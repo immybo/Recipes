@@ -8,9 +8,11 @@ import { createAppContainer } from 'react-navigation';
 import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import { store } from './reducers/Reducers';
+import AddRecipe from './components/AddRecipe';
 
 const MainNavigator = createStackNavigator({
-  ViewRecipes: {screen: ViewRecipes}
+  ViewRecipes: {screen: ViewRecipes},
+  AddRecipe: {screen: AddRecipe}
 });
 
 let Navigation = createAppContainer(MainNavigator);

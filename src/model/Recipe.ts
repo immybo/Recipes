@@ -1,6 +1,9 @@
+import { Ingredient } from "./Ingredient";
+
 export interface Recipe {
-    ingredients: string[];
+    ingredients: Ingredient[];
     name: string;
+    description: string;
 }
 
 export interface RecipeState {

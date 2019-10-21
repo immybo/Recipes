@@ -1,14 +1,16 @@
 import React from 'react';
 import {
   View,
-  Text
+  Text,
+  Button
 } from 'react-native';
 import { connect } from 'react-redux';
 import { Recipe } from '../model/Recipe';
 import { AppState } from '../reducers/Reducers';
-import RecipeComponent from './RecipeComponent';
+import RecipeComponent from './shared/RecipeComponent';
+import { withNavigation } from 'react-navigation';
 
-interface ViewRecipesProps {
+interface ViewRecipesProps extends React.Props<ViewRecipes> {
   recipes: Recipe[]
 }
 
@@ -20,7 +22,7 @@ const mapStateToProps = (state: AppState) =>
 }
 
 class ViewRecipes extends React.Component<ViewRecipesProps, any> {
-  constructor(props: any) {
+  constructor(props: ViewRecipesProps) {
     super(props);
   }
 
@@ -28,6 +30,7 @@ class ViewRecipes extends React.Component<ViewRecipesProps, any> {
     return (
       <View>
         { this.getRecipeList() }
+        <Button title="Add Recipe" onPress={ (event: any) => this.props.navigation.navigate("AddRecipe") }>Add Recipe</Button>
       </View>
     );
   }
@@ -37,4 +40,4 @@ class ViewRecipes extends React.Component<ViewRecipesProps, any> {
   }
 }
 
-export default connect(mapStateToProps)(ViewRecipes);
+export default withNavigation(connect(mapStateToProps)(ViewRecipes));

@@ -2,12 +2,7 @@ import { RecipeActionTypes, ADD_RECIPE } from "../actions/RecipeActions";
 import { RecipeState } from "../model/Recipe";
 
 const initialState: RecipeState = {
-    recipes: [
-        {
-            ingredients: ["ingredient1", "ingredient2"],
-            name: "test recipe"
-        }
-    ]
+    recipes: []
 }
 
 export default function(state = initialState, action: RecipeActionTypes) {
