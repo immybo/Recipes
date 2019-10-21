@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import { Ingredient } from '../../model/Ingredient';
 
-interface IngredientInputProps {
+interface IngredientInputProps extends React.Props<IngredientInput> {
   ingredient: Ingredient,
   onChangeIngredient: (ingredient: Ingredient) => void
 }
@@ -16,8 +16,15 @@ class IngredientInput extends React.Component<IngredientInputProps, any> {
 
   public render(): JSX.Element {
     return (
-        <TextInput placeholder={ this.props.ingredient.name == null ? this.props.ingredient.name : "" } />
+        <TextInput onChangeText={(newText) => this.updateIngredientName(newText)} placeholder={ this.props.ingredient.name == null ? this.props.ingredient.name : "" } />
     );
+  }
+
+  private updateIngredientName(newText: string): void {
+    this.props.onChangeIngredient({
+      ...this.props.ingredient,
+      name: newText
+    });
   }
 }
 

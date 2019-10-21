@@ -26,7 +26,7 @@ class RecipeComponent extends React.Component<RecipeComponentProps, any> {
   }
 
   private getIngredientList(): JSX.Element[] {
-      return this.props.recipe.ingredients.map(ingredient => <IngredientDisplay key={ingredient} ingredient={ingredient} />);
+      return this.props.recipe.ingredients.map((ingredient, key) => <IngredientDisplay key={key} ingredient={ingredient} />);
   }
 }
 

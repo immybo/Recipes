@@ -51,7 +51,9 @@ class AddRecipe extends React.Component<React.Props<AddRecipe>, AddRecipeState> 
   }
 
   private getIngredientInputList(): JSX.Element[] {
-    return this.state.ingredients.map((ingredient: Ingredient, key: number) => <IngredientInput ingredient={ingredient} key={key} onChangeIngredient={(newIngredient) => this.onChangeIngredient(newIngredient, key)} />);
+    return this.state.ingredients.map(
+      (ingredient: Ingredient, key: number) => <IngredientInput ingredient={ingredient} key={key} onChangeIngredient={(newIngredient) => this.onChangeIngredient(newIngredient, key)} />
+    );
   }
 
   private addNewIngredient(): void {

@@ -36,7 +36,7 @@ class ViewRecipes extends React.Component<ViewRecipesProps, any> {
   }
 
   private getRecipeList(): JSX.Element[] {
-    return this.props.recipes.map(recipe => <RecipeComponent key={recipe.name} recipe={recipe} />);
+    return this.props.recipes.map((recipe, key) => <RecipeComponent key={key} recipe={recipe} />);
   }
 }
 
