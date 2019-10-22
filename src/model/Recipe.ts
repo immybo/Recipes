@@ -8,4 +8,5 @@ export interface Recipe {
 
 export interface RecipeState {
     recipes: Recipe[];
+    recipeContext?: Recipe;
 }

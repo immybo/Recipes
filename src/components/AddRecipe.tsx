@@ -11,6 +11,7 @@ import IngredientInput from './shared/IngredientInput';
 import { Recipe } from '../model/Recipe';
 import { addRecipe } from '../actions/RecipeActions';
 import { withNavigation } from 'react-navigation';
+import { RouteViewRecipes } from '../Routes';
 
 interface AddRecipeState {
   recipeName: string,
@@ -75,7 +76,7 @@ class AddRecipe extends React.Component<React.Props<AddRecipe>, AddRecipeState> 
   private submitRecipe(): void {
     let recipe: Recipe = this.buildRecipe();
     this.props.addRecipe(recipe);
-    this.props.navigation.navigate("ViewRecipes");
+    this.props.navigation.navigate(RouteViewRecipes);
   }
 
   private buildRecipe(): Recipe {
