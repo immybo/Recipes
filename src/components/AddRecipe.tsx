@@ -28,7 +28,7 @@ const mapDispatchToProps = {
   addRecipe
 };
 
-class AddRecipe extends React.Component<React.Props<AddRecipe>, AddRecipeState> {
+class AddRecipe extends React.Component<any, AddRecipeState> {
   constructor(props: any) {
     super(props);
 

@@ -7,7 +7,8 @@ import { Recipe } from '../../model/Recipe';
 
 interface RecipeCompactDisplayProps {
   recipe: Recipe,
-  onClick?: (recipe: Recipe) => void
+  onClick: (recipe: Recipe) => void
+  onDelete: (recipe: Recipe) => void
 }
 
 class RecipeCompactDisplay extends React.Component<RecipeCompactDisplayProps, any> {
@@ -18,7 +19,8 @@ class RecipeCompactDisplay extends React.Component<RecipeCompactDisplayProps, an
   public render(): JSX.Element {
     return (
         <View>
-            <Button title={this.props.recipe.name} onPress={(event) => this.props.onClick && this.props.onClick(this.props.recipe)}>{this.props.recipe.name}</Button>
+            <Button title={this.props.recipe.name} onPress={(event) => this.props.onClick(this.props.recipe)} />
+            <Button title="x" onPress={(event) => this.props.onDelete(this.props.recipe)} />
         </View>
     );
   }

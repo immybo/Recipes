@@ -9,7 +9,7 @@ import { Recipe } from '../model/Recipe';
 import { AppState } from '../reducers/Reducers';
 import { withNavigation } from 'react-navigation';
 import { RouteAddRecipe, RouteViewIndividualRecipe } from '../Routes';
-import { selectRecipe } from '../actions/RecipeActions';
+import { selectRecipe, deleteRecipe } from '../actions/RecipeActions';
 import RecipeCompactDisplay from './shared/RecipeCompactDisplay';
 
 interface ViewRecipesProps extends React.Props<ViewRecipes> {
@@ -24,7 +24,8 @@ const mapStateToProps = (state: AppState) =>
 }
 
 const mapDispatchToProps = {
-  selectRecipe
+  selectRecipe,
+  deleteRecipe
 };
 
 class ViewRecipes extends React.Component<ViewRecipesProps, any> {
@@ -42,12 +43,16 @@ class ViewRecipes extends React.Component<ViewRecipesProps, any> {
   }
 
   private getRecipeList(): JSX.Element[] {
-    return this.props.recipes.map((recipe, key) => <RecipeCompactDisplay onClick={(recipe) => this.selectRecipe(recipe)} key={key} recipe={recipe} />);
+    return this.props.recipes.map((recipe, key) => <RecipeCompactDisplay onClick={(recipe) => this.selectRecipe(recipe)} onDelete={(recipe) => this.deleteRecipe(recipe)} key={key} recipe={recipe} />);
   }
 
   private selectRecipe(recipe: Recipe) {
     this.props.selectRecipe(recipe);
     this.props.navigation.navigate(RouteViewIndividualRecipe);
+  }
+
+  private deleteRecipe(recipe: Recipe) {
+    this.props.deleteRecipe(recipe);
   }
 }
 

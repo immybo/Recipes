@@ -2,6 +2,7 @@ import { Recipe } from "../model/Recipe";
 
 export const ADD_RECIPE = "ADD_RECIPE";
 export const SELECT_RECIPE = "SELECT_RECIPE";
+export const DELETE_RECIPE = "DELETE_RECIPE";
 
 interface AddRecipeAction {
     type: typeof ADD_RECIPE,
@@ -13,7 +14,12 @@ interface SelectRecipeAction {
     payload: Recipe
 }
 
-export type RecipeActionTypes = AddRecipeAction | SelectRecipeAction;
+interface DeleteRecipeAction {
+    type: typeof DELETE_RECIPE,
+    payload: Recipe
+}
+
+export type RecipeActionTypes = AddRecipeAction | SelectRecipeAction | DeleteRecipeAction;
 
 export function addRecipe(newRecipe: Recipe): RecipeActionTypes {
     return {
@@ -26,5 +32,12 @@ export function selectRecipe(newSelectedRecipe: Recipe): RecipeActionTypes {
     return {
         type: SELECT_RECIPE,
         payload: newSelectedRecipe
+    }
+}
+
+export function deleteRecipe(toDelete: Recipe): RecipeActionTypes {
+    return {
+        type: DELETE_RECIPE,
+        payload: toDelete
     }
 }
