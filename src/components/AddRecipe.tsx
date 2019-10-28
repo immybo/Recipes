@@ -2,7 +2,8 @@ import React from 'react';
 import {
   View,
   TextInput,
-  Button
+  Button,
+  TouchableHighlight
 } from 'react-native';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers/Reducers';
@@ -12,11 +13,15 @@ import { Recipe } from '../model/Recipe';
 import { addRecipe } from '../actions/RecipeActions';
 import { withNavigation } from 'react-navigation';
 import { RouteViewRecipes } from '../Routes';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { Category } from '../model/Category';
+import { styles } from '../style/AddRecipe';
 
 interface AddRecipeState {
   recipeName: string,
   recipeDescription: string,
-  ingredients: Ingredient[]
+  ingredients: Ingredient[],
+  categories: Category[]
 }
 
 const mapStateToProps = (state: AppState) => 
@@ -35,7 +40,8 @@ class AddRecipe extends React.Component<any, AddRecipeState> {
     this.state = {
       recipeName: "",
       recipeDescription: "",
-      ingredients: []
+      ingredients: [],
+      categories: []
     };
   }
 
@@ -45,7 +51,17 @@ class AddRecipe extends React.Component<any, AddRecipeState> {
         <TextInput placeholder="Recipe Name" onChangeText={(text) => this.onRecipeNameChange(text)} />
         <TextInput placeholder="Recipe Description" onChangeText={(text) => this.onRecipeDescriptionChange(text)} />
         { this.getIngredientInputList() }
-        <Button title="Add Ingredient" onPress={(event) => this.addNewIngredient()}>Add Ingredient</Button>
+        <TouchableHighlight onPress={(event) => this.addNewIngredient()}>
+          <View style={styles.rightButton}>
+            <Icon name="plus" size={30} color="black" />
+          </View>
+        </TouchableHighlight>
+        { this.getCategoryList() }
+        <TouchableHighlight onPress={(event) => this.addNewCategory()}>
+          <View style={styles.rightButton}>
+            <Icon name="plus" size={30} color="black" />
+          </View>
+        </TouchableHighlight>
         <Button title="Submit Recipe" onPress={(event) => this.submitRecipe()}>Submit Recipe</Button>
       </View>
     );
@@ -53,12 +69,22 @@ class AddRecipe extends React.Component<any, AddRecipeState> {
 
   private getIngredientInputList(): JSX.Element[] {
     return this.state.ingredients.map(
-      (ingredient: Ingredient, key: number) => <IngredientInput ingredient={ingredient} key={key} onChangeIngredient={(newIngredient) => this.onChangeIngredient(newIngredient, key)} />
+      (ingredient: Ingredient, key: number) => <IngredientInput ingredient={ingredient} key={"ingredient-"+key} onChangeIngredient={(newIngredient) => this.onChangeIngredient(newIngredient, key)} />
+    );
+  }
+
+  private getCategoryList(): JSX.Element[] {
+    return this.state.categories.map(
+      (category: Category, key: number) => <TextInput placeholder="Category Name" key={"category-"+key} onChangeText={(text) => this.onCategoryTextChange(text, key)} />
     );
   }
 
   private addNewIngredient(): void {
     this.setState({ingredients: this.state.ingredients.concat(getBlankIngredient())});
+  }
+
+  private addNewCategory(): void {
+    this.setState({categories: this.state.categories.concat({name: ""})});
   }
 
   private onRecipeNameChange(newName: string): void {
@@ -73,6 +99,10 @@ class AddRecipe extends React.Component<any, AddRecipeState> {
     this.setState({ingredients: [...this.state.ingredients.slice(0, index), ingredient, ...this.state.ingredients.slice(index+1)]});
   }
 
+  private onCategoryTextChange(newText: string, index: number) {
+    this.setState({categories: [...this.state.categories.slice(0, index), {name: newText}, ...this.state.categories.slice(index+1)]});
+  }
+
   private submitRecipe(): void {
     let recipe: Recipe = this.buildRecipe();
     this.props.addRecipe(recipe);
@@ -83,7 +113,8 @@ class AddRecipe extends React.Component<any, AddRecipeState> {
     return {
       name: this.state.recipeName,
       description: this.state.recipeDescription,
-      ingredients: this.state.ingredients.filter((ingredient: Ingredient) => this.isValidIngredient(ingredient))
+      ingredients: this.state.ingredients.filter((ingredient: Ingredient) => this.isValidIngredient(ingredient)),
+      categories: this.state.categories
     };
   }
 

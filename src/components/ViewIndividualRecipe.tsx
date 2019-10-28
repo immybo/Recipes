@@ -8,38 +8,51 @@ import { withNavigation } from 'react-navigation';
 import IngredientDisplay from './shared/IngredientDisplay';
 
 interface ViewIndividualRecipeProps extends React.Props<ViewIndividualRecipe> {
-  recipe?: Recipe
+  navigation: any
+}
+
+interface ViewIndividualRecipeState {
+  recipe: Recipe
 }
 
 const mapStateToProps = (state: AppState) => 
 {
   return {
-    recipe: state.recipes.recipeContext
+    recipe: state.recipes.recipeContext == null ? null : state.recipes.recipeContext
   };
 }
 
-class ViewIndividualRecipe extends React.Component<ViewIndividualRecipeProps, any> {
+class ViewIndividualRecipe extends React.Component<ViewIndividualRecipeProps, ViewIndividualRecipeState> {
   constructor(props: ViewIndividualRecipeProps) {
     super(props);
+
+    this.state = {
+      recipe: this.props.navigation.getParam("recipe", null)
+    };
   }
 
   public render(): JSX.Element {
-    if (this.props.recipe == null) {
+    if (this.state.recipe == null) {
       return <View />;
     }
 
     return (
       <View>
-        <Text>{this.props.recipe.name}</Text>
-        <Text>{this.props.recipe.description}</Text>
+        <Text>{this.state.recipe.name}</Text>
+        <Text>{this.state.recipe.description}</Text>
         {this.getIngredientList()}
+        {this.getCategoryList()}
       </View>
     );
   }
 
   private getIngredientList(): JSX.Element[] {
-    return this.props.recipe.ingredients.map((ingredient, key) => <IngredientDisplay key={key} ingredient={ingredient} />);
+    return this.state.recipe.ingredients.map((ingredient, key) => <IngredientDisplay key={key} ingredient={ingredient} />);
   }
+
+  private getCategoryList(): JSX.Element {
+    return <Text>{this.state.recipe.categories.map(x => x.name).join(", ")}</Text>
+  } 
 }
 
 export default withNavigation(connect(mapStateToProps)(ViewIndividualRecipe));
