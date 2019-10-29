@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  TextInput
+  TextInput, View
 } from 'react-native';
 import { Ingredient } from '../../model/Ingredient';
 
@@ -16,7 +16,10 @@ class IngredientInput extends React.Component<IngredientInputProps, any> {
 
   public render(): JSX.Element {
     return (
-        <TextInput onChangeText={(newText) => this.updateIngredientName(newText)} placeholder={ this.props.ingredient.name == null ? this.props.ingredient.name : "" } />
+      <View>
+        <TextInput onChangeText={(newText) => this.updateIngredientName(newText)} placeholder={ "Ingredient Name" } />
+        <TextInput keyboardType="numeric" onChangeText={(newQuantity) => this.updateIngredientQuantity(newQuantity)} placeholder={ "Quantity" } />
+      </View>
     );
   }
 
@@ -24,6 +27,13 @@ class IngredientInput extends React.Component<IngredientInputProps, any> {
     this.props.onChangeIngredient({
       ...this.props.ingredient,
       name: newText
+    });
+  }
+
+  private updateIngredientQuantity(newQuantity: string) {
+    this.props.onChangeIngredient({
+      ...this.props.ingredient,
+      quantity: { quantity: Number(newQuantity) }
     });
   }
 }

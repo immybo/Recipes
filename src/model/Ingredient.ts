@@ -1,7 +1,10 @@
+import { Quantity } from "./Quantity";
+
 export interface Ingredient {
-    name: string
+    name: string,
+    quantity: Quantity
 }
 
 export function getBlankIngredient() {
-    return { name: "" };
+    return { name: "", quantity: { quantity: 0 } };
 }

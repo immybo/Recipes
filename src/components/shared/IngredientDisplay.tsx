@@ -19,7 +19,10 @@ class IngredientDisplay extends React.Component<IngredientDisplayProps, any> {
 
   public render(): JSX.Element {
     return (
+      <View>
         <Text>{this.props.ingredient.name}</Text>
+        <Text>{this.props.ingredient.quantity}</Text>
+      </View>
     );
   }
 }
