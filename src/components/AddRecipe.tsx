@@ -3,7 +3,8 @@ import {
   View,
   TextInput,
   Button,
-  TouchableHighlight
+  TouchableHighlight,
+  Text
 } from 'react-native';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers/Reducers';
@@ -11,11 +12,12 @@ import { Ingredient, getBlankIngredient } from '../model/Ingredient';
 import IngredientInput from './shared/IngredientInput';
 import { Recipe } from '../model/Recipe';
 import { addRecipe } from '../actions/RecipeActions';
-import { withNavigation } from 'react-navigation';
+import { withNavigation, ScrollView } from 'react-navigation';
 import { RouteViewRecipes } from '../Routes';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Category } from '../model/Category';
-import { styles } from '../style/AddRecipe';
+import { addRecipeStyles } from '../style/AddRecipe';
+import { styles } from '../style/Style';
 
 interface AddRecipeState {
   recipeName: string,
@@ -47,23 +49,25 @@ class AddRecipe extends React.Component<any, AddRecipeState> {
 
   public render(): JSX.Element {
     return (
-      <View>
+      <ScrollView>
         <TextInput placeholder="Recipe Name" onChangeText={(text) => this.onRecipeNameChange(text)} />
         <TextInput placeholder="Recipe Description" onChangeText={(text) => this.onRecipeDescriptionChange(text)} />
+        <Text style={styles.h1}>Ingredients</Text>
         { this.getIngredientInputList() }
         <TouchableHighlight onPress={(event) => this.addNewIngredient()}>
-          <View style={styles.rightButton}>
-            <Icon name="plus" size={30} color="black" />
+          <View style={addRecipeStyles.rightButton}>
+            <Icon name="plus" size={20} color="black" />
           </View>
         </TouchableHighlight>
+        <Text style={styles.h1}>Categories</Text>
         { this.getCategoryList() }
         <TouchableHighlight onPress={(event) => this.addNewCategory()}>
-          <View style={styles.rightButton}>
-            <Icon name="plus" size={30} color="black" />
+          <View style={addRecipeStyles.rightButton}>
+            <Icon name="plus" size={20} color="black" />
           </View>
         </TouchableHighlight>
         <Button title="Submit Recipe" onPress={(event) => this.submitRecipe()}>Submit Recipe</Button>
-      </View>
+      </ScrollView>
     );
   }
 
@@ -75,7 +79,7 @@ class AddRecipe extends React.Component<any, AddRecipeState> {
 
   private getCategoryList(): JSX.Element[] {
     return this.state.categories.map(
-      (category: Category, key: number) => <TextInput placeholder="Category Name" key={"category-"+key} onChangeText={(text) => this.onCategoryTextChange(text, key)} />
+      (category: Category, key: number) => <TextInput style={addRecipeStyles.rowLayout} placeholder="Category Name" key={"category-"+key} onChangeText={(text) => this.onCategoryTextChange(text, key)} />
     );
   }
 

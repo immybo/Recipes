@@ -1,0 +1,1 @@
+export const Numbers = /^\d+S/

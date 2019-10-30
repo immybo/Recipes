@@ -21,7 +21,7 @@ class IngredientDisplay extends React.Component<IngredientDisplayProps, any> {
     return (
       <View>
         <Text>{this.props.ingredient.name}</Text>
-        <Text>{this.props.ingredient.quantity}</Text>
+        <Text>{this.props.ingredient.quantity.quantity.toString()}</Text>
       </View>
     );
   }
