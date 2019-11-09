@@ -10,10 +10,12 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@types/react-native-vector-icons": "^6.4.4",
     "lstat": "^1.0.0",
     "react": "16.9.0",
     "react-native": "0.61.2",
     "react-native-gesture-handler": "^1.4.1",
+    "react-native-sqlite-storage": "^4.1.0",
     "react-native-vector-icons": "^6.6.0",
     "react-navigation": "^4.0.10",
     "react-navigation-stack": "^1.9.4",
@@ -30,6 +32,7 @@
     "@types/jest": "^24.0.19",
     "@types/react": "^16.9.9",
     "@types/react-native": "^0.60.21",
+    "@types/react-native-sqlite-storage": "^3.3.1",
     "@types/react-redux": "^7.1.5",
     "@types/react-test-renderer": "^16.9.1",
     "babel-jest": "24.9.0",

@@ -55,14 +55,14 @@ class AddRecipe extends React.Component<any, AddRecipeState> {
         <Text style={styles.h1}>Ingredients</Text>
         { this.getIngredientInputList() }
         <TouchableHighlight onPress={(event) => this.addNewIngredient()}>
-          <View style={addRecipeStyles.rightButton}>
+          <View style={styles.rightButton}>
             <Icon name="plus" size={20} color="black" />
           </View>
         </TouchableHighlight>
         <Text style={styles.h1}>Categories</Text>
         { this.getCategoryList() }
         <TouchableHighlight onPress={(event) => this.addNewCategory()}>
-          <View style={addRecipeStyles.rightButton}>
+          <View style={styles.rightButton}>
             <Icon name="plus" size={20} color="black" />
           </View>
         </TouchableHighlight>
@@ -79,7 +79,7 @@ class AddRecipe extends React.Component<any, AddRecipeState> {
 
   private getCategoryList(): JSX.Element[] {
     return this.state.categories.map(
-      (category: Category, key: number) => <TextInput style={addRecipeStyles.rowLayout} placeholder="Category Name" key={"category-"+key} onChangeText={(text) => this.onCategoryTextChange(text, key)} />
+      (category: Category, key: number) => <TextInput style={styles.rowLayout} placeholder="Category Name" key={"category-"+key} onChangeText={(text) => this.onCategoryTextChange(text, key)} />
     );
   }
 
