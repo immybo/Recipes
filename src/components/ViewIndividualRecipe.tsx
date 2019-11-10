@@ -15,11 +15,8 @@ interface ViewIndividualRecipeState {
   recipe: Recipe
 }
 
-const mapStateToProps = (state: AppState) => 
-{
-  return {
-    recipe: state.recipes.recipeContext == null ? null : state.recipes.recipeContext
-  };
+const mapStateToProps = (state: AppState) => {
+    return {};
 }
 
 class ViewIndividualRecipe extends React.Component<ViewIndividualRecipeProps, ViewIndividualRecipeState> {

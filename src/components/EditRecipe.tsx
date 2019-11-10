@@ -1,15 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers/Reducers';
-import { Ingredient, getBlankIngredient } from '../model/Ingredient';
 import { Recipe, getBlankRecipe } from '../model/Recipe';
-import { addRecipe } from '../actions/RecipeActions';
+import { updateRecipe } from '../actions/RecipeActions';
 import { withNavigation, ScrollView } from 'react-navigation';
 import { RouteViewRecipes } from '../Routes';
-import { Category } from '../model/Category';
 import RecipeInput from './shared/RecipeInput';
 
-interface AddRecipeState {
+interface EditRecipeProps extends React.Props<EditRecipe> {
+}
+
+interface EditRecipeState {
+    initialRecipe: Recipe
 }
 
 const mapStateToProps = (state: AppState) => {
@@ -17,24 +19,28 @@ const mapStateToProps = (state: AppState) => {
 }
 
 const mapDispatchToProps = {
-    addRecipe
+    updateRecipe
 };
 
-class AddRecipe extends React.Component<any, AddRecipeState> {
+class EditRecipe extends React.Component<EditRecipeProps, EditRecipeState> {
     constructor(props: any) {
         super(props);
+
+        this.state = {
+            initialRecipe: this.props.navigation.getParam("recipe", null)
+        };
     }
 
     public render(): JSX.Element {
         return (
-            <RecipeInput initialRecipe={getBlankRecipe()} submitRecipe={(recipe) => this.submitRecipe(recipe)} />
+            <RecipeInput initialRecipe={this.state.initialRecipe} submitRecipe={(recipe) => this.submitRecipe(recipe)} />
         );
     }
 
     private submitRecipe(recipe: Recipe): void {
-        this.props.addRecipe(recipe);
+        this.props.updateRecipe(recipe);
         this.props.navigation.navigate(RouteViewRecipes);
     }
 }
 
-export default withNavigation(connect(mapStateToProps, mapDispatchToProps)(AddRecipe));
+export default withNavigation(connect(mapStateToProps, mapDispatchToProps)(EditRecipe));

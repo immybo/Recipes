@@ -1,9 +1,10 @@
-import { RecipeActionTypes, ADD_RECIPE, SELECT_RECIPE, DELETE_RECIPE } from "../actions/RecipeActions";
-import { RecipeState, Recipe } from "../model/Recipe";
+import { RecipeActionTypes, ADD_RECIPE, SELECT_RECIPE, DELETE_RECIPE, UPDATE_RECIPE } from "../actions/RecipeActions";
+import { RecipeState, Recipe, getUniqueRecipeId } from "../model/Recipe";
 
 const initialState: RecipeState = {
     recipes: [
         {
+            id: getUniqueRecipeId(),
             name: "Mushroom Pasta",
             categories: [
                 {
@@ -30,6 +31,7 @@ const initialState: RecipeState = {
             ]
         },
         {
+            id: getUniqueRecipeId(),
             name: "Pizza",
             categories: [
                 {
@@ -101,12 +103,20 @@ export default function(state = initialState, action: RecipeActionTypes) {
                 recipeContext: action.payload
             };
         case DELETE_RECIPE:
-            let indexOf: number = state.recipes.indexOf(action.payload);
+            let indexToDelete: number = state.recipes.indexOf(action.payload);
             let newRecipes: Recipe[] = [...state.recipes];
-            newRecipes.splice(indexOf, 1);
+            newRecipes.splice(indexToDelete, 1);
             return {
                 ...state,
                 recipes: newRecipes
+            }
+        case UPDATE_RECIPE:
+            let indexToUpdate: number = state.recipes.findIndex(x => x.id === action.payload.id);
+            let recipesAfterUpdate: Recipe[] = [...state.recipes];
+            recipesAfterUpdate[indexToUpdate] = action.payload;
+            return {
+                ...state,
+                recipes: recipesAfterUpdate
             }
         default:
             return state;
