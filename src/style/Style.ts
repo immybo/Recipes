@@ -22,9 +22,6 @@ export const styles = StyleSheet.create({
         alignItems: "flex-end",
         margin: 10,
     },
-    verticalMiddleAlign: {
-        alignItems: "center"
-    },
     sideMarginSmall: {
         marginHorizontal: 10
     }

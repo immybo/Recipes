@@ -4,6 +4,7 @@ export const ADD_RECIPE = "ADD_RECIPE";
 export const SELECT_RECIPE = "SELECT_RECIPE";
 export const DELETE_RECIPE = "DELETE_RECIPE";
 export const UPDATE_RECIPE = "UPDATE_RECIPE";
+export const SET_ALL_RECIPES = "SET_ALL_RECIPES";
 
 interface AddRecipeAction {
     type: typeof ADD_RECIPE,
@@ -25,7 +26,12 @@ interface UpdateRecipeAction {
     payload: Recipe
 }
 
-export type RecipeActionTypes = AddRecipeAction | SelectRecipeAction | DeleteRecipeAction | UpdateRecipeAction;
+interface SetAllRecipesAction {
+    type: typeof SET_ALL_RECIPES,
+    payload: Recipe[]
+}
+
+export type RecipeActionTypes = AddRecipeAction | SelectRecipeAction | DeleteRecipeAction | UpdateRecipeAction | SetAllRecipesAction;
 
 export function addRecipe(newRecipe: Recipe): RecipeActionTypes {
     return {
@@ -52,5 +58,12 @@ export function updateRecipe(newRecipe: Recipe): RecipeActionTypes {
     return {
         type: UPDATE_RECIPE,
         payload: newRecipe
+    }
+}
+
+export function setAllRecipes(allRecipes: Recipe[]): RecipeActionTypes {
+    return {
+        type: SET_ALL_RECIPES,
+        payload: allRecipes
     }
 }
