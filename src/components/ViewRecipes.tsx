@@ -11,6 +11,7 @@ import { withNavigation } from 'react-navigation';
 import { RouteAddRecipe, RouteViewIndividualRecipe, RouteEditRecipe } from '../Routes';
 import { selectRecipe, deleteRecipe } from '../actions/RecipeActions';
 import RecipeCompactDisplay from './shared/RecipeCompactDisplay';
+import { styles } from '../style/Style';
 
 interface ViewRecipesProps extends React.Props<ViewRecipes> {
     navigation: any,
@@ -37,9 +38,13 @@ class ViewRecipes extends React.Component<ViewRecipesProps, any> {
 
     public render(): JSX.Element {
         return (
-            <View>
-                {this.getRecipeList()}
-                <Button title="Add Recipe" onPress={(event: any) => this.props.navigation.navigate(RouteAddRecipe)}>Add Recipe</Button>
+            <View style={styles.container}>
+                <View>
+                    {this.getRecipeList()}
+                </View>
+                <View style={styles.bottomButtonContainer}>
+                    <Button title="Add Recipe" onPress={(event: any) => this.props.navigation.navigate(RouteAddRecipe)}>Add Recipe</Button>
+                </View>
             </View>
         );
     }

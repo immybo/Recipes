@@ -3,8 +3,8 @@ import {
   TextInput, View
 } from 'react-native';
 import { Ingredient } from '../../model/Ingredient';
-import { addRecipeStyles } from '../../style/AddRecipe';
 import { Numbers } from '../../util/Regex';
+import { styles } from '../../style/Style';
 
 interface IngredientInputProps extends React.Props<IngredientInput> {
   ingredient: Ingredient,
@@ -18,7 +18,7 @@ class IngredientInput extends React.Component<IngredientInputProps, any> {
 
   public render(): JSX.Element {
     return (
-      <View style={addRecipeStyles.rowLayout}>
+      <View style={styles.rowLayout}>
         <TextInput value={this.props.ingredient.name} onChangeText={(newText) => this.updateIngredientName(newText)} placeholder={ "Ingredient Name" } />
         <TextInput
           value={this.props.ingredient.quantity.quantity > 0 ? this.props.ingredient.quantity.quantity.toString() : ""}

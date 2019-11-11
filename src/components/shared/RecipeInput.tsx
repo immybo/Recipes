@@ -6,16 +6,12 @@ import {
     TouchableHighlight,
     Text
 } from 'react-native';
-import { connect } from 'react-redux';
-import { AppState } from '../../reducers/Reducers';
 import { Ingredient, getBlankIngredient } from '../../model/Ingredient';
 import IngredientInput from './../shared/IngredientInput';
 import { Recipe } from '../../model/Recipe';
-import { addRecipe } from '../../actions/RecipeActions';
-import { withNavigation, ScrollView } from 'react-navigation';
-import { RouteViewRecipes } from '../../Routes';
+import { ScrollView } from 'react-navigation';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Category } from '../../model/Category';
+import { Category, getBlankCategory } from '../../model/Category';
 import { styles } from '../../style/Style';
 
 interface RecipeInputProps extends React.Props<RecipeInput> {
@@ -44,25 +40,31 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
 
     public render(): JSX.Element {
         return (
-            <ScrollView>
-                <TextInput placeholder="Recipe Name" defaultValue={this.props.initialRecipe.name} onChangeText={(text) => this.onRecipeNameChange(text)} />
-                <TextInput placeholder="Recipe Description" defaultValue={this.props.initialRecipe.description} onChangeText={(text) => this.onRecipeDescriptionChange(text)} />
-                <Text style={styles.h1}>Ingredients</Text>
-                {this.getIngredientInputList()}
-                <TouchableHighlight onPress={(event) => this.addNewIngredient()}>
-                    <View style={styles.rightButton}>
-                        <Icon name="plus" size={20} color="black" />
-                    </View>
-                </TouchableHighlight>
-                <Text style={styles.h1}>Categories</Text>
-                {this.getCategoryList()}
-                <TouchableHighlight onPress={(event) => this.addNewCategory()}>
-                    <View style={styles.rightButton}>
-                        <Icon name="plus" size={20} color="black" />
-                    </View>
-                </TouchableHighlight>
-                <Button title="Submit Recipe" onPress={(event) => this.submitRecipe()}>Submit Recipe</Button>
+            <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <View>
+                    <TextInput style={styles.h1} placeholder="Recipe Name" defaultValue={this.props.initialRecipe.name} onChangeText={(text) => this.onRecipeNameChange(text)} />
+                    <TextInput style={styles.sideMarginSmall} placeholder="Recipe Description" defaultValue={this.props.initialRecipe.description} onChangeText={(text) => this.onRecipeDescriptionChange(text)} />
+                    <Text style={styles.h1}>Ingredients</Text>
+                    {this.getIngredientInputList()}
+                    <TouchableHighlight onPress={(event) => this.addNewIngredient()}>
+                        <View style={styles.rightButton}>
+                            <Icon name="plus" size={20} color="black" />
+                        </View>
+                    </TouchableHighlight>
+                    <Text style={styles.h1}>Categories</Text>
+                    {this.getCategoryList()}
+                    <TouchableHighlight onPress={(event) => this.addNewCategory()}>
+                        <View style={styles.rightButton}>
+                            <Icon name="plus" size={20} color="black" />
+                        </View>
+                    </TouchableHighlight>
+                </View>
+                <View style={styles.bottomButtonContainer}>
+                    <Button title="Submit Recipe" onPress={(event) => this.submitRecipe()}>Submit Recipe</Button>
+                </View>
             </ScrollView>
+            </View>
         );
     }
 
@@ -83,7 +85,7 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
     }
 
     private addNewCategory(): void {
-        this.setState({ categories: this.state.categories.concat({ name: "" }) });
+        this.setState({ categories: this.state.categories.concat(getBlankCategory()) });
     }
 
     private onRecipeNameChange(newName: string): void {
@@ -99,7 +101,7 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
     }
 
     private onCategoryTextChange(newText: string, index: number) {
-        this.setState({ categories: [...this.state.categories.slice(0, index), { name: newText }, ...this.state.categories.slice(index + 1)] });
+        this.setState({ categories: [...this.state.categories.slice(0, index), { ...this.state.categories[index], name: newText }, ...this.state.categories.slice(index + 1)] });
     }
 
     private submitRecipe(): void {

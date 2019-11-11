@@ -14,7 +14,7 @@ export interface RecipeState {
     recipeContext?: Recipe;
 }
 
-export function getBlankRecipe() {
+export function getBlankRecipe(): Recipe {
     return {
         id: getUniqueRecipeId(),
         ingredients: [],
@@ -24,8 +24,8 @@ export function getBlankRecipe() {
     };
 }
 
-var nextUniqueId = 0;
+var nextUniqueId: number = 0;
 
-export function getUniqueRecipeId() {
+export function getUniqueRecipeId(): number {
     return nextUniqueId++;
 }
