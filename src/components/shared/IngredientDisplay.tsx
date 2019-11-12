@@ -1,27 +1,29 @@
 import React from 'react';
 import {
-  View,
-  Text
+    View,
+    Text
 } from 'react-native';
 import { Ingredient } from '../../model/Ingredient';
+import { styles } from '../../style/Style';
 
 interface IngredientDisplayProps {
-  ingredient: Ingredient
+    ingredient: Ingredient
 }
 
 class IngredientDisplay extends React.Component<IngredientDisplayProps, any> {
-  constructor(props: any) {
-    super(props);
-  }
+    constructor(props: any) {
+        super(props);
+    }
 
-  public render(): JSX.Element {
-    return (
-      <View>
-        <Text>{this.props.ingredient.name}</Text>
-        <Text>{this.props.ingredient.quantity.quantity.toString()}</Text>
-      </View>
-    );
-  }
+    public render(): JSX.Element {
+        return (
+            <View style={styles.rowWithoutJustify}>
+                <Text>{this.props.ingredient.quantity.quantity.toString()}</Text>
+                <Text> </Text>
+                <Text>{this.props.ingredient.name}</Text>
+            </View>
+        );
+    }
 }
 
 export default IngredientDisplay;

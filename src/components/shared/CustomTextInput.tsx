@@ -34,7 +34,6 @@ class CustomTextInput extends React.Component<CustomTextInputProps, CustomTextIn
                 underlineColorAndroid={this.state.isFocused ? Colors.Blue : Colors.LightGrey }
                 onFocus={() => this.handleFocus()}
                 onBlur={() => this.handleBlur()}
-                style={styles.textInput}
                 {...this.props}
                 />
         );    

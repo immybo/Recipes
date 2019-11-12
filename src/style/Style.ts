@@ -13,9 +13,17 @@ export const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold"
     },
+    h2: {
+        fontSize: 15,
+        fontWeight: "bold"
+    },
     rowLayout: {
         flexDirection: "row",
         justifyContent: "space-between",
+        alignItems: "center"
+    },
+    rowWithoutJustify: {
+        flexDirection: "row",
         alignItems: "center"
     },
     rightAlign: {
@@ -42,7 +50,6 @@ export const styles = StyleSheet.create({
         margin: 10
     },
     textInput: {
-        height: 40,
         paddingLeft: 6
     },
     topMargin: {

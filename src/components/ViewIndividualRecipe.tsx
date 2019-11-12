@@ -9,11 +9,11 @@ import IngredientDisplay from './shared/IngredientDisplay';
 import { styles } from '../style/Style';
 
 interface ViewIndividualRecipeProps extends React.Props<ViewIndividualRecipe> {
-  navigation: any
+    navigation: any
 }
 
 interface ViewIndividualRecipeState {
-  recipe: Recipe
+    recipe: Recipe
 }
 
 const mapStateToProps = (state: AppState) => {
@@ -21,36 +21,52 @@ const mapStateToProps = (state: AppState) => {
 }
 
 class ViewIndividualRecipe extends React.Component<ViewIndividualRecipeProps, ViewIndividualRecipeState> {
-  constructor(props: ViewIndividualRecipeProps) {
-    super(props);
+    constructor(props: ViewIndividualRecipeProps) {
+        super(props);
 
-    this.state = {
-      recipe: this.props.navigation.getParam("recipe", null)
-    };
-  }
-
-  public render(): JSX.Element {
-    if (this.state.recipe == null) {
-      return <View />;
+        this.state = {
+            recipe: this.props.navigation.getParam("recipe", null)
+        };
     }
 
-    return (
-      <View>
-        <Text style={styles.h1}>{this.state.recipe.name}</Text>
-        <Text>{this.state.recipe.description}</Text>
-        {this.getIngredientList()}
-        {this.getCategoryList()}
-      </View>
-    );
-  }
+    public render(): JSX.Element {
+        if (this.state.recipe == null) {
+            return <View />;
+        }
 
-  private getIngredientList(): JSX.Element[] {
-    return this.state.recipe.ingredients.map((ingredient, key) => <IngredientDisplay key={key} ingredient={ingredient} />);
-  }
+        return (
+            <View style={styles.container}>
+                <Text style={[styles.h1, styles.verticalMarginSmall]}>{this.state.recipe.name}</Text>
+                <Text style={styles.verticalMarginSmall}>{this.state.recipe.description}</Text>
+                <View style={styles.verticalMarginSmall}>
+                    <Text style={styles.h2}>Ingredients</Text>
+                    {this.getIngredientList()}
+                </View>
+                <View>
+                    <Text style={styles.h2}>Method</Text>
+                    {this.getMethod()}
+                </View>
+                <View style={styles.verticalMarginSmall}>
+                    <Text style={styles.h2}>Categories</Text>
+                    {this.getCategoryList()}
+                </View>
+            </View>
+        );
+    }
 
-  private getCategoryList(): JSX.Element {
-    return <Text>{this.state.recipe.categories.map(x => x.name).join(", ")}</Text>
-  } 
+    private getIngredientList(): JSX.Element[] {
+        return this.state.recipe.ingredients.map((ingredient, key) => <IngredientDisplay key={key} ingredient={ingredient} />);
+    }
+
+    private getMethod(): JSX.Element[] {
+        return this.state.recipe.method.steps.map(
+            (step: string, key: number) => <Text key={"step-" + key}>{(key+1) + ". " + step}</Text>
+        );
+    }
+
+    private getCategoryList(): JSX.Element {
+        return <Text>{this.state.recipe.categories.map(x => x.name).join(", ")}</Text>
+    }
 }
 
 export default withNavigation(connect(mapStateToProps)(ViewIndividualRecipe));

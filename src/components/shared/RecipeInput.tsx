@@ -15,6 +15,7 @@ import { Category, getBlankCategory } from '../../model/Category';
 import { styles } from '../../style/Style';
 import { Colors } from '../../style/Colors';
 import CustomTextInput from './CustomTextInput';
+import { Method } from '../../model/Method';
 
 interface RecipeInputProps extends React.Props<RecipeInput> {
     initialRecipe: Recipe,
@@ -25,7 +26,8 @@ interface RecipeInputState {
     recipeName: string,
     recipeDescription: string,
     ingredients: Ingredient[],
-    categories: Category[]
+    categories: Category[],
+    method: Method
 }
 
 export default class RecipeInput extends React.Component<RecipeInputProps, RecipeInputState> {
@@ -36,7 +38,8 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
             recipeName: props.initialRecipe.name,
             recipeDescription: props.initialRecipe.description,
             ingredients: props.initialRecipe.ingredients,
-            categories: props.initialRecipe.categories
+            categories: props.initialRecipe.categories,
+            method: props.initialRecipe.method
         };
     }
 
@@ -46,7 +49,7 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View>
                         <CustomTextInput style={styles.h1} placeholder="Recipe Name" defaultValue={this.props.initialRecipe.name} onChangeText={(text) => this.onRecipeNameChange(text)} />
-                        <CustomTextInput style={styles.verticalMarginSmall} placeholder="Recipe Description" defaultValue={this.props.initialRecipe.description} onChangeText={(text) => this.onRecipeDescriptionChange(text)} />
+                        <CustomTextInput style={styles.verticalMarginSmall} multiline={true} placeholder="Recipe Description" defaultValue={this.props.initialRecipe.description} onChangeText={(text) => this.onRecipeDescriptionChange(text)} />
                         
                         <View style={styles.rowLayout}>
                             <Text style={[styles.h1, styles.verticalMarginSmall]}>Ingredients</Text>
@@ -57,6 +60,16 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
                             </TouchableHighlight>
                         </View>
                         {this.getIngredientInputList()}
+
+                        <View style={styles.rowLayout}>
+                            <Text style={[styles.h1, styles.verticalMarginSmall]}>Method</Text>
+                            <TouchableHighlight onPress={(event) => this.addNewStep()}>
+                                <View style={[styles.rightAlign, styles.verticalMarginSmall]}>
+                                    <Icon name="plus" size={20} color="black" />
+                                </View>
+                            </TouchableHighlight>
+                        </View>
+                        {this.getMethodStepList()}
 
                         <View style={styles.rowLayout}>
                             <Text style={[styles.h1, styles.verticalMarginSmall]}>Categories</Text>
@@ -82,6 +95,12 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
         );
     }
 
+    private getMethodStepList(): JSX.Element[] {
+        return this.state.method.steps.map(
+            (step: string, key: number) => <CustomTextInput multiline={true} defaultValue={(key+1) + ". " + step} placeholder={"Step " + key} key={"step-" + key} onChangeText={(text) => this.onMethodStepTextChange(text, key)} />
+        );
+    }
+
     private getCategoryList(): JSX.Element[] {
         return this.state.categories.map(
             (category: Category, key: number) => <CustomTextInput defaultValue={category.name} placeholder="Category Name" key={"category-" + key} onChangeText={(text) => this.onCategoryTextChange(text, key)} />
@@ -96,6 +115,10 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
         this.setState({ categories: this.state.categories.concat(getBlankCategory()) });
     }
 
+    private addNewStep(): void {
+        this.setState({ method: { ...this.state.method, steps: this.state.method.steps.concat("") }});
+    }
+
     private onRecipeNameChange(newName: string): void {
         this.setState({ recipeName: newName });
     }
@@ -106,6 +129,10 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
 
     private onChangeIngredient(ingredient: Ingredient, index: number) {
         this.setState({ ingredients: [...this.state.ingredients.slice(0, index), ingredient, ...this.state.ingredients.slice(index + 1)] });
+    }
+
+    private onMethodStepTextChange(newText: string, index: number) {
+        this.setState({ method: {...this.state.method, steps: [...this.state.method.steps.slice(0, index), newText, ...this.state.method.steps.slice(index + 1)]}});
     }
 
     private onCategoryTextChange(newText: string, index: number) {
@@ -123,7 +150,8 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
             name: this.state.recipeName,
             description: this.state.recipeDescription,
             ingredients: this.state.ingredients.filter((ingredient: Ingredient) => this.isValidIngredient(ingredient)),
-            categories: this.state.categories
+            categories: this.state.categories,
+            method: this.state.method
         };
     }
 

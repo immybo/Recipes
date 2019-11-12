@@ -1,10 +1,12 @@
 import { Ingredient } from "./Ingredient";
 import { Category } from "./Category";
+import { getEmptyMethod, Method } from "./Method";
 
 export interface Recipe {
     id: number,
     ingredients: Ingredient[];
     categories: Category[];
+    method: Method;
     name: string;
     description: string;
 }
@@ -20,7 +22,8 @@ export function getBlankRecipe(): Recipe {
         ingredients: [],
         categories: [],
         name: "",
-        description: ""
+        description: "",
+        method: getEmptyMethod()
     };
 }
 

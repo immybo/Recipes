@@ -76,7 +76,14 @@ class InitialStateLoader extends React.Component<InitialStateLoaderProps, any> {
                             quantity: 1.5
                         }
                     }
-                ]
+                ],
+                method: {
+                    steps: [
+                        "Boil a pot of water with some salt",
+                        "Cook the pasta until al dente",
+                        "Meanwhile, fry the mushrooms in butter"
+                    ]
+                }
             },
             {
                 id: getUniqueRecipeId(),
@@ -126,7 +133,17 @@ class InitialStateLoader extends React.Component<InitialStateLoaderProps, any> {
                             quantity: 5
                         }
                     }
-                ]
+                ],
+                method: {
+                    steps: [
+                        "Mix the yeast with 1 cup of warm water and the sugar and leave for 10 minutes",
+                        "Sift in the flour and mix until it forms a dough",
+                        "Put the dough on the bench (dusted with flour) and knead it for 5-10 minutes, or until smooth",
+                        "Place the dough back in a bowl & cover. Leave to rise for 45 minutes or until doubled in size",
+                        "Roll out the dough and place toppings on it",
+                        "Put the pizza in the oven for 12-15 minutes or until cooked"
+                    ]
+                }
             }
         ];
     }
