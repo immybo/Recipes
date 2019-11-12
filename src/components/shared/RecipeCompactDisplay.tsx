@@ -26,10 +26,10 @@ class RecipeCompactDisplay extends React.Component<RecipeCompactDisplayProps, an
                 <View style={styles.rowLayout}>
                     <Text>{this.props.recipe.name}</Text>
                     <View style={styles.rowRightButton}>
-                        <TouchableHighlight style={styles.sideMarginSmall} onPress={(event) => this.props.onEdit(this.props.recipe)}>
+                        <TouchableHighlight style={styles.marginSmall} onPress={(event) => this.props.onEdit(this.props.recipe)}>
                             <Icon name="edit" size={20} color="black" />
                         </TouchableHighlight>
-                        <TouchableHighlight style={styles.sideMarginSmall} onPress={(event) => this.props.onDelete(this.props.recipe)}>
+                        <TouchableHighlight style={styles.marginSmall} onPress={(event) => this.props.onDelete(this.props.recipe)}>
                             <Icon name="trash" size={20} color="black" />
                         </TouchableHighlight>
                     </View>

@@ -6,6 +6,7 @@ import { AppState } from '../reducers/Reducers';
 import RecipeComponent from './shared/RecipeCompactDisplay';
 import { withNavigation } from 'react-navigation';
 import IngredientDisplay from './shared/IngredientDisplay';
+import { styles } from '../style/Style';
 
 interface ViewIndividualRecipeProps extends React.Props<ViewIndividualRecipe> {
   navigation: any
@@ -35,7 +36,7 @@ class ViewIndividualRecipe extends React.Component<ViewIndividualRecipeProps, Vi
 
     return (
       <View>
-        <Text>{this.state.recipe.name}</Text>
+        <Text style={styles.h1}>{this.state.recipe.name}</Text>
         <Text>{this.state.recipe.description}</Text>
         {this.getIngredientList()}
         {this.getCategoryList()}
