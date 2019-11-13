@@ -1,18 +1,12 @@
 import { Recipe } from "../model/Recipe";
 
 export const ADD_RECIPE = "ADD_RECIPE";
-export const SELECT_RECIPE = "SELECT_RECIPE";
 export const DELETE_RECIPE = "DELETE_RECIPE";
 export const UPDATE_RECIPE = "UPDATE_RECIPE";
 export const SET_ALL_RECIPES = "SET_ALL_RECIPES";
 
 interface AddRecipeAction {
     type: typeof ADD_RECIPE,
-    payload: Recipe
-}
-
-interface SelectRecipeAction {
-    type: typeof SELECT_RECIPE,
     payload: Recipe
 }
 
@@ -31,19 +25,12 @@ interface SetAllRecipesAction {
     payload: Recipe[]
 }
 
-export type RecipeActionTypes = AddRecipeAction | SelectRecipeAction | DeleteRecipeAction | UpdateRecipeAction | SetAllRecipesAction;
+export type RecipeActionTypes = AddRecipeAction | DeleteRecipeAction | UpdateRecipeAction | SetAllRecipesAction;
 
 export function addRecipe(newRecipe: Recipe): RecipeActionTypes {
     return {
         type: ADD_RECIPE,
         payload: newRecipe
-    }
-}
-
-export function selectRecipe(newSelectedRecipe: Recipe): RecipeActionTypes {
-    return {
-        type: SELECT_RECIPE,
-        payload: newSelectedRecipe
     }
 }
 

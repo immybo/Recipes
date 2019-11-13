@@ -1,4 +1,4 @@
-import { RecipeActionTypes, ADD_RECIPE, SELECT_RECIPE, DELETE_RECIPE, UPDATE_RECIPE, SET_ALL_RECIPES } from "../actions/RecipeActions";
+import { RecipeActionTypes, ADD_RECIPE, DELETE_RECIPE, UPDATE_RECIPE, SET_ALL_RECIPES } from "../actions/RecipeActions";
 import { RecipeState, Recipe } from "../model/Recipe";
 
 const initialState: RecipeState = {
@@ -11,11 +11,6 @@ export default function(state = initialState, action: RecipeActionTypes) {
             return {
                 ...state,
                 recipes: [...state.recipes, action.payload]
-            };
-        case SELECT_RECIPE:
-            return {
-                ...state,
-                recipeContext: action.payload
             };
         case DELETE_RECIPE:
             let indexToDelete: number = state.recipes.indexOf(action.payload);
