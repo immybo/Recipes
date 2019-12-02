@@ -1,6 +1,7 @@
 import RecipeReducer from "./RecipeReducer";
-import { combineReducers, createStore } from "redux";
+import { combineReducers, createStore, applyMiddleware } from "redux";
 import CategoryReducer from "./CategoryReducer";
+import thunk from 'redux-thunk';
 
 const rootReducer = combineReducers({
     recipes: RecipeReducer,
@@ -9,4 +10,4 @@ const rootReducer = combineReducers({
 
 export type AppState = ReturnType<typeof rootReducer>;
 
-export const store = createStore(rootReducer);
+export const store = createStore(rootReducer, applyMiddleware(thunk));

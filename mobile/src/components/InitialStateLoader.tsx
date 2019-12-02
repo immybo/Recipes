@@ -1,8 +1,8 @@
 import { Category } from "../model/Category";
 import { setAllCategories } from "../actions/CategoryActions";
-import { setAllRecipes } from "../actions/RecipeActions";
+import { setAllRecipes, fetchRecipes } from "../actions/RecipeActions";
 import { AppState, View } from "react-native";
-import React from "react";
+import React, { Dispatch } from "react";
 import { Recipe, getUniqueRecipeId } from "../model/Recipe";
 import { connect } from "react-redux";
 import { withNavigation } from "react-navigation";
@@ -17,7 +17,8 @@ const mapStateToProps = (state: AppState) => {
 
 const mapDispatchToProps = {
     setAllCategories,
-    setAllRecipes
+    setAllRecipes,
+    fetchRecipes
 };
 
 class InitialStateLoader extends React.Component<InitialStateLoaderProps, any> {
@@ -33,8 +34,10 @@ class InitialStateLoader extends React.Component<InitialStateLoaderProps, any> {
         let categories: Category[] = this.loadAllCategories();
         let recipes: Recipe[] = this.loadAllRecipes(categories);
 
-        this.props.setAllRecipes(recipes);
-        this.props.setAllCategories(categories);
+        this.props.fetchRecipes();
+
+        //this.props.setAllRecipes(recipes);
+        //this.props.setAllCategories(categories);
 
         this.props.onLoad();
     }

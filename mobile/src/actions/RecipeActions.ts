@@ -1,4 +1,6 @@
 import { Recipe } from "../model/Recipe";
+import { Dispatch } from "react";
+import { getRecipes } from "../util/Server";
 
 export const ADD_RECIPE = "ADD_RECIPE";
 export const DELETE_RECIPE = "DELETE_RECIPE";
@@ -52,5 +54,11 @@ export function setAllRecipes(allRecipes: Recipe[]): RecipeActionTypes {
     return {
         type: SET_ALL_RECIPES,
         payload: allRecipes
+    }
+}
+
+export function fetchRecipes() {
+    return function(dispatch: Dispatch<RecipeActionTypes>) {
+        return getRecipes().then(recipes => dispatch(setAllRecipes(recipes)));
     }
 }
