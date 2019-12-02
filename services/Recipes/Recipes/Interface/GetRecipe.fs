@@ -2,5 +2,5 @@
 
 open Model.Recipe
 
-let getRecipe id : Recipe =
+let getRecipe id : Option<Recipe> =
     GetRecipeImpl.getRecipe(id)

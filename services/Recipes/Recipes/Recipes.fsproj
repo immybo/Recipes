@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <Compile Include="Model\Recipe.fs" />
+    <Compile Include="DataAccess\Database.fs" />
     <Compile Include="DataAccess\RecipeDataAccess.fs" />
     <Compile Include="Implementation\GetRecipeImpl.fs" />
     <Compile Include="Interface\GetRecipe.fs" />

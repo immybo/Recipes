@@ -1,5 +1,4 @@
-﻿
-open Suave
+﻿open Suave
 open Suave.Web
 open Suave.Filters
 open Suave.Logging
