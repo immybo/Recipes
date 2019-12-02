@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">  
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <FscToolPath>D:\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\FSharp</FscToolPath>
+    <FscToolExe>fsc.exe</FscToolExe>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Model\Recipe.fs" />
+    <Compile Include="DataAccess\RecipeDataAccess.fs" />
+    <Compile Include="Implementation\GetRecipeImpl.fs" />
+    <Compile Include="Interface\GetRecipe.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FSharp.Core" Version="4.7.0" />
+    <PackageReference Include="SQLProvider" Version="1.1.75" />
+  </ItemGroup>
+</Project>
