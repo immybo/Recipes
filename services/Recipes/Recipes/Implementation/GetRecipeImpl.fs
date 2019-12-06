@@ -1,6 +1,6 @@
 ﻿module GetRecipeImpl
 
-open Model.Recipe
+open Model
 
-let getRecipe id : Option<Recipe> =
-    DataAccess.RecipeDataAccess.getRecipeById(id)
+let getRecipe id : Result<Recipe, Error> =
+    RecipeDomain.getRecipeById id

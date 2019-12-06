@@ -1,6 +1,6 @@
 ﻿namespace DataAccess
 
-open Model.Recipe
+open Model
 open FSharp.Data.Sql
 
 module Database =

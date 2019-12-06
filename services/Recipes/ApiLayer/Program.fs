@@ -23,7 +23,7 @@ let callWithJson func argv =
     OK responseValue
 
 let getRecipe id =
-    GetRecipe.getRecipe(id)
+    GetRecipe.getRecipe id
 
 let updateRecipe id =
     0

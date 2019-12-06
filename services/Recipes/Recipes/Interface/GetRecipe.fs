@@ -1,6 +1,6 @@
 ﻿module GetRecipe
 
-open Model.Recipe
+open Model
 
-let getRecipe id : Option<Recipe> =
-    GetRecipeImpl.getRecipe(id)
+let getRecipe id : Result<Recipe, Error> =
+    GetRecipeImpl.getRecipe id

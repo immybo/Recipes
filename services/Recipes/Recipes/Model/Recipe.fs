@@ -1,9 +1,9 @@
 ﻿namespace Model
 
-module Recipe =
-    type Recipe = {
-        Name: string
-        Description: string
-        Ingredients: string
-        Categories: string
-    }
+type Recipe = {
+    Id: int
+    Name: string
+    Description: string
+    Ingredients: Ingredient[]
+    Categories: Category[]
+}

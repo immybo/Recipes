@@ -10,9 +10,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Model\Error.fs" />
+    <Compile Include="Model\Ingredient.fs" />
+    <Compile Include="Model\Category.fs" />
     <Compile Include="Model\Recipe.fs" />
     <Compile Include="DataAccess\Database.fs" />
+    <Compile Include="DataAccess\IngredientDataAccess.fs" />
+    <Compile Include="DataAccess\CategoryDataAccess.fs" />
     <Compile Include="DataAccess\RecipeDataAccess.fs" />
+    <Compile Include="Domain\RecipeDomain.fs" />
     <Compile Include="Implementation\GetRecipeImpl.fs" />
     <Compile Include="Interface\GetRecipe.fs" />
   </ItemGroup>
