@@ -6,6 +6,7 @@ open Suave.Operators
 open Suave.Successful
 open System.Threading
 open System
+open Newtonsoft.Json
 
 let logRequest request =
     printf "REQUEST || %s\n" (request.ToString())
@@ -17,8 +18,7 @@ let callWithJson func argv =
     logRequest argv
     let responseValue = 
         func(argv)
-        |> Json.toJson
-        |> System.Text.Encoding.UTF8.GetString
+        |> JsonConvert.SerializeObject
     logResponse responseValue
     OK responseValue
 

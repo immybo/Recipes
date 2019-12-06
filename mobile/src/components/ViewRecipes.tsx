@@ -9,14 +9,13 @@ import { Recipe } from '../model/Recipe';
 import { AppState } from '../reducers/Reducers';
 import { withNavigation } from 'react-navigation';
 import { RouteAddRecipe, RouteViewIndividualRecipe, RouteEditRecipe } from '../Routes';
-import { selectRecipe, deleteRecipe } from '../actions/RecipeActions';
+import { deleteRecipe } from '../actions/RecipeActions';
 import RecipeCompactDisplay from './shared/RecipeCompactDisplay';
 import { styles } from '../style/Style';
 
 interface ViewRecipesProps extends React.Props<ViewRecipes> {
     navigation: any,
     recipes: Recipe[],
-    selectRecipe: (newSelectedRecipe: Recipe) => void,
     deleteRecipe: (deletedRecipe: Recipe) => void
 }
 
@@ -27,7 +26,6 @@ const mapStateToProps = (state: AppState) => {
 }
 
 const mapDispatchToProps = {
-    selectRecipe,
     deleteRecipe
 };
 
@@ -60,12 +58,10 @@ class ViewRecipes extends React.Component<ViewRecipesProps, any> {
     }
 
     private selectRecipe(recipe: Recipe) {
-        this.props.selectRecipe(recipe);
         this.props.navigation.navigate(RouteViewIndividualRecipe, { recipe: recipe });
     }
 
     private editRecipe(recipe: Recipe) {
-        this.props.selectRecipe(recipe);
         this.props.navigation.navigate(RouteEditRecipe, { recipe: recipe });
     }
 

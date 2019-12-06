@@ -8,7 +8,8 @@ import { connect } from "react-redux";
 import { withNavigation } from "react-navigation";
 
 interface InitialStateLoaderProps extends React.Props<InitialStateLoader> {
-    onLoad: () => void
+    onLoad: () => void,
+    fetchRecipes: () => void
 }
 
 const mapStateToProps = (state: AppState) => {
