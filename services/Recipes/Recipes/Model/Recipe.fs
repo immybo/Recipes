@@ -6,4 +6,5 @@ type Recipe = {
     Description: string
     Ingredients: Ingredient[]
     Categories: Category[]
+    Method: Method
 }

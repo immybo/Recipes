@@ -20,3 +20,18 @@ module IngredientDataAccess =
         }
         |> Seq.map mapToIngredient
         |> Seq.toArray
+        
+    // TODO not good functional style
+    let addIngredient (recipeId: int, ingredient: Ingredient) =
+        let ingredientRow = Database.context.Dbo.Ingredients.Create();
+        ingredientRow.Id <- ingredient.Id;
+        ingredientRow.Name <- ingredient.Name;
+
+        let ingredientMapping = Database.sql.GetDataContext().Dbo.RecipesToIngredients.Create();
+        ingredientMapping.IngredientId <- ingredient.Id;
+        ingredientMapping.RecipeId <- recipeId;
+
+    let writeIngredientsForRecipe (recipe: Recipe) =
+        for ingredient in recipe.Ingredients do
+            addIngredient(recipe.Id, ingredient)
+        Database.context.SubmitUpdates();

@@ -11,6 +11,10 @@ module RecipeDataAccess =
             Description = recipeEntity.Description;
             Ingredients = Array.empty<Ingredient>;
             Categories = Array.empty<Category>;
+            Method = {
+                MethodId = recipeEntity.Methodid;
+                Steps = Array.empty<string>;
+            }
         }
 
     let getPartialRecipeById (id: int) : Result<Recipe, Error> = 
@@ -24,3 +28,11 @@ module RecipeDataAccess =
         |> function recipe -> match recipe with
             | None -> Result.Error Error.RecipeDoesNotExist
             | Some recipe -> Result.Ok (mapToRecipe recipe)
+
+    let writePartialRecipe (recipe: Recipe) =
+        let row = Database.context.Dbo.Recipes.Create();
+        row.Id <- recipe.Id;
+        row.Description <- recipe.Description;
+        row.Name <- recipe.Name;
+        row.Methodid <- recipe.Method.MethodId; // TODO set IDs on first creation rather than taking over API
+        Database.context.SubmitUpdates();

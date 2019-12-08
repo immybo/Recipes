@@ -20,3 +20,18 @@ module CategoryDataAccess =
         }
         |> Seq.map mapToCategory
         |> Seq.toArray
+
+    // TODO not good functional style
+    let addCategory (recipeId: int, category: Category) =
+        let categoryRow = Database.context.Dbo.Categories.Create();
+        categoryRow.Id <- category.Id;
+        categoryRow.Name <- category.Name;
+
+        let categoryMapping = Database.sql.GetDataContext().Dbo.RecipesToCategories.Create();
+        categoryMapping.CategoryId <- category.Id;
+        categoryMapping.RecipeId <- recipeId;
+
+    let writeCategoriesForRecipe (recipe: Recipe) =
+        for category in recipe.Categories do
+            addCategory(recipe.Id, category)
+        Database.context.SubmitUpdates();

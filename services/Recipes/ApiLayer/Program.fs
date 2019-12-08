@@ -7,6 +7,7 @@ open Suave.Successful
 open System.Threading
 open System
 open Newtonsoft.Json
+open Model
 
 let logRequest request =
     printf "REQUEST || %s\n" (request.ToString())
@@ -22,8 +23,18 @@ let callWithJson func argv =
     logResponse responseValue
     OK responseValue
 
+let getJsonFromRequest (req: HttpRequest) =
+    req.rawForm
+    |> System.Text.Encoding.UTF8.GetString
+
 let getRecipe id =
     GetRecipe.getRecipe id
+
+let addRecipe (recipeJson: string) =
+    // TODO manage this better + add validation
+    JsonConvert.DeserializeObject<Recipe> recipeJson
+    |> AddRecipe.addRecipe 
+    OK ""
 
 let updateRecipe id =
     0
@@ -36,6 +47,8 @@ let app =
         [ 
           GET >=> choose
             [ pathScan "/recipes/%d" (fun id -> callWithJson getRecipe id) ]
+          POST >=> choose
+            [ path "/recipes" >=> request(getJsonFromRequest >> addRecipe)]
           PUT >=> choose
             [ pathScan "/recipes/%d" (fun id -> callWithJson updateRecipe id) ]
           DELETE >=> choose
