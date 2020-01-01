@@ -4,15 +4,14 @@ open FSharp.Data.Sql
 open Model
 
 module MethodDataAccess =
-    let mapToMethod (methodSteps: Database.sql.dataContext.``dbo.MethodsEntity``[]) : Method = 
+    let mapToMethod (methodSteps: Database.sql.dataContext.``dbo.MethodStepsEntity``[]) : Method = 
         {
-            MethodId = methodSteps.[0].MethodId;
-            Steps = Array.map(fun (step: Database.sql.dataContext.``dbo.MethodsEntity``) -> step.Description) methodSteps;
+            Steps = Array.map(fun (step: Database.sql.dataContext.``dbo.MethodStepsEntity``) -> step.Description) methodSteps;
         }
 
     let getMethodById (methodId: int) : Method = 
         query {
-            for method in Database.context.Dbo.Methods do
+            for method in Database.context.Dbo.MethodSteps do
             where (method.MethodId = methodId)
             sortBy method.StepNumber
             select method
@@ -20,16 +19,25 @@ module MethodDataAccess =
         |> Seq.toArray
         |> mapToMethod
 
-    
+    let addBaseMethod (method: Method) : int =
+        let methodRow = Database.context.Dbo.Methods.Create();
+        Database.context.SubmitUpdates();
+        methodRow.MethodId;
+
     // TODO not good functional style
     let addMethodStep (methodId: int, index: int, methodStep: string) =
-        let methodRow = Database.context.Dbo.Methods.Create();
+        let methodRow = Database.context.Dbo.MethodSteps.Create();
         methodRow.MethodId <- methodId;
         methodRow.StepNumber <- index;
         methodRow.Description <- methodStep;
         ()
 
-    let addMethod (method: Method) =
-        method.Steps
-        |> Array.iteri(fun index methodStep -> addMethodStep (method.MethodId, index, methodStep))
+    let addMethodSteps (methodSteps: string[], methodId: int) : int =
+        methodSteps
+        |> Array.iteri(fun index methodStep -> addMethodStep (methodId, index, methodStep))
         |> Database.context.SubmitUpdates
+        |> fun () -> methodId
+
+    let addMethod (method: Method) =
+        addBaseMethod method
+        |> fun methodId -> addMethodSteps (method.Steps, methodId)

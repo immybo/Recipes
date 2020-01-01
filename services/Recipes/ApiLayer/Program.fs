@@ -32,6 +32,7 @@ let getRecipe id =
 
 let addRecipe (recipeJson: string) =
     // TODO manage this better + add validation
+    // TODO validate that there are no primary keys in this recipe as the objects haven't been created in the DB yet
     JsonConvert.DeserializeObject<Recipe> recipeJson
     |> AddRecipe.addRecipe 
     OK ""

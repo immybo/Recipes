@@ -6,7 +6,6 @@ open Model
 module CategoryDataAccess =
     let mapToCategory (categoryEntity: Database.sql.dataContext.``dbo.CategoriesEntity``) : Category = 
         {
-            Id = categoryEntity.Id;
             Name = categoryEntity.Name;
         }
 
@@ -21,17 +20,20 @@ module CategoryDataAccess =
         |> Seq.map mapToCategory
         |> Seq.toArray
 
-    // TODO not good functional style
-    let addCategory (recipeId: int, category: Category) =
+    let addCategory (category: Category) : int =
         let categoryRow = Database.context.Dbo.Categories.Create();
-        categoryRow.Id <- category.Id;
         categoryRow.Name <- category.Name;
-
-        let categoryMapping = Database.sql.GetDataContext().Dbo.RecipesToCategories.Create();
-        categoryMapping.CategoryId <- category.Id;
-        categoryMapping.RecipeId <- recipeId;
-
-    let writeCategoriesForRecipe (recipe: Recipe) =
-        for category in recipe.Categories do
-            addCategory(recipe.Id, category)
         Database.context.SubmitUpdates();
+        categoryRow.Id
+
+    let addCategoryMapping recipeId categoryId =
+        let categoryMapping = Database.sql.GetDataContext().Dbo.RecipesToCategories.Create();
+        categoryMapping.CategoryId <- categoryId
+        categoryMapping.RecipeId <- recipeId;
+        Database.context.SubmitUpdates();
+
+    let writeCategoriesForRecipe recipe recipeId : int =
+        for category in recipe.Categories do
+            addCategory category
+            |> addCategoryMapping recipeId
+        recipeId

@@ -6,13 +6,11 @@ open Model
 module RecipeDataAccess =
     let mapToRecipe (recipeEntity: Database.sql.dataContext.``dbo.RecipesEntity``) : Recipe = 
         {
-            Id = recipeEntity.Id;
             Name = recipeEntity.Name;
             Description = recipeEntity.Description;
             Ingredients = Array.empty<Ingredient>;
             Categories = Array.empty<Category>;
             Method = {
-                MethodId = recipeEntity.Methodid;
                 Steps = Array.empty<string>;
             }
         }
@@ -29,10 +27,10 @@ module RecipeDataAccess =
             | None -> Result.Error Error.RecipeDoesNotExist
             | Some recipe -> Result.Ok (mapToRecipe recipe)
 
-    let writePartialRecipe (recipe: Recipe) =
+    let writePartialRecipe recipe methodId : int =
         let row = Database.context.Dbo.Recipes.Create();
-        row.Id <- recipe.Id;
         row.Description <- recipe.Description;
         row.Name <- recipe.Name;
-        row.Methodid <- recipe.Method.MethodId; // TODO set IDs on first creation rather than taking over API
+        row.MethodId <- methodId;
         Database.context.SubmitUpdates();
+        row.Id;

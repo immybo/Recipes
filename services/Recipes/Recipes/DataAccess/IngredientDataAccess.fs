@@ -6,7 +6,6 @@ open Model
 module IngredientDataAccess =
     let mapToIngredient (ingredientEntity: Database.sql.dataContext.``dbo.IngredientsEntity``) : Ingredient = 
         {
-            Id = ingredientEntity.Id;
             Name = ingredientEntity.Name;
         }
         
@@ -22,16 +21,20 @@ module IngredientDataAccess =
         |> Seq.toArray
         
     // TODO not good functional style
-    let addIngredient (recipeId: int, ingredient: Ingredient) =
+    let addIngredient (ingredient: Ingredient) : int =
         let ingredientRow = Database.context.Dbo.Ingredients.Create();
-        ingredientRow.Id <- ingredient.Id;
         ingredientRow.Name <- ingredient.Name;
-
-        let ingredientMapping = Database.sql.GetDataContext().Dbo.RecipesToIngredients.Create();
-        ingredientMapping.IngredientId <- ingredient.Id;
-        ingredientMapping.RecipeId <- recipeId;
-
-    let writeIngredientsForRecipe (recipe: Recipe) =
-        for ingredient in recipe.Ingredients do
-            addIngredient(recipe.Id, ingredient)
         Database.context.SubmitUpdates();
+        ingredientRow.Id
+
+    let addIngredientMapping recipeId ingredientId =
+        let ingredientMapping = Database.sql.GetDataContext().Dbo.RecipesToIngredients.Create();
+        ingredientMapping.IngredientId <- ingredientId;
+        ingredientMapping.RecipeId <- recipeId;
+        Database.context.SubmitUpdates();
+
+    let writeIngredientsForRecipe recipe recipeId : int =
+        for ingredient in recipe.Ingredients do
+            addIngredient ingredient
+            |> addIngredientMapping recipeId
+        recipeId
