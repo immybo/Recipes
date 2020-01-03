@@ -4,20 +4,23 @@ open FSharp.Data.Sql
 open Model
 
 module IngredientDataAccess =
-    let mapToIngredient (ingredientEntity: Database.sql.dataContext.``dbo.IngredientsEntity``) : Ingredient = 
+    let mapToIngredientWithQuantity (name: string, quantity: int) : IngredientWithQuantity = 
         {
-            Name = ingredientEntity.Name;
+            Ingredient = {
+                Name = name
+            }
+            Quantity = quantity
         }
         
-    let getIngredientsForRecipe (recipeId: int) : Ingredient[] = 
+    let getIngredientsForRecipe (recipeId: int) : IngredientWithQuantity[] = 
         query {
             for ingredientMapping in Database.context.Dbo.RecipesToIngredients do
             join ingredient in Database.context.Dbo.Ingredients
                 on (ingredientMapping.IngredientId = ingredient.Id)
             where (ingredientMapping.RecipeId = recipeId)
-            select ingredient
+            select (ingredient.Name, ingredientMapping.Quantity)
         }
-        |> Seq.map mapToIngredient
+        |> Seq.map mapToIngredientWithQuantity
         |> Seq.toArray
         
     // TODO not good functional style
@@ -27,14 +30,15 @@ module IngredientDataAccess =
         Database.context.SubmitUpdates();
         ingredientRow.Id
 
-    let addIngredientMapping recipeId ingredientId =
-        let ingredientMapping = Database.sql.GetDataContext().Dbo.RecipesToIngredients.Create();
+    let addIngredientMapping recipeId quantity ingredientId =
+        let ingredientMapping = Database.context.Dbo.RecipesToIngredients.Create();
         ingredientMapping.IngredientId <- ingredientId;
         ingredientMapping.RecipeId <- recipeId;
+        ingredientMapping.Quantity <- quantity;
         Database.context.SubmitUpdates();
 
     let writeIngredientsForRecipe recipe recipeId : int =
         for ingredient in recipe.Ingredients do
-            addIngredient ingredient
-            |> addIngredientMapping recipeId
+            addIngredient ingredient.Ingredient
+            |> addIngredientMapping recipeId ingredient.Quantity
         recipeId

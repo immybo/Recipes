@@ -13,6 +13,7 @@
     <Compile Include="Model\Method.fs" />
     <Compile Include="Model\Error.fs" />
     <Compile Include="Model\Ingredient.fs" />
+    <Compile Include="Model\IngredientWithQuantity.fs" />
     <Compile Include="Model\Category.fs" />
     <Compile Include="Model\Recipe.fs" />
     <Compile Include="DataAccess\Database.fs" />

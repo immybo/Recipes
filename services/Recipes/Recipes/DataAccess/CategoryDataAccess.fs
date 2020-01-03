@@ -27,7 +27,7 @@ module CategoryDataAccess =
         categoryRow.Id
 
     let addCategoryMapping recipeId categoryId =
-        let categoryMapping = Database.sql.GetDataContext().Dbo.RecipesToCategories.Create();
+        let categoryMapping = Database.context.Dbo.RecipesToCategories.Create();
         categoryMapping.CategoryId <- categoryId
         categoryMapping.RecipeId <- recipeId;
         Database.context.SubmitUpdates();

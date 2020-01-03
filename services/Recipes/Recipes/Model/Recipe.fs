@@ -3,7 +3,7 @@
 type Recipe = {
     Name: string
     Description: string
-    Ingredients: Ingredient[]
+    Ingredients: IngredientWithQuantity[]
     Categories: Category[]
     Method: Method
 }

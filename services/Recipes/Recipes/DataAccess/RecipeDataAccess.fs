@@ -8,7 +8,7 @@ module RecipeDataAccess =
         {
             Name = recipeEntity.Name;
             Description = recipeEntity.Description;
-            Ingredients = Array.empty<Ingredient>;
+            Ingredients = Array.empty<IngredientWithQuantity>;
             Categories = Array.empty<Category>;
             Method = {
                 Steps = Array.empty<string>;
