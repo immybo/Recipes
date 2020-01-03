@@ -35,7 +35,10 @@ let addRecipe (recipeJson: string) =
     // TODO validate that there are no primary keys in this recipe as the objects haven't been created in the DB yet
     JsonConvert.DeserializeObject<Recipe> recipeJson
     |> AddRecipe.addRecipe 
-    OK ""
+    |> function result ->
+        match result with
+        | Result.Error err -> ServerErrors.INTERNAL_ERROR (err.ToString()) // Might not actually be a 500 but will leave this for now. Also shouldn't expose actual error contents over internet
+        | Result.Ok recipeId -> OK (recipeId.ToString())
 
 let updateRecipe id =
     0
