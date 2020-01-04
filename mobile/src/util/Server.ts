@@ -4,7 +4,7 @@ import { Category } from "../model/Category";
 import { Ingredient } from "../model/Ingredient";
 
 export function getRecipes(): Promise<Array<Recipe>> {
-    return callApi("recipes/4")
+    return callApi("recipes")
         .then(
             json => {console.log("TEST:" + JSON.stringify(json)); return parseRecipes(json)}
         );
@@ -16,16 +16,20 @@ function parseRecipes(json: any): Array<Recipe> {
     // TODO Get multiple recipes
     // TODO handle multiple categories/ingredients
     // TODO figure out types with this json; does it have to be any? Maybe some shared config file and automatic mapping
-    return [{
-        id: Number.parseInt(json.Id),
-        name: json.Fields[0].Name,
-        description: json.Fields[0].Description,
+    return json.Fields[0].map((recipeJson: any) => parseRecipe(recipeJson));
+}
+
+function parseRecipe(recipeJson: any): Recipe {
+    return {
+        id: Number.parseInt(recipeJson.Id),
+        name: recipeJson.Name,
+        description: recipeJson.Description,
         method: {
-            steps: json.Fields[0].Method.Steps
+            steps: recipeJson.Method.Steps
         },
-        categories: parseCategories(json.Fields[0].Categories),
-        ingredients: parseIngredients(json.Fields[0].Ingredients)
-    }];
+        categories: parseCategories(recipeJson.Categories),
+        ingredients: parseIngredients(recipeJson.Ingredients)
+    };
 }
 
 function parseCategories(categoriesJson: any[]): Array<Category> {

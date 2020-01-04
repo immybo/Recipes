@@ -11,17 +11,24 @@ open Model
 
 let logRequest request =
     printf "REQUEST || %s\n" (request.ToString())
+    request
 
 let logResponse response =
     printf "RESPONSE || %s\n" (response.ToString())
+    response
 
-let callWithJson func argv =
+let callWithJson func argv : WebPart =
     logRequest argv
-    let responseValue = 
-        func(argv)
-        |> JsonConvert.SerializeObject
-    logResponse responseValue
-    OK responseValue
+    |> func
+    |> JsonConvert.SerializeObject
+    |> logResponse
+    |> OK
+
+let callWithJsonParameterless func : WebPart =
+    func
+    |> JsonConvert.SerializeObject
+    |> logResponse
+    |> OK
 
 let getJsonFromRequest (req: HttpRequest) =
     req.rawForm
@@ -46,11 +53,15 @@ let updateRecipe id =
 let deleteRecipe id =
     0
 
+let getAllRecipes =
+    GetAllRecipes.getAllRecipes
+
 let app =
     choose
         [ 
           GET >=> choose
-            [ pathScan "/recipes/%d" (fun id -> callWithJson getRecipe id) ]
+            [ path "/recipes" >=> request(fun context -> callWithJsonParameterless getAllRecipes)
+              pathScan "/recipes/%d" (fun id -> callWithJson getRecipe id) ]
           POST >=> choose
             [ path "/recipes" >=> request(getJsonFromRequest >> addRecipe)]
           PUT >=> choose

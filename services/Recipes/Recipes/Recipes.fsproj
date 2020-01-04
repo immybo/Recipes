@@ -22,6 +22,7 @@
     <Compile Include="DataAccess\CategoryDataAccess.fs" />
     <Compile Include="DataAccess\RecipeDataAccess.fs" />
     <Compile Include="Domain\RecipeDomain.fs" />
+    <Compile Include="Interface\GetAllRecipes.fs" />
     <Compile Include="Interface\AddRecipe.fs" />
     <Compile Include="Interface\GetRecipe.fs" />
   </ItemGroup>

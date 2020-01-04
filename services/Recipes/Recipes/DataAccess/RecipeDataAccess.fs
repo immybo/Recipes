@@ -2,6 +2,7 @@
 
 open FSharp.Data.Sql
 open Model
+open System.Collections.Generic
 
 module RecipeDataAccess =
     let mapToRecipe (recipeEntity: Database.sql.dataContext.``dbo.RecipesEntity``) : Recipe = 
@@ -34,3 +35,10 @@ module RecipeDataAccess =
         row.MethodId <- methodId;
         Database.context.SubmitUpdates();
         row.Id;
+
+    let getAllRecipeIds : int[] =
+        query {
+            for recipe in Database.context.Dbo.Recipes do
+            select recipe.Id
+        }
+        |> Seq.toArray

@@ -26,9 +26,21 @@ let getRecipeById (id: int) : Result<Recipe, Error> =
             |> loadMethodIntoRecipe id
             |> Result.Ok
 
+// TODO this file will become too big. need multiple domain files
 let addRecipe (recipe: Recipe) : Result<int, Error> =
     MethodDataAccess.addMethod recipe.Method
     |> RecipeDataAccess.writePartialRecipe recipe
     |> CategoryDataAccess.writeCategoriesForRecipe recipe
     |> IngredientDataAccess.writeIngredientsForRecipe recipe
+    |> Result.Ok
+
+let getAllRecipes : Result<Recipe[], Error> =
+    RecipeDataAccess.getAllRecipeIds
+    |> Array.map(function recipeId -> getRecipeById recipeId)
+    // Remove any that weren't read correctly; might want to handle individual error types here
+    // - TODO this behaviour is only correct on RecipeDoesNotExist
+    |> Array.choose(function result -> 
+        match result with
+        | Result.Ok recipe -> Some recipe
+        | Result.Error err -> None)
     |> Result.Ok
