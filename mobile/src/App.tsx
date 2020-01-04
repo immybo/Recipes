@@ -8,6 +8,9 @@ import AddRecipe from './components/AddRecipe';
 import ViewIndividualRecipe from './components/ViewIndividualRecipe';
 import EditRecipe from './components/EditRecipe';
 import InitialStateLoader from './components/InitialStateLoader';
+import { ActivityIndicator, View } from 'react-native';
+import { Colors } from './style/Colors';
+import { styles } from './style/Style';
 
 const MainNavigator = createStackNavigator({
     ViewRecipes: { screen: ViewRecipes },
@@ -36,6 +39,11 @@ export default class App extends React.Component<any, AppLocalState> {
             <Provider store={store}>
                 <InitialStateLoader onLoad={() => this.setState({isLoaded: true})} />
                 { this.state.isLoaded && <Navigation />}
+                { !this.state.isLoaded && 
+                    <View style={styles.centerAlign}>
+                        <ActivityIndicator size={72} color={Colors.Blue}/>
+                    </View>
+                }
             </Provider>
         );
     }

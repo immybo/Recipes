@@ -1,12 +1,11 @@
 import { Recipe } from "../model/Recipe";
-import CategoryReducer from "../reducers/CategoryReducer";
 import { Category } from "../model/Category";
 import { Ingredient } from "../model/Ingredient";
 
 export function getRecipes(): Promise<Array<Recipe>> {
     return callApi("recipes")
         .then(
-            json => {console.log("TEST:" + JSON.stringify(json)); return parseRecipes(json)}
+            json => parseRecipes(json)
         );
 }
 

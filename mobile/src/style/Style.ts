@@ -54,5 +54,10 @@ export const styles = StyleSheet.create({
     },
     topMargin: {
         marginTop: 20
+    },
+    centerAlign: {
+        alignItems: "center",
+        justifyContent: "center",
+        flex: 1
     }
 });
