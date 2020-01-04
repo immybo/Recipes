@@ -44,3 +44,17 @@ let getAllRecipes : Result<Recipe[], Error> =
         | Result.Ok recipe -> Some recipe
         | Result.Error err -> None)
     |> Result.Ok
+
+let updateRecipe (recipe: Recipe) : Result<int, Error> =
+    getRecipeById(recipe.Id)
+    |> function result ->
+        match result with
+        | Result.Error err -> Result.Error err
+        | Result.Ok _ -> (
+            RecipeDataAccess.updatePartialRecipe recipe
+            CategoryDataAccess.updateCategoriesForRecipe recipe
+            IngredientDataAccess.updateIngredientsForRecipe recipe
+            MethodDataAccess.updateMethod recipe.Method
+            Result.Ok recipe.Id
+        )
+    

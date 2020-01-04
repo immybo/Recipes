@@ -7,11 +7,13 @@ open System.Collections.Generic
 module RecipeDataAccess =
     let mapToRecipe (recipeEntity: Database.sql.dataContext.``dbo.RecipesEntity``) : Recipe = 
         {
+            Id = recipeEntity.Id;
             Name = recipeEntity.Name;
             Description = recipeEntity.Description;
             Ingredients = Array.empty<IngredientWithQuantity>;
             Categories = Array.empty<Category>;
             Method = {
+                Id = -1;
                 Steps = Array.empty<string>;
             }
         }
@@ -42,3 +44,18 @@ module RecipeDataAccess =
             select recipe.Id
         }
         |> Seq.toArray
+
+    let updatePartialRecipe updatedRecipe =
+        let recipe = (query {
+            for recipe in Database.context.Dbo.Recipes do
+            where (recipe.Id = updatedRecipe.Id)
+            select recipe
+        }
+        |> Seq.toArray
+        |> Seq.exactlyOne)
+
+        recipe.Description <- updatedRecipe.Description;
+        recipe.Name <- updatedRecipe.Name;
+        recipe.MethodId <- updatedRecipe.Method.Id;
+
+        Database.context.SubmitUpdates();

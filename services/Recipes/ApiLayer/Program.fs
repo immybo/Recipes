@@ -47,8 +47,13 @@ let addRecipe (recipeJson: string) =
         | Result.Error err -> ServerErrors.INTERNAL_ERROR (err.ToString()) // Might not actually be a 500 but will leave this for now. Also shouldn't expose actual error contents over internet
         | Result.Ok recipeId -> OK (recipeId.ToString())
 
-let updateRecipe id =
-    0
+let updateRecipe (recipeJson: string) =
+    JsonConvert.DeserializeObject<Recipe> recipeJson
+    |> UpdateRecipe.updateRecipe
+    |> function result ->
+        match result with
+        | Result.Error err -> ServerErrors.INTERNAL_ERROR (err.ToString())
+        | Result.Ok recipeId -> OK (recipeId.ToString())
 
 let deleteRecipe id =
     0
@@ -65,7 +70,7 @@ let app =
           POST >=> choose
             [ path "/recipes" >=> request(getJsonFromRequest >> addRecipe)]
           PUT >=> choose
-            [ pathScan "/recipes/%d" (fun id -> callWithJson updateRecipe id) ]
+            [ path "/recipes" >=> request(getJsonFromRequest >> updateRecipe)]
           DELETE >=> choose
             [ pathScan "/recipes/%d" (fun id -> callWithJson deleteRecipe id) ]
         ]

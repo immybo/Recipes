@@ -4,8 +4,9 @@ open FSharp.Data.Sql
 open Model
 
 module MethodDataAccess =
-    let mapToMethod (methodSteps: Database.sql.dataContext.``dbo.MethodStepsEntity``[]) : Method = 
+    let mapToMethod methodId methodSteps : Method = 
         {
+            Id = methodId;
             Steps = Array.map(fun (step: Database.sql.dataContext.``dbo.MethodStepsEntity``) -> step.Description) methodSteps;
         }
 
@@ -17,10 +18,16 @@ module MethodDataAccess =
             select method
         }
         |> Seq.toArray
-        |> mapToMethod
+        |> mapToMethod methodId
 
     let addBaseMethod (method: Method) : int =
         let methodRow = Database.context.Dbo.Methods.Create();
+        Database.context.SubmitUpdates();
+        methodRow.MethodId;
+
+    let updateBaseMethod (method: Method) : int =
+        let methodRow = Database.context.Dbo.Methods.Create();
+        methodRow.MethodId = method.Id;
         Database.context.SubmitUpdates();
         methodRow.MethodId;
 
@@ -32,7 +39,7 @@ module MethodDataAccess =
         methodRow.Description <- methodStep;
         ()
 
-    let addMethodSteps (methodSteps: string[], methodId: int) : int =
+    let addMethodSteps methodSteps methodId : int =
         methodSteps
         |> Array.iteri(fun index methodStep -> addMethodStep (methodId, index, methodStep))
         |> Database.context.SubmitUpdates
@@ -40,4 +47,9 @@ module MethodDataAccess =
 
     let addMethod (method: Method) =
         addBaseMethod method
-        |> fun methodId -> addMethodSteps (method.Steps, methodId)
+        |> addMethodSteps method.Steps
+
+    let updateMethod (method: Method) =
+        updateBaseMethod method
+        |> addMethodSteps method.Steps
+        |> ignore

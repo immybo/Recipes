@@ -4,13 +4,48 @@ open FSharp.Data.Sql
 open Model
 
 module IngredientDataAccess =
-    let mapToIngredientWithQuantity (name: string, quantity: int) : IngredientWithQuantity = 
+    let mapToIngredient (ingredientEntity: Database.sql.dataContext.``dbo.IngredientsEntity``) : Ingredient =
+        {
+            Id = ingredientEntity.Id
+            Name = ingredientEntity.Name
+        }
+
+    let mapToIngredientWithQuantity (id: int, name: string, quantity: int) : IngredientWithQuantity = 
         {
             Ingredient = {
+                Id = id
                 Name = name
             }
             Quantity = quantity
         }
+        
+    let updateIngredient (updatedIngredient: Ingredient) : int =
+        let ingredient = (query {
+            for ingredient in Database.context.Dbo.Ingredients do
+            where (ingredient.Id = updatedIngredient.Id)
+            select ingredient
+        }
+        |> Seq.toArray
+        |> Seq.exactlyOne)
+        
+        ingredient.Name <- updatedIngredient.Name;
+        Database.context.SubmitUpdates();
+        ingredient.Id;
+
+    let getIngredient (ingredientId: int): Result<Ingredient, Error> =
+        query {
+            for ingredient in Database.context.Dbo.Ingredients do
+            where (ingredient.Id = ingredientId)
+            select ingredient
+        }
+        |> Seq.toArray
+        |> function results ->
+            match results.Length with
+            | 0 -> Result.Error IngredientDoesNotExist
+            | 1 ->
+                mapToIngredient results.[0]
+                |> Result.Ok
+            | _ -> Result.Error ExpectedExactlyOne
         
     let getIngredientsForRecipe (recipeId: int) : IngredientWithQuantity[] = 
         query {
@@ -18,10 +53,20 @@ module IngredientDataAccess =
             join ingredient in Database.context.Dbo.Ingredients
                 on (ingredientMapping.IngredientId = ingredient.Id)
             where (ingredientMapping.RecipeId = recipeId)
-            select (ingredient.Name, ingredientMapping.Quantity)
+            select (ingredient.Id, ingredient.Name, ingredientMapping.Quantity)
         }
         |> Seq.map mapToIngredientWithQuantity
         |> Seq.toArray
+
+    let deleteIngredientMappingsForRecipe (recipeId: int) =
+        query {
+            for ingredientMapping in Database.context.Dbo.RecipesToIngredients do
+            where (ingredientMapping.RecipeId = recipeId)
+            select ingredientMapping
+        }
+        |> Seq.``delete all items from single table``
+        |> Async.RunSynchronously
+        Database.context.SubmitUpdates();
         
     // TODO not good functional style
     let addIngredient (ingredient: Ingredient) : int =
@@ -42,3 +87,14 @@ module IngredientDataAccess =
             addIngredient ingredient.Ingredient
             |> addIngredientMapping recipeId ingredient.Quantity
         recipeId
+
+    let updateIngredientsForRecipe recipe =
+        deleteIngredientMappingsForRecipe recipe.Id |> ignore
+
+        for ingredient in recipe.Ingredients do
+            getIngredient ingredient.Ingredient.Id
+            |> function result ->
+                match result with
+                | Result.Error IngredientDoesNotExist -> addIngredient ingredient.Ingredient
+                | _ -> updateIngredient ingredient.Ingredient
+            |> addIngredientMapping recipe.Id ingredient.Quantity
