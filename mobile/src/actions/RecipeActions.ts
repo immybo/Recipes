@@ -1,6 +1,7 @@
 import { Recipe } from "../model/Recipe";
 import { Dispatch } from "react";
-import { getRecipes } from "../util/Server";
+import { callApi, HttpMethod } from "../services/Server";
+import { parseRecipes, recipeToJson } from "../services/RecipeParser";
 
 export const ADD_RECIPE = "ADD_RECIPE";
 export const DELETE_RECIPE = "DELETE_RECIPE";
@@ -29,7 +30,16 @@ interface SetAllRecipesAction {
 
 export type RecipeActionTypes = AddRecipeAction | DeleteRecipeAction | UpdateRecipeAction | SetAllRecipesAction;
 
-export function addRecipe(newRecipe: Recipe): RecipeActionTypes {
+export function addRecipe(newRecipe: Recipe)  {
+    return function(dispatch: Dispatch<RecipeActionTypes>) {
+        return callApi("recipes", HttpMethod.POST, recipeToJson(newRecipe)).then(
+            response => response.json().then(json => dispatch(addRecipeLocal(newRecipe))),
+            error => console.error(error) // TODO error handling
+        );
+    }
+}
+
+export function addRecipeLocal(newRecipe: Recipe): RecipeActionTypes {
     return {
         type: ADD_RECIPE,
         payload: newRecipe
@@ -59,6 +69,9 @@ export function setAllRecipes(allRecipes: Recipe[]): RecipeActionTypes {
 
 export function fetchRecipes() {
     return function(dispatch: Dispatch<RecipeActionTypes>) {
-        return getRecipes().then(recipes => dispatch(setAllRecipes(recipes)));
+        return callApi("recipes", HttpMethod.GET).then(
+            response => response.json().then(json => dispatch(setAllRecipes(parseRecipes(json)))),
+            error => console.error(error) // TODO error handling
+        );
     }
 }

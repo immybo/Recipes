@@ -3,11 +3,11 @@ import {
     View,
     Text
 } from 'react-native';
-import { Ingredient } from '../../model/Ingredient';
+import { IngredientWithQuantity } from '../../model/IngredientWithQuantity';
 import { styles } from '../../style/Style';
 
 interface IngredientDisplayProps {
-    ingredient: Ingredient
+    ingredient: IngredientWithQuantity
 }
 
 class IngredientDisplay extends React.Component<IngredientDisplayProps, any> {
@@ -18,9 +18,9 @@ class IngredientDisplay extends React.Component<IngredientDisplayProps, any> {
     public render(): JSX.Element {
         return (
             <View style={styles.rowWithoutJustify}>
-                <Text>{this.props.ingredient.quantity.quantity.toString()}</Text>
+                <Text>{this.props.ingredient.quantity.toString()}</Text>
                 <Text> </Text>
-                <Text>{this.props.ingredient.name}</Text>
+                <Text>{this.props.ingredient.ingredient.name}</Text>
             </View>
         );
     }

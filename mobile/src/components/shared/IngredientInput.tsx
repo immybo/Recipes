@@ -1,15 +1,15 @@
-import React from 'react';
+ import React from 'react';
 import {
     TextInput, View
 } from 'react-native';
-import { Ingredient } from '../../model/Ingredient';
+import { IngredientWithQuantity } from '../../model/IngredientWithQuantity';
 import { Numbers } from '../../util/Regex';
 import { styles } from '../../style/Style';
 import CustomTextInput from './CustomTextInput';
 
 interface IngredientInputProps extends React.Props<IngredientInput> {
-    ingredient: Ingredient,
-    onChangeIngredient: (ingredient: Ingredient) => void
+    ingredient: IngredientWithQuantity,
+    onChangeIngredient: (ingredient: IngredientWithQuantity) => void
 }
 
 class IngredientInput extends React.Component<IngredientInputProps, any> {

@@ -1,10 +1,10 @@
-import { Ingredient } from "./Ingredient";
+import { IngredientWithQuantity } from "./IngredientWithQuantity";
 import { Category } from "./Category";
 import { getEmptyMethod, Method } from "./Method";
 
 export interface Recipe {
     id: number,
-    ingredients: Ingredient[];
+    ingredients: IngredientWithQuantity[];
     categories: Category[];
     method: Method;
     name: string;

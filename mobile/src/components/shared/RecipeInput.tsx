@@ -6,7 +6,7 @@ import {
     TouchableHighlight,
     Text
 } from 'react-native';
-import { Ingredient, getBlankIngredient } from '../../model/Ingredient';
+import { IngredientWithQuantity, getBlankIngredient } from '../../model/IngredientWithQuantity';
 import IngredientInput from './../shared/IngredientInput';
 import { Recipe } from '../../model/Recipe';
 import { ScrollView } from 'react-navigation';
@@ -25,7 +25,7 @@ interface RecipeInputProps extends React.Props<RecipeInput> {
 interface RecipeInputState {
     recipeName: string,
     recipeDescription: string,
-    ingredients: Ingredient[],
+    ingredients: IngredientWithQuantity[],
     categories: Category[],
     method: Method
 }
@@ -91,7 +91,7 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
 
     private getIngredientInputList(): JSX.Element[] {
         return this.state.ingredients.map(
-            (ingredient: Ingredient, key: number) => <IngredientInput ingredient={ingredient} key={"ingredient-" + key} onChangeIngredient={(newIngredient) => this.onChangeIngredient(newIngredient, key)} />
+            (ingredient: IngredientWithQuantity, key: number) => <IngredientInput ingredient={ingredient} key={"ingredient-" + key} onChangeIngredient={(newIngredient) => this.onChangeIngredient(newIngredient, key)} />
         );
     }
 
@@ -127,7 +127,7 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
         this.setState({ recipeDescription: newDescription });
     }
 
-    private onChangeIngredient(ingredient: Ingredient, index: number) {
+    private onChangeIngredient(ingredient: IngredientWithQuantity, index: number) {
         this.setState({ ingredients: [...this.state.ingredients.slice(0, index), ingredient, ...this.state.ingredients.slice(index + 1)] });
     }
 
@@ -149,13 +149,13 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
             id: this.props.initialRecipe.id,
             name: this.state.recipeName,
             description: this.state.recipeDescription,
-            ingredients: this.state.ingredients.filter((ingredient: Ingredient) => this.isValidIngredient(ingredient)),
+            ingredients: this.state.ingredients.filter((ingredient: IngredientWithQuantity) => this.isValidIngredient(ingredient)),
             categories: this.state.categories,
             method: this.state.method
         };
     }
 
-    private isValidIngredient(ingredient: Ingredient): boolean {
-        return ingredient.name != null && ingredient.name.length > 0;
+    private isValidIngredient(ingredient: IngredientWithQuantity): boolean {
+        return ingredient.ingredient.name != null && ingredient.ingredient.name.length > 0;
     }
 }

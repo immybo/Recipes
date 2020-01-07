@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers/Reducers';
-import { Ingredient, getBlankIngredient } from '../model/Ingredient';
+import { IngredientWithQuantity, getBlankIngredient } from '../model/IngredientWithQuantity';
 import { Recipe, getBlankRecipe } from '../model/Recipe';
 import { addRecipe } from '../actions/RecipeActions';
 import { withNavigation, ScrollView } from 'react-navigation';
