@@ -59,3 +59,14 @@ module RecipeDataAccess =
         recipe.MethodId <- updatedRecipe.Method.Id;
 
         Database.context.SubmitUpdates();
+
+    let deletePartialRecipe recipeId =
+        query {
+            for recipe in Database.context.Dbo.Recipes do
+            where (recipe.Id = recipeId)
+            select recipe
+        }
+        |> Seq.``delete all items from single table``
+        |> Async.RunSynchronously
+        |> ignore
+        Database.context.SubmitUpdates();

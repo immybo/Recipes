@@ -115,4 +115,19 @@ let AddAndThenUpdateRecipeAndCheckThatItUpdatedCorrectly () =
                                 | Result.Error Error.RecipeDoesNotExist -> Assert.False(true)
                                 | Result.Ok readRecipe -> recipesAreEqualExceptForIds updatedRecipe readRecipe
                 )
-                                
+
+[<Test>]
+let AddAndDeleteRecipeAndCheckThatItNoLongerExists () =
+    AddRecipe.addRecipe TestRecipe
+    |> function
+        | Result.Error err -> Assert.False(true, err.ToString());
+        | Result.Ok recipeId ->
+            DeleteRecipe.deleteRecipe recipeId
+            |> function
+                | Result.Error err -> Assert.False(true, err.ToString())
+                | Result.Ok recipeId ->
+                    GetRecipe.getRecipe recipeId
+                    |> function
+                        | Result.Error Error.RecipeDoesNotExist -> ()
+                        | Result.Error err -> Assert.False(true, "Invalid error raised: " + err.ToString())
+                        | Result.Ok recipeId -> Assert.False(true, "Recipe was not deleted...")
