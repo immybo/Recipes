@@ -2,5 +2,5 @@
 
 open Model
 
-let getAllRecipes : Result<Recipe[], Error> =
-    RecipeDomain.getAllRecipes
+let getAllRecipes () : Result<Recipe[], Error> =
+    RecipeDomain.getAllRecipes ()

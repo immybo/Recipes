@@ -58,14 +58,14 @@ let updateRecipe (recipeJson: string) =
 let deleteRecipe id =
     0
 
-let getAllRecipes =
-    GetAllRecipes.getAllRecipes
+let getAllRecipes () =
+    GetAllRecipes.getAllRecipes ()
 
 let app =
     choose
         [ 
           GET >=> choose
-            [ path "/recipes" >=> request(fun context -> callWithJsonParameterless getAllRecipes)
+            [ path "/recipes" >=> request(fun context -> callWithJsonParameterless (getAllRecipes ()))
               pathScan "/recipes/%d" (fun id -> callWithJson getRecipe id) ]
           POST >=> choose
             [ path "/recipes" >=> request(getJsonFromRequest >> addRecipe)]

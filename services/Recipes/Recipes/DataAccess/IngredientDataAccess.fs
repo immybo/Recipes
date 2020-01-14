@@ -10,7 +10,7 @@ module IngredientDataAccess =
             Name = ingredientEntity.Name
         }
 
-    let mapToIngredientWithQuantity (id: int, name: string, quantity: int) : IngredientWithQuantity = 
+    let mapToIngredientWithQuantity (id: int, name: string, quantity: decimal) : IngredientWithQuantity = 
         {
             Ingredient = {
                 Id = id

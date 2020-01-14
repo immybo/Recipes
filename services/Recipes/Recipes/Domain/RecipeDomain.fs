@@ -34,7 +34,7 @@ let addRecipe (recipe: Recipe) : Result<int, Error> =
     |> IngredientDataAccess.writeIngredientsForRecipe recipe
     |> Result.Ok
 
-let getAllRecipes : Result<Recipe[], Error> =
+let getAllRecipes () : Result<Recipe[], Error> =
     RecipeDataAccess.getAllRecipeIds
     |> Array.map(function recipeId -> getRecipeById recipeId)
     // Remove any that weren't read correctly; might want to handle individual error types here

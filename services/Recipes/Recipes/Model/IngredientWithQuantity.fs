@@ -2,5 +2,5 @@
 
 type IngredientWithQuantity = {
     Ingredient: Ingredient
-    Quantity: int
+    Quantity: decimal
 }
