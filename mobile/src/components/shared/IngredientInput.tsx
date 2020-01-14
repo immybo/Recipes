@@ -20,10 +20,10 @@ class IngredientInput extends React.Component<IngredientInputProps, any> {
     public render(): JSX.Element {
         return (
             <View style={styles.rowLayout}>
-                <CustomTextInput style={{ "flex": 0.7 }} value={this.props.ingredient.name} onChangeText={(newText) => this.updateIngredientName(newText)} placeholder={"Ingredient Name"} />
+                <CustomTextInput style={{ "flex": 0.7 }} value={this.props.ingredient.ingredient.name} onChangeText={(newText) => this.updateIngredientName(newText)} placeholder={"Ingredient Name"} />
                 <CustomTextInput
                     style={{ "flex": 0.2 }}
-                    value={this.props.ingredient.quantity.quantity > 0 ? this.props.ingredient.quantity.quantity.toString() : ""}
+                    value={this.props.ingredient.quantity > 0 ? this.props.ingredient.quantity.toString() : ""}
                     keyboardType="numeric"
                     onChangeText={(newQuantity) => this.updateIngredientQuantity(newQuantity)}
                     placeholder={"Quantity"} />
@@ -34,7 +34,10 @@ class IngredientInput extends React.Component<IngredientInputProps, any> {
     private updateIngredientName(newText: string): void {
         this.props.onChangeIngredient({
             ...this.props.ingredient,
-            name: newText
+            ingredient: {
+                ...this.props.ingredient.ingredient,
+                name: newText
+            }
         });
     }
 
@@ -42,7 +45,7 @@ class IngredientInput extends React.Component<IngredientInputProps, any> {
         if (!Numbers.test(newQuantity)) {
             this.props.onChangeIngredient({
                 ...this.props.ingredient,
-                quantity: { quantity: Number(newQuantity) }
+                quantity: Number(newQuantity)
             });
         }
     }
