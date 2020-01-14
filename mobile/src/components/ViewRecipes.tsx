@@ -7,7 +7,7 @@ import {
 import { connect } from 'react-redux';
 import { Recipe } from '../model/Recipe';
 import { AppState } from '../reducers/Reducers';
-import { withNavigation } from 'react-navigation';
+import { withNavigation, ScrollView } from 'react-navigation';
 import { RouteAddRecipe, RouteViewIndividualRecipe, RouteEditRecipe } from '../Routes';
 import { deleteRecipe } from '../actions/RecipeActions';
 import RecipeCompactDisplay from './shared/RecipeCompactDisplay';
@@ -37,12 +37,14 @@ class ViewRecipes extends React.Component<ViewRecipesProps, any> {
     public render(): JSX.Element {
         return (
             <View style={styles.container}>
-                <View>
-                    {this.getRecipeList()}
-                </View>
-                <View style={styles.bottomButtonContainer}>
-                    <Button title="Add Recipe" onPress={(event: any) => this.props.navigation.navigate(RouteAddRecipe)}>Add Recipe</Button>
-                </View>
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    <View>
+                        {this.getRecipeList()}
+                    </View>
+                    <View style={styles.bottomButtonContainer}>
+                        <Button title="Add Recipe" onPress={(event: any) => this.props.navigation.navigate(RouteAddRecipe)}>Add Recipe</Button>
+                    </View>
+                </ScrollView>
             </View>
         );
     }

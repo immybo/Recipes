@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Recipe } from '../model/Recipe';
 import { AppState } from '../reducers/Reducers';
 import RecipeComponent from './shared/RecipeCompactDisplay';
-import { withNavigation } from 'react-navigation';
+import { withNavigation, ScrollView } from 'react-navigation';
 import IngredientDisplay from './shared/IngredientDisplay';
 import { styles } from '../style/Style';
 
@@ -36,20 +36,22 @@ class ViewIndividualRecipe extends React.Component<ViewIndividualRecipeProps, Vi
 
         return (
             <View style={styles.container}>
-                <Text style={[styles.h1, styles.verticalMarginSmall]}>{this.state.recipe.name}</Text>
-                <Text style={styles.verticalMarginSmall}>{this.state.recipe.description}</Text>
-                <View style={styles.verticalMarginSmall}>
-                    <Text style={styles.h2}>Ingredients</Text>
-                    {this.getIngredientList()}
-                </View>
-                <View>
-                    <Text style={styles.h2}>Method</Text>
-                    {this.getMethod()}
-                </View>
-                <View style={styles.verticalMarginSmall}>
-                    <Text style={styles.h2}>Categories</Text>
-                    {this.getCategoryList()}
-                </View>
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    <Text style={[styles.h1, styles.verticalMarginSmall]}>{this.state.recipe.name}</Text>
+                    <Text style={styles.verticalMarginSmall}>{this.state.recipe.description}</Text>
+                    <View style={styles.verticalMarginSmall}>
+                        <Text style={styles.h2}>Ingredients</Text>
+                        {this.getIngredientList()}
+                    </View>
+                    <View>
+                        <Text style={styles.h2}>Method</Text>
+                        {this.getMethod()}
+                    </View>
+                    <View style={styles.verticalMarginSmall}>
+                        <Text style={styles.h2}>Categories</Text>
+                        {this.getCategoryList()}
+                    </View>
+                </ScrollView>
             </View>
         );
     }
