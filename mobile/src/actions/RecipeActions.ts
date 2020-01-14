@@ -53,7 +53,16 @@ export function deleteRecipe(toDelete: Recipe): RecipeActionTypes {
     }
 }
 
-export function updateRecipe(newRecipe: Recipe): RecipeActionTypes {
+export function updateRecipe(updatedRecipe: Recipe) {
+    return function(dispatch: Dispatch<RecipeActionTypes>) {
+        return callApi("recipes", HttpMethod.PUT, recipeToJson(updatedRecipe)).then(
+            response => response.json().then(json => dispatch(updateRecipeLocal(updatedRecipe))),
+            error => console.error(error) // TODO error handling
+        );
+    }
+}
+
+export function updateRecipeLocal(newRecipe: Recipe): RecipeActionTypes {
     return {
         type: UPDATE_RECIPE,
         payload: newRecipe
