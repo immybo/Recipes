@@ -1,10 +1,12 @@
 import { Ingredient } from "./Ingredient";
+import { Quantity } from "./Quantity";
+import { QuantityUnit } from "./QuantityUnit";
 
 export interface IngredientWithQuantity {
     ingredient: Ingredient
-    quantity: number
+    quantity: Quantity
 }
 
 export function getBlankIngredient(): IngredientWithQuantity {
-    return { ingredient: { id: -1, name: "" }, quantity: 0 };
+    return { ingredient: { id: -1, name: "" }, quantity: { amount: 0, unit: QuantityUnit.Kilograms }};
 }

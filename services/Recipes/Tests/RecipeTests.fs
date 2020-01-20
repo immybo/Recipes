@@ -13,7 +13,10 @@ let TestRecipe: Recipe = {
                 Id = -1;
                 Name = "test ingredient 1234";
             }
-            Quantity = 1234
+            Quantity = {
+                Unit = QuantityUnit.Teaspoons;
+                Amount = 1234m;
+            }
         }
     ];
     Categories = List.toArray [
@@ -80,13 +83,16 @@ let AddAndThenUpdateRecipeAndCheckThatItUpdatedCorrectly () =
                     let updatedRecipe = { recipe with
                         Name = "hello test 123";
                         Ingredients = List.toArray [
-                            { recipe.Ingredients.[0] with Quantity = 4567; Ingredient = { recipe.Ingredients.[0].Ingredient with Name = "updated ingredient 1" } }
+                            { recipe.Ingredients.[0] with Quantity = { Unit = QuantityUnit.Cups; Amount = 4567m }; Ingredient = { recipe.Ingredients.[0].Ingredient with Name = "updated ingredient 1" } }
                             {
                                 Ingredient = {
                                     Id = -1;
                                     Name = "test ingredient 9876";
                                 }
-                                Quantity = 1234
+                                Quantity = {
+                                    Unit = QuantityUnit.Kilograms;
+                                    Amount = 0.001m;
+                                }
                             };
                         ];
                         Categories = List.toArray [

@@ -15,7 +15,7 @@ class QuantityDisplay extends React.Component<QuantityDisplayProps, any> {
 
   public render(): JSX.Element {
     return (
-        <Text>{this.props.quantity.quantity.toString()}</Text>
+        <Text>{this.props.quantity.amount.toString()} {this.props.quantity.unit.toString()}</Text>
     );
   }
 }

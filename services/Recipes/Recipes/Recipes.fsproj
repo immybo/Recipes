@@ -10,6 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Model\QuantityUnit.fs" />
+    <Compile Include="Model\Quantity.fs" />
     <Compile Include="Model\Method.fs" />
     <Compile Include="Model\Error.fs" />
     <Compile Include="Model\Ingredient.fs" />

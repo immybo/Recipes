@@ -63,9 +63,9 @@ let deleteRecipe (recipeId: int) : Result<int, Error> =
     |> function
         | Result.Error err -> Result.Error err
         | Result.Ok recipe -> (
-            MethodDataAccess.deleteMethod recipe.Method.Id
             IngredientDataAccess.deleteIngredientMappingsForRecipe recipe.Id
             CategoryDataAccess.deleteCategoryMappingsForRecipe recipe.Id
             RecipeDataAccess.deletePartialRecipe recipe.Id
+            MethodDataAccess.deleteMethod recipe.Method.Id
             Result.Ok recipe.Id
         )

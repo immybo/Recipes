@@ -1,3 +1,6 @@
+import { QuantityUnit } from "./QuantityUnit";
+
 export interface Quantity {
-    quantity: number
+    unit: QuantityUnit
+    amount: number
 }

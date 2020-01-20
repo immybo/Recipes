@@ -56,7 +56,7 @@ let updateRecipe (recipeJson: string) =
         | Result.Ok recipeId -> OK (recipeId.ToString())
 
 let deleteRecipe id =
-    0
+    DeleteRecipe.deleteRecipe id
 
 let getAllRecipes () =
     GetAllRecipes.getAllRecipes ()

@@ -1,8 +1,4 @@
-import { Recipe } from "../model/Recipe";
-import { Category } from "../model/Category";
-import { IngredientWithQuantity } from "../model/IngredientWithQuantity";
-
-const SERVER_IP = "http://10.0.2.2:52354"
+const SERVER_IP = "http://localhost:52354"
 
 export enum HttpMethod {
     GET = "GET",

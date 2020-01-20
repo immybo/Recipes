@@ -10,13 +10,16 @@ module IngredientDataAccess =
             Name = ingredientEntity.Name
         }
 
-    let mapToIngredientWithQuantity (id: int, name: string, quantity: decimal) : IngredientWithQuantity = 
+    let mapToIngredientWithQuantity (id: int, name: string, quantityUnit: int, quantity: decimal) : IngredientWithQuantity = 
         {
             Ingredient = {
                 Id = id
                 Name = name
             }
-            Quantity = quantity
+            Quantity = {
+                Unit = enum<QuantityUnit> quantityUnit
+                Amount = quantity
+            }
         }
         
     let updateIngredient (updatedIngredient: Ingredient) : int =
@@ -53,7 +56,7 @@ module IngredientDataAccess =
             join ingredient in Database.context.Dbo.Ingredients
                 on (ingredientMapping.IngredientId = ingredient.Id)
             where (ingredientMapping.RecipeId = recipeId)
-            select (ingredient.Id, ingredient.Name, ingredientMapping.Quantity)
+            select (ingredient.Id, ingredient.Name, ingredientMapping.QuantityUnit, ingredientMapping.Quantity)
         }
         |> Seq.map mapToIngredientWithQuantity
         |> Seq.toArray
@@ -66,6 +69,7 @@ module IngredientDataAccess =
         }
         |> Seq.``delete all items from single table``
         |> Async.RunSynchronously
+        |> ignore
         Database.context.SubmitUpdates();
         
     // TODO not good functional style
@@ -79,7 +83,8 @@ module IngredientDataAccess =
         let ingredientMapping = Database.context.Dbo.RecipesToIngredients.Create();
         ingredientMapping.IngredientId <- ingredientId;
         ingredientMapping.RecipeId <- recipeId;
-        ingredientMapping.Quantity <- quantity;
+        ingredientMapping.Quantity <- quantity.Amount;
+        ingredientMapping.QuantityUnit <- int quantity.Unit;
         Database.context.SubmitUpdates();
 
     let writeIngredientsForRecipe recipe recipeId : int =

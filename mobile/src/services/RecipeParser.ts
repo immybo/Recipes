@@ -38,7 +38,10 @@ function parseIngredients(ingredientsJson: any[]): Array<IngredientWithQuantity>
             id: ingredient.Ingredient.Id,
             name: ingredient.Ingredient.Name
         },
-        quantity: Number.parseFloat(ingredient.Quantity)
+        quantity: {
+            amount: Number.parseFloat(ingredient.Quantity.Amount),
+            unit: ingredient.Quantity.Unit
+        }
     }));
 }
 
