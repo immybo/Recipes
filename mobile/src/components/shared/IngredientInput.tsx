@@ -28,7 +28,8 @@ class IngredientInput extends React.Component<IngredientInputProps, any> {
                     value={this.props.ingredient.quantity.amount > 0 ? this.props.ingredient.quantity.amount.toString() : ""}
                     keyboardType="numeric"
                     onChangeText={(newQuantity) => this.updateIngredientQuantityNumber(newQuantity)}
-                    placeholder={"Quantity"} />
+                    placeholder={"Quantity"}
+                    maxLength={10} />
                 <View style={{ "flex": 0.35 }}>
                     <Picker selectedValue={this.props.ingredient.quantity.unit} onValueChange={(value, _) => this.updateIngredientQuantityUnit(value)}>
                         { [ QuantityUnit.Cups, QuantityUnit.Grams, QuantityUnit.Kilograms, QuantityUnit.Teaspoons].map((unit: QuantityUnit) => {

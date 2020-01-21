@@ -18,10 +18,9 @@ class IngredientDisplay extends React.Component<IngredientDisplayProps, any> {
 
     public render(): JSX.Element {
         return (
-            <View style={styles.rowWithoutJustify}>
-                <Text>{QuantityFormatter.format(this.props.ingredient.quantity)}</Text>
-                <Text> </Text>
+            <View style={styles.rowLayout}>
                 <Text>{this.props.ingredient.ingredient.name}</Text>
+                <Text>{QuantityFormatter.format(this.props.ingredient.quantity)}</Text>
             </View>
         );
     }
