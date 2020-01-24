@@ -1,6 +1,6 @@
 import { Recipe } from "../model/Recipe";
-import { Dispatch } from "react";
-import { callApi, HttpMethod } from "../services/Server";
+import { Dispatch } from "redux";
+import { callApi, HttpMethod, callApiAsync } from "../services/Server";
 import { parseRecipes, recipeToJson } from "../services/RecipeParser";
 
 export const ADD_RECIPE = "ADD_RECIPE";
@@ -86,10 +86,10 @@ export function setAllRecipes(allRecipes: Recipe[]): RecipeActionTypes {
 }
 
 export function fetchRecipes() {
-    return function(dispatch: Dispatch<RecipeActionTypes>) {
-        return callApi("recipes", HttpMethod.GET).then(
-            response => response.json().then(json => dispatch(setAllRecipes(parseRecipes(json)))),
-            error => console.error(error) // TODO error handling
+    return function(dispatch: Dispatch) {
+        return callApiAsync("recipes", HttpMethod.GET, dispatch).then(
+            response => dispatch(setAllRecipes(parseRecipes(response))),
+            error => null
         );
     }
 }

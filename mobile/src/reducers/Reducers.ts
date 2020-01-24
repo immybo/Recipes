@@ -2,10 +2,12 @@ import RecipeReducer from "./RecipeReducer";
 import { combineReducers, createStore, applyMiddleware } from "redux";
 import CategoryReducer from "./CategoryReducer";
 import thunk from 'redux-thunk';
+import NetworkReducer from "./NetworkReducer";
 
 const rootReducer = combineReducers({
     recipes: RecipeReducer,
-    categories: CategoryReducer
+    categories: CategoryReducer,
+    network: NetworkReducer
 });
 
 export type AppState = ReturnType<typeof rootReducer>;

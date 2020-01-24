@@ -2,8 +2,8 @@ import React from 'react';
 import ViewRecipes from './components/ViewRecipes';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
-import { Provider } from 'react-redux';
-import { store } from './reducers/Reducers';
+import { Provider, connect } from 'react-redux';
+import { store, AppState } from './reducers/Reducers';
 import AddRecipe from './components/AddRecipe';
 import ViewIndividualRecipe from './components/ViewIndividualRecipe';
 import EditRecipe from './components/EditRecipe';
@@ -11,6 +11,7 @@ import InitialStateLoader from './components/InitialStateLoader';
 import { ActivityIndicator, View } from 'react-native';
 import { Colors } from './style/Colors';
 import { styles } from './style/Style';
+import NoConnectionToServer from './components/NoConnectionToServer';
 
 const MainNavigator = createStackNavigator({
     ViewRecipes: { screen: ViewRecipes },
@@ -25,7 +26,17 @@ interface AppLocalState {
     isLoaded: boolean
 }
 
-export default class App extends React.Component<any, AppLocalState> {
+interface AppProps extends React.Props<App> {
+    hasNetworkConnectivity: boolean
+}
+
+const mapStateToProps = (state: AppState) => {
+    return {
+        hasNetworkConnectivity: state.network.hasConnectionToServer
+    };
+}
+
+class App extends React.Component<AppProps, AppLocalState> {
     constructor(props: any) {
         super(props);
 
@@ -37,14 +48,21 @@ export default class App extends React.Component<any, AppLocalState> {
     public render(): JSX.Element {
         return (
             <Provider store={store}>
-                <InitialStateLoader onLoad={() => this.setState({isLoaded: true})} />
-                { this.state.isLoaded && <Navigation />}
+                <InitialStateLoader shouldReload={!this.state.isLoaded} onLoad={() => this.setState({isLoaded: true})} />
+                { this.state.isLoaded && this.props.hasNetworkConnectivity && <Navigation />}
+
                 { !this.state.isLoaded && 
                     <View style={styles.centerAlign}>
                         <ActivityIndicator size={72} color={Colors.Blue}/>
                     </View>
                 }
+
+                { !this.props.hasNetworkConnectivity && this.state.isLoaded &&
+                    <NoConnectionToServer attemptReload={() => this.setState({isLoaded: false})}/>
+                }
             </Provider>
         );
     }
 }
+
+export default connect(mapStateToProps)(App);
