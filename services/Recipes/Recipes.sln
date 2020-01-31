@@ -7,7 +7,7 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Recipes", "Recipes\Recipes.
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ApiLayer", "ApiLayer\ApiLayer.fsproj", "{C25348E5-7A76-42F8-9D57-B640F6C8647F}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Tests", "Tests\Tests.fsproj", "{80157FA9-3F18-4AEF-9AC5-A2D69916CC41}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Tests", "Tests\Tests.fsproj", "{80157FA9-3F18-4AEF-9AC5-A2D69916CC41}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

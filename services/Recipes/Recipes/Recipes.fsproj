@@ -10,6 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Model\MacronutrientInformation.fs" />
+    <Compile Include="Model\NutritionalInformation.fs" />
     <Compile Include="Model\QuantityUnit.fs" />
     <Compile Include="Model\Quantity.fs" />
     <Compile Include="Model\Method.fs" />
@@ -19,11 +21,14 @@
     <Compile Include="Model\Category.fs" />
     <Compile Include="Model\Recipe.fs" />
     <Compile Include="DataAccess\Database.fs" />
+    <Compile Include="DataAccess\MacronutrientsDataAccess.fs" />
     <Compile Include="DataAccess\MethodDataAccess.fs" />
     <Compile Include="DataAccess\IngredientDataAccess.fs" />
     <Compile Include="DataAccess\CategoryDataAccess.fs" />
     <Compile Include="DataAccess\RecipeDataAccess.fs" />
+    <Compile Include="Domain\NutritionalInformationDomain.fs" />
     <Compile Include="Domain\RecipeDomain.fs" />
+    <Compile Include="Interface\GetNutritionalInformationForRecipe.fs" />
     <Compile Include="Interface\DeleteRecipe.fs" />
     <Compile Include="Interface\UpdateRecipe.fs" />
     <Compile Include="Interface\GetAllRecipes.fs" />

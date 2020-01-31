@@ -1,5 +1,5 @@
 import { fetchRecipes } from "../actions/RecipeActions";
-import { AppState, View } from "react-native";
+import { View } from "react-native";
 import React from "react";
 import { connect } from "react-redux";
 

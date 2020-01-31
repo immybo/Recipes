@@ -14,6 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="TestUtils.fs" />
+    <Compile Include="NutritionTests.fs" />
     <Compile Include="RecipeTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

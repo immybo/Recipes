@@ -8,3 +8,4 @@ type Error =
     | IngredientDoesNotExist
     | MethodDoesNotExist
     | ExpectedExactlyOne
+    | NoNutritionalInformationForIngredient

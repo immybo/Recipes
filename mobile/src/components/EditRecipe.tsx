@@ -3,11 +3,13 @@ import { connect } from 'react-redux';
 import { AppState } from '../reducers/Reducers';
 import { Recipe, getBlankRecipe } from '../model/Recipe';
 import { updateRecipe } from '../actions/RecipeActions';
-import { withNavigation, ScrollView } from 'react-navigation';
+import { withNavigation, NavigationParams, NavigationState, NavigationScreenProp } from 'react-navigation';
 import { RouteViewRecipes } from '../Routes';
 import RecipeInput from './shared/RecipeInput';
 
 interface EditRecipeProps extends React.Props<EditRecipe> {
+    navigation: NavigationScreenProp<NavigationState, NavigationParams>
+    updateRecipe: (newRecipe: Recipe) => void
 }
 
 interface EditRecipeState {
