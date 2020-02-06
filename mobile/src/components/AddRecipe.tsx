@@ -1,33 +1,38 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers/Reducers';
-import { IngredientWithQuantity, getBlankIngredient } from '../model/IngredientWithQuantity';
 import { Recipe, getBlankRecipe } from '../model/Recipe';
 import { addRecipe } from '../actions/RecipeActions';
 import { withNavigation, ScrollView } from 'react-navigation';
 import { RouteViewRecipes } from '../Routes';
-import { Category } from '../model/Category';
 import RecipeInput from './shared/RecipeInput';
+import { Ingredient } from '../model/Ingredient';
+
+interface AddRecipeProps extends React.Props<AddRecipe> {
+    allIngredients: Ingredient[]
+}
 
 interface AddRecipeState {
 }
 
 const mapStateToProps = (state: AppState) => {
-    return {};
+    return {
+        allIngredients: state.ingredients.allIngredients
+    };
 }
 
 const mapDispatchToProps = {
     addRecipe
 };
 
-class AddRecipe extends React.Component<any, AddRecipeState> {
+class AddRecipe extends React.Component<AddRecipeProps, AddRecipeState> {
     constructor(props: any) {
         super(props);
     }
 
     public render(): JSX.Element {
         return (
-            <RecipeInput initialRecipe={getBlankRecipe()} submitRecipe={(recipe) => this.submitRecipe(recipe)} />
+            <RecipeInput allIngredients={this.props.allIngredients} initialRecipe={getBlankRecipe()} submitRecipe={(recipe) => this.submitRecipe(recipe)} />
         );
     }
 

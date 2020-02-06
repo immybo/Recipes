@@ -7,7 +7,7 @@ import {
     Text
 } from 'react-native';
 import { IngredientWithQuantity, getBlankIngredient } from '../../model/IngredientWithQuantity';
-import IngredientInput from './../shared/IngredientInput';
+import IngredientSelect from './IngredientSelect';
 import { Recipe } from '../../model/Recipe';
 import { ScrollView } from 'react-navigation';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -16,9 +16,11 @@ import { styles } from '../../style/Style';
 import { Colors } from '../../style/Colors';
 import CustomTextInput from './CustomTextInput';
 import { Method } from '../../model/Method';
+import { Ingredient } from '../../model/Ingredient';
 
 interface RecipeInputProps extends React.Props<RecipeInput> {
     initialRecipe: Recipe,
+    allIngredients: Ingredient[],
     submitRecipe: (recipe: Recipe) => void
 }
 
@@ -91,7 +93,7 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
 
     private getIngredientInputList(): JSX.Element[] {
         return this.state.ingredients.map(
-            (ingredient: IngredientWithQuantity, key: number) => <IngredientInput ingredient={ingredient} key={"ingredient-" + key} onChangeIngredient={(newIngredient) => this.onChangeIngredient(newIngredient, key)} />
+            (ingredient: IngredientWithQuantity, key: number) => <IngredientSelect allIngredients={this.props.allIngredients} ingredient={ingredient} key={"ingredient-" + key} onChangeIngredient={(newIngredient) => this.onChangeIngredient(newIngredient, key)} />
         );
     }
 

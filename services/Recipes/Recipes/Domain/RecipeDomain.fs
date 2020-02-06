@@ -45,6 +45,10 @@ let getAllRecipes () : Result<Recipe[], Error> =
         | Result.Error err -> None)
     |> Result.Ok
 
+let getAllIngredients () : Result<Ingredient[], Error> =
+    IngredientDataAccess.getAllIngredients
+    |> Result.Ok 
+
 let updateRecipe (recipe: Recipe) : Result<int, Error> =
     getRecipeById(recipe.Id)
     |> function result ->
@@ -69,3 +73,7 @@ let deleteRecipe (recipeId: int) : Result<int, Error> =
             MethodDataAccess.deleteMethod recipe.Method.Id
             Result.Ok recipe.Id
         )
+
+let addIngredient (ingredient: Ingredient) : Result<int, Error> =
+    IngredientDataAccess.addIngredient ingredient
+    |> Result.Ok

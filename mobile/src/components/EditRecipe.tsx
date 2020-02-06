@@ -6,9 +6,10 @@ import { updateRecipe } from '../actions/RecipeActions';
 import { withNavigation, NavigationParams, NavigationState, NavigationScreenProp } from 'react-navigation';
 import { RouteViewRecipes } from '../Routes';
 import RecipeInput from './shared/RecipeInput';
+import { Ingredient } from '../model/Ingredient';
 
 interface EditRecipeProps extends React.Props<EditRecipe> {
-    navigation: NavigationScreenProp<NavigationState, NavigationParams>
+    allIngredients: Ingredient[]
     updateRecipe: (newRecipe: Recipe) => void
 }
 
@@ -17,7 +18,9 @@ interface EditRecipeState {
 }
 
 const mapStateToProps = (state: AppState) => {
-    return {};
+    return {
+        allIngredients: state.ingredients.allIngredients
+    };
 }
 
 const mapDispatchToProps = {
@@ -35,7 +38,7 @@ class EditRecipe extends React.Component<EditRecipeProps, EditRecipeState> {
 
     public render(): JSX.Element {
         return (
-            <RecipeInput initialRecipe={this.state.initialRecipe} submitRecipe={(recipe) => this.submitRecipe(recipe)} />
+            <RecipeInput allIngredients={this.props.allIngredients} initialRecipe={this.state.initialRecipe} submitRecipe={(recipe) => this.submitRecipe(recipe)} />
         );
     }
 

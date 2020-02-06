@@ -61,6 +61,15 @@ module IngredientDataAccess =
         |> Seq.map mapToIngredientWithQuantity
         |> Seq.toArray
 
+    let getAllIngredients =
+        // TODO what if there are too many recipes? Maybe we need pagination here
+        query {
+            for ingredient in Database.context.Dbo.Ingredients do
+            select ingredient
+        }
+        |> Seq.map mapToIngredient
+        |> Seq.toArray
+
     let deleteIngredientMappingsForRecipe (recipeId: int) =
         query {
             for ingredientMapping in Database.context.Dbo.RecipesToIngredients do

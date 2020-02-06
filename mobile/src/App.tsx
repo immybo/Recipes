@@ -12,12 +12,14 @@ import { ActivityIndicator, View } from 'react-native';
 import { Colors } from './style/Colors';
 import { styles } from './style/Style';
 import NoConnectionToServer from './components/NoConnectionToServer';
+import AddIngredient from './components/AddIngredient';
 
 const MainNavigator = createStackNavigator({
     ViewRecipes: { screen: ViewRecipes },
     AddRecipe: { screen: AddRecipe },
     ViewIndividualRecipe: { screen: ViewIndividualRecipe },
-    EditRecipe: { screen: EditRecipe }
+    EditRecipe: { screen: EditRecipe },
+    AddIngredient: { screen: AddIngredient }
 });
 
 let Navigation = createAppContainer(MainNavigator);

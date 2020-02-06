@@ -36,6 +36,9 @@ export function callApi(endpoint: string, method: HttpMethod, payload?: any): Pr
     // TODO make this function typed, maybe have an API interface
     // TODO make this function take a parser
     // TODO make errors typed
-
-    return fetch(SERVER_IP+"/"+endpoint, { method: method, body: payload });
+    if (payload == null) {
+        return fetch(SERVER_IP+"/"+endpoint, { method: method });
+    } else {
+        return fetch(SERVER_IP+"/"+endpoint, { method: method, body: payload });
+    }
 }

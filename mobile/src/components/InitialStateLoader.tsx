@@ -1,10 +1,12 @@
 import { fetchRecipes } from "../actions/RecipeActions";
+import { fetchIngredients } from "../actions/IngredientActions";
 import { View } from "react-native";
 import React from "react";
 import { connect } from "react-redux";
 
 interface InitialStateLoaderProps extends React.Props<InitialStateLoader> {
     fetchRecipes: () => Promise<void>
+    fetchIngredients: () => Promise<void>
     onLoad: () => void
     shouldReload: boolean
 }
@@ -14,12 +16,14 @@ interface InitialStateLoaderState {
 }
 
 const mapDispatchToProps = {
-    fetchRecipes
+    fetchRecipes,
+    fetchIngredients
 };
 
 const mergeProps = (stateProps: InitialStateLoaderProps, dispatchProps: InitialStateLoaderProps, ownProps: InitialStateLoaderProps): InitialStateLoaderProps => {
     return {
         fetchRecipes: dispatchProps.fetchRecipes,
+        fetchIngredients: dispatchProps.fetchIngredients,
         onLoad: ownProps.onLoad,
         shouldReload: ownProps.shouldReload
     }
@@ -50,6 +54,7 @@ class InitialStateLoader extends React.Component<InitialStateLoaderProps, Initia
             this.setState({ isLoading: true });
 
             this.props.fetchRecipes()
+                .then(_ => this.props.fetchIngredients())
                 .then(_ => { this.setState({ isLoading: false }); this.props.onLoad()});
         }
     }

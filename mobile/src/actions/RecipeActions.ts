@@ -33,7 +33,7 @@ export type RecipeActionTypes = AddRecipeAction | DeleteRecipeAction | UpdateRec
 export function addRecipe(newRecipe: Recipe)  {
     return function(dispatch: Dispatch<RecipeActionTypes>) {
         return callApi("recipes", HttpMethod.POST, recipeToJson(newRecipe)).then(
-            response => response.json().then(json => dispatch(addRecipeLocal(newRecipe))),
+            response => response.json().then(json => dispatch(addRecipeLocal({...newRecipe, id: json}))),
             error => console.error(error) // TODO error handling
         );
     }
@@ -87,8 +87,8 @@ export function setAllRecipes(allRecipes: Recipe[]): RecipeActionTypes {
 
 export function fetchRecipes() {
     return function(dispatch: Dispatch) {
-        return callApiAsync("recipes", HttpMethod.GET, dispatch).then(
-            response => dispatch(setAllRecipes(parseRecipes(response))),
+        return callApi("recipes", HttpMethod.GET).then(
+            response => response.json().then(json => dispatch(setAllRecipes(parseRecipes(json)))),
             error => null
         );
     }

@@ -61,14 +61,35 @@ let deleteRecipe id =
 let getAllRecipes () =
     GetAllRecipes.getAllRecipes ()
 
+let getAllIngredients () =
+    GetAllIngredients.getAllIngredients ()
+
+let handle<'ParamType, 'ResponseType> (request: HttpRequest, underlyingFunction: 'ParamType -> Result<'ResponseType, Error>) : WebPart =
+    logRequest request
+    |> getJsonFromRequest
+    |> JsonConvert.DeserializeObject<'ParamType>
+    |> underlyingFunction
+    |> logResponse
+    |> function result -> match result with
+        | Result.Ok response ->
+            JsonConvert.SerializeObject response
+            |> OK
+        | Result.Error err ->
+            // TODO switch between validation errors vs internal server errors here.
+            ServerErrors.INTERNAL_ERROR (err.ToString())
+    
+
 let app =
     choose
         [ 
           GET >=> choose
             [ path "/recipes" >=> request(fun context -> callWithJsonParameterless (getAllRecipes ()))
-              pathScan "/recipes/%d" (fun id -> callWithJson getRecipe id) ]
+              pathScan "/recipes/%d" (fun id -> callWithJson getRecipe id)
+              path "/ingredients" >=> request(fun context -> callWithJsonParameterless (getAllIngredients ()))
+              path "/nutrition/ingredients" >=> request(fun context -> handle (context, GetNutritionalInformationForIngredients.getNutritionalInformationForIngredients))]
           POST >=> choose
-            [ path "/recipes" >=> request(getJsonFromRequest >> addRecipe)]
+            [ path "/recipes" >=> request(getJsonFromRequest >> addRecipe)
+              path "/ingredients" >=> request(fun context -> handle (context, AddIngredient.addIngredient)) ]
           PUT >=> choose
             [ path "/recipes" >=> request(getJsonFromRequest >> updateRecipe)]
           DELETE >=> choose

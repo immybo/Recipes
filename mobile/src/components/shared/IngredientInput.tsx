@@ -1,78 +1,52 @@
- import React from 'react';
+import React from 'react';
 import {
-    View, Picker
+    View,
+    Button,
 } from 'react-native';
-import { IngredientWithQuantity } from '../../model/IngredientWithQuantity';
-import { Numbers } from '../../util/Regex';
 import { styles } from '../../style/Style';
 import CustomTextInput from './CustomTextInput';
-import { QuantityUnit } from '../../model/QuantityUnit';
-import { QuantityFormatter } from '../../util/QuantityFormatter';
+import { Ingredient } from '../../model/Ingredient';
 
 interface IngredientInputProps extends React.Props<IngredientInput> {
-    ingredient: IngredientWithQuantity,
-    onChangeIngredient: (ingredient: IngredientWithQuantity) => void
+    initialIngredient: Ingredient,
+    submitIngredient: (ingredient: Ingredient) => void
 }
 
-class IngredientInput extends React.Component<IngredientInputProps, any> {
-    constructor(props: any) {
+interface IngredientInputState {
+    ingredientName: string
+}
+
+export default class IngredientInput extends React.Component<IngredientInputProps, IngredientInputState> {
+    constructor(props: IngredientInputProps) {
         super(props);
+
+        this.state = {
+            ingredientName: props.initialIngredient.name
+        };
     }
 
     public render(): JSX.Element {
         return (
-            <View style={styles.rowLayout}>
-                <CustomTextInput style={{ "flex": 0.45 }} value={this.props.ingredient.ingredient.name} onChangeText={(newText) => this.updateIngredientName(newText)} placeholder={"Ingredient Name"} />
-                <CustomTextInput
-                    style={{ "flex": 0.1 }}
-                    value={this.props.ingredient.quantity.amount > 0 ? this.props.ingredient.quantity.amount.toString() : ""}
-                    keyboardType="numeric"
-                    onChangeText={(newQuantity) => this.updateIngredientQuantityNumber(newQuantity)}
-                    placeholder={"Quantity"}
-                    maxLength={10} />
-                <View style={{ "flex": 0.35 }}>
-                    <Picker selectedValue={this.props.ingredient.quantity.unit} onValueChange={(value, _) => this.updateIngredientQuantityUnit(value)}>
-                        { [ QuantityUnit.Cups, QuantityUnit.Grams, QuantityUnit.Kilograms, QuantityUnit.Teaspoons].map((unit: QuantityUnit) => {
-                            let formattedUnit: string = QuantityFormatter.formatUnit(unit, true);
-                            return <Picker.Item label={formattedUnit} key={formattedUnit} value={unit} />
-                        })}
-                    </Picker>
-                </View>
+            <View style={styles.container}>
+                <CustomTextInput style={styles.h1} placeholder="Ingredient Name" defaultValue={this.props.initialIngredient.name} onChangeText={(text) => this.onChangeIngredientName(text)} />
+                <Button title="Submit Ingredient" onPress={(event) => this.submitIngredient()}>Submit Ingredient</Button>
             </View>
         );
     }
 
-    private updateIngredientName(newText: string): void {
-        this.props.onChangeIngredient({
-            ...this.props.ingredient,
-            ingredient: {
-                ...this.props.ingredient.ingredient,
-                name: newText
-            }
-        });
+    private onChangeIngredientName(newName: string): void {
+        this.setState({ ingredientName: newName });
     }
 
-    private updateIngredientQuantityNumber(newQuantity: string): void {
-        if (!Numbers.test(newQuantity)) {
-            this.props.onChangeIngredient({
-                ...this.props.ingredient,
-                quantity: {
-                    ...this.props.ingredient.quantity,
-                    amount: Number(newQuantity)
-                }
-            });
-        }
+    private submitIngredient(): void {
+        let ingredient: Ingredient = this.buildIngredient();
+        this.props.submitIngredient(ingredient);
     }
 
-    private updateIngredientQuantityUnit(newQuantityUnit: QuantityUnit): void {
-        this.props.onChangeIngredient({
-            ...this.props.ingredient,
-            quantity: {
-                ...this.props.ingredient.quantity,
-                unit: newQuantityUnit
-            }
-        });
+    private buildIngredient(): Ingredient {
+        return {
+            id: this.props.initialIngredient.id,
+            name: this.state.ingredientName
+        };
     }
 }
-
-export default IngredientInput;
