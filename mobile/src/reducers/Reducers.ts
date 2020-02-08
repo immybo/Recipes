@@ -4,12 +4,14 @@ import CategoryReducer from "./CategoryReducer";
 import thunk from 'redux-thunk';
 import NetworkReducer from "./NetworkReducer";
 import IngredientReducer from "./IngredientReducer";
+import MealPlannerReducer from "./MealPlannerReducer";
 
 const rootReducer = combineReducers({
     recipes: RecipeReducer,
     categories: CategoryReducer,
     network: NetworkReducer,
-    ingredients: IngredientReducer
+    ingredients: IngredientReducer,
+    mealPlanner: MealPlannerReducer
 });
 
 export type AppState = ReturnType<typeof rootReducer>;

@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import { Recipe } from '../model/Recipe';
 import { AppState } from '../reducers/Reducers';
 import { withNavigation, ScrollView } from 'react-navigation';
-import { RouteAddRecipe, RouteViewIndividualRecipe, RouteEditRecipe, RouteAddIngredient } from '../Routes';
+import { RouteAddRecipe, RouteViewIndividualRecipe, RouteEditRecipe, RouteAddIngredient, RouteMealPlanner } from '../Routes';
 import { deleteRecipe } from '../actions/RecipeActions';
 import RecipeCompactDisplay from './shared/RecipeCompactDisplay';
 import { styles } from '../style/Style';
@@ -43,7 +43,8 @@ class ViewRecipes extends React.Component<ViewRecipesProps, any> {
                     </View>
                     <View style={styles.bottomButtonContainer}>
                         <Button title="Add Recipe" onPress={(event: any) => this.props.navigation.navigate(RouteAddRecipe)}>Add Recipe</Button>
-                        <Button title="Add Ingredient" onPress={(event: any) => this.props.navigation.navigate(RouteAddIngredient)}>Add Recipe</Button>
+                        <Button title="Add Ingredient" onPress={(event: any) => this.props.navigation.navigate(RouteAddIngredient)}>Add Ingredient</Button>
+                        <Button title="Meal Planner" onPress={(event: any) => this.props.navigation.navigate(RouteMealPlanner)}>Meal Planner</Button>
                     </View>
                 </ScrollView>
             </View>

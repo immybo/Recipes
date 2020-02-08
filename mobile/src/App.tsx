@@ -13,13 +13,15 @@ import { Colors } from './style/Colors';
 import { styles } from './style/Style';
 import NoConnectionToServer from './components/NoConnectionToServer';
 import AddIngredient from './components/AddIngredient';
+import MealPlanner from './components/MealPlanner';
 
 const MainNavigator = createStackNavigator({
     ViewRecipes: { screen: ViewRecipes },
     AddRecipe: { screen: AddRecipe },
     ViewIndividualRecipe: { screen: ViewIndividualRecipe },
     EditRecipe: { screen: EditRecipe },
-    AddIngredient: { screen: AddIngredient }
+    AddIngredient: { screen: AddIngredient },
+    MealPlanner: { screen: MealPlanner }
 });
 
 let Navigation = createAppContainer(MainNavigator);

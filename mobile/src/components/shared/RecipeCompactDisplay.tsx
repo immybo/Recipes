@@ -10,28 +10,32 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 interface RecipeCompactDisplayProps {
     recipe: Recipe,
-    onClick: (recipe: Recipe) => void
-    onEdit: (recipe: Recipe) => void
-    onDelete: (recipe: Recipe) => void
+    onClick?: (recipe: Recipe) => void,
+    onEdit?: (recipe: Recipe) => void,
+    onDelete?: (recipe: Recipe) => void
 }
 
 class RecipeCompactDisplay extends React.Component<RecipeCompactDisplayProps, any> {
-    constructor(props: any) {
+    constructor(props: RecipeCompactDisplayProps) {
         super(props);
     }
 
     public render(): JSX.Element {
         return (
-            <TouchableHighlight onPress={(event) => this.props.onClick(this.props.recipe)}>
+            <TouchableHighlight onPress={(event) => { if (this.props.onClick != null) { this.props.onClick(this.props.recipe)}}}>
                 <View style={styles.rowLayout}>
                     <Text>{this.props.recipe.name}</Text>
                     <View style={styles.rowRightButton}>
-                        <TouchableHighlight style={styles.marginSmall} onPress={(event) => this.props.onEdit(this.props.recipe)}>
-                            <Icon name="edit" size={20} color="black" />
-                        </TouchableHighlight>
-                        <TouchableHighlight style={styles.marginSmall} onPress={(event) => this.props.onDelete(this.props.recipe)}>
-                            <Icon name="trash" size={20} color="black" />
-                        </TouchableHighlight>
+                        { this.props.onEdit != null &&
+                            <TouchableHighlight style={styles.marginSmall} onPress={(event) => { if (this.props.onEdit != null) { this.props.onEdit(this.props.recipe)}}}>
+                                <Icon name="edit" size={20} color="black" />
+                            </TouchableHighlight>
+                        }
+                        { this.props.onDelete != null &&
+                            <TouchableHighlight style={styles.marginSmall} onPress={(event) => { if (this.props.onDelete != null) { this.props.onDelete(this.props.recipe)}}}>
+                                <Icon name="trash" size={20} color="black" />
+                            </TouchableHighlight>
+                        }
                     </View>
                 </View>
             </TouchableHighlight>
