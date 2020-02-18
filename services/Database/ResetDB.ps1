@@ -1,5 +1,4 @@
 $server = "(LocalDb)\MSSQLLocalDB"
-$database = "Recipes"
 $scriptDir = ".\"
 $logFile = "$scriptDir\ResetLog.txt"
 

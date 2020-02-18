@@ -9,7 +9,7 @@ export enum DayOfWeek {
 }
 
 export class DayUtils {
-    public static toString(day: DayOfWeek): string {
+    public static toString(day: DayOfWeek | number): string {
         return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][day]
     }
 }

@@ -1,31 +1,33 @@
-import { DayOfWeek } from "../style/DayOfWeek";
-import { MealPlannerActionTypes, SET_MEAL, REMOVE_MEAL } from "../actions/MealPlannerActions";
+import { MealPlannerActionTypes, SET_MEAL_PLAN } from "../actions/MealPlannerActions";
+import { MealPlanEntry } from "../model/MealPlanEntry";
 
 export interface MealPlannerState {
-    weeklyPlan: Record<DayOfWeek, number>
+    mealPlan: MealPlanEntry[]
 }
 
 const initialState: MealPlannerState = {
-    weeklyPlan: {} as Record<DayOfWeek, number>
+    mealPlan: []
 }
 
 export default function(state = initialState, action: MealPlannerActionTypes): MealPlannerState {
     switch (action.type) {
-        case SET_MEAL:
-            let newPlan: Record<DayOfWeek, number> = { ...state.weeklyPlan };
-            newPlan[action.payload[0]] = action.payload[1];
+        case SET_MEAL_PLAN:
+            let newPlan: MealPlanEntry[] = state.mealPlan;
+            let newPlanDict: { [date: string] : MealPlanEntry } = {};
+
+            newPlan.forEach(entry => {
+                newPlanDict[entry.date.toString()] = entry;
+            });
+
+            action.payload.forEach(entry => {
+                newPlanDict[entry.date.toString()] = entry;
+            });
+
+            newPlan = Object.entries(newPlanDict).map(([_, value]) => value);
 
             return {
                 ...state,
-                weeklyPlan: newPlan
-            }
-        case REMOVE_MEAL:
-            let planWithMealRemoved: Record<DayOfWeek, number> = { ...state.weeklyPlan };
-            delete planWithMealRemoved[action.payload[0]]
-            
-            return {
-                ...state,
-                weeklyPlan: planWithMealRemoved
+                mealPlan: newPlan
             }
         default:
             return state;

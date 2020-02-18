@@ -7,13 +7,13 @@ import { withNavigation } from 'react-navigation';
 import { styles } from '../style/Style';
 import { DayOfWeek, DayUtils } from '../style/DayOfWeek';
 import RecipeCompactDisplay from './shared/RecipeCompactDisplay';
-import { setMeal, removeMeal } from '../actions/MealPlannerActions';
+import { setMealPlan } from '../actions/MealPlannerActions';
+import { MealPlanEntry } from '../model/MealPlanEntry';
 
 interface MealPlannerProps extends React.Props<MealPlanner> {
-    selectedRecipes: Record<DayOfWeek, number>;
+    mealPlan: MealPlanEntry[];
     allRecipes: Recipe[];
-    setMeal: (day: DayOfWeek, recipeId: number) => void;
-    removeMeal: (day: DayOfWeek, recipeId: number) => void;
+    setMealPlan: (day: Date, recipeId: number) => void;
 }
 
 interface MealPlannerState {
@@ -22,13 +22,12 @@ interface MealPlannerState {
 const mapStateToProps = (state: AppState) => {
     return {
         allRecipes: state.recipes.recipes,
-        selectedRecipes: state.mealPlanner.weeklyPlan
+        mealPlan: state.mealPlanner.mealPlan
     };
 }
 
 const mapDispatchToProps = {
-    setMeal,
-    removeMeal
+    setMealPlan
 };
 
 class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
@@ -42,46 +41,58 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
     public render(): JSX.Element {
         return (
             <View style={styles.container}>
-                { [ DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday ].map(
-                    day => this.getRow(day)
-                )}
+                { this.getDateRows() }
             </View>
         );
     }
 
-    private hasMealOnDay(day: DayOfWeek): boolean {
-        // Can be a bit slow if we have a lot of recipes. Maybe start using dictionaries for recipes/ingredients.
-        return (day in this.props.selectedRecipes) && this.props.allRecipes.find(x => x.id === this.props.selectedRecipes[day]) != null;
+    private getDateRows(): JSX.Element[] {
+        let today: Date = new Date();
+        let sundayThisWeek: Date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        sundayThisWeek.setDate(today.getDate()-today.getDay());
+
+        let rows: JSX.Element[] = [];
+        for (var i = 0; i < 7; i++) {
+            let dayOfWeek: Date = new Date(sundayThisWeek);
+            dayOfWeek.setDate(dayOfWeek.getDate() + i);
+            rows.push(this.getRow(dayOfWeek));
+        }
+        return rows;
     }
 
-    private getMealOnDay(day: DayOfWeek): Recipe {
-        let potentialMeal = this.props.allRecipes.find(x => x.id === this.props.selectedRecipes[day]);
+    private hasMealOnDate(date: Date): boolean {
+        // Can be a bit slow if we have a lot of recipes. Maybe start using dictionaries for recipes/ingredients.
+        return (this.props.mealPlan.find(x => +x.date === +date) != undefined) && this.props.allRecipes.find(x => x.id === this.props.mealPlan.find(x => +x.date === +date)!.recipeId) != undefined;
+    }
+
+    private getMealOnDate(date: Date): Recipe {
+        let potentialMeal = this.props.allRecipes.find(x => x.id === this.props.mealPlan.find(x => +x.date === +date)!.recipeId);
         if (potentialMeal == null) {
-            throw new Error("Unable to get meal for " + day.toString());
+            throw new Error("Unable to get meal for " + date.toString());
         } else {
             return potentialMeal;
         }
     }
 
-    private getRow(day: DayOfWeek): JSX.Element {
+    private getRow(date: Date): JSX.Element {
         return (
             <View style={styles.rowLayout}>
-                <Text style={{ flex: 0.25 }}>{ DayUtils.toString(day) }</Text>
+                <Text style={{ flex: 0.25 }}>{ DayUtils.toString(date.getDay()) }</Text>
                 <View style={{ flex: 0.75 }}>
-                    { this.getIngredientRowSection(day) }
+                    { this.getIngredientRowSection(date) }
                 </View>
             </View>
         );
     }
 
-    private getIngredientRowSection(day: DayOfWeek) {
-        if (this.hasMealOnDay(day)) {
-            let selectedRecipe: Recipe = this.getMealOnDay(day);
-            return <RecipeCompactDisplay recipe={selectedRecipe} onDelete={() => this.props.removeMeal(day, selectedRecipe.id) } />
+    private getIngredientRowSection(date: Date) {
+        if (this.hasMealOnDate(date)) {
+            let selectedRecipe: Recipe = this.getMealOnDate(date);
+            return <RecipeCompactDisplay recipe={selectedRecipe} onDelete={() => /* TODO */ {}} />
         } else {
             // TODO change this to an autocomplete text field
             return (
-                <Picker selectedValue={ "" } onValueChange={(value, _) => this.props.setMeal(day, value)}>
+                <Picker selectedValue={ "" } onValueChange={(value, _) => this.props.setMealPlan(date, value)}>
                     { this.props.allRecipes.map((recipe: Recipe) => {
                         return <Picker.Item label={recipe.name} key={recipe.id} value={recipe.id} />
                     })}
