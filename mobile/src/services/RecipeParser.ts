@@ -11,7 +11,7 @@ export function parseRecipes(json: any): Array<Recipe> {
     return json.Fields[0].map((recipeJson: any) => parseRecipe(recipeJson));
 }
 
-function parseRecipe(recipeJson: any): Recipe {
+export function parseRecipe(recipeJson: any): Recipe {
     return {
         id: Number.parseInt(recipeJson.Id),
         name: recipeJson.Name,

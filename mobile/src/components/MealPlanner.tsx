@@ -76,7 +76,7 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
 
     private getRow(date: Date): JSX.Element {
         return (
-            <View style={styles.rowLayout}>
+            <View style={styles.rowLayout} key={date.getDay()}>
                 <Text style={{ flex: 0.25 }}>{ DayUtils.toString(date.getDay()) }</Text>
                 <View style={{ flex: 0.75 }}>
                     { this.getIngredientRowSection(date) }
@@ -92,7 +92,7 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
         } else {
             // TODO change this to an autocomplete text field
             return (
-                <Picker selectedValue={ "" } onValueChange={(value, _) => this.props.setMealPlan(date, value)}>
+                <Picker key={date.getDay()} selectedValue={ "" } onValueChange={(value, _) => this.props.setMealPlan(date, value)}>
                     { this.props.allRecipes.map((recipe: Recipe) => {
                         return <Picker.Item label={recipe.name} key={recipe.id} value={recipe.id} />
                     })}

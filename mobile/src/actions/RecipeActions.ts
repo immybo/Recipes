@@ -1,7 +1,6 @@
 import { Recipe } from "../model/Recipe";
 import { Dispatch } from "redux";
-import { callApi, HttpMethod, callApiAsync } from "../services/Server";
-import { parseRecipes, recipeToJson } from "../services/RecipeParser";
+import { RecipesApi } from "../services/api/Recipes";
 
 export const ADD_RECIPE = "ADD_RECIPE";
 export const DELETE_RECIPE = "DELETE_RECIPE";
@@ -32,8 +31,8 @@ export type RecipeActionTypes = AddRecipeAction | DeleteRecipeAction | UpdateRec
 
 export function addRecipe(newRecipe: Recipe)  {
     return function(dispatch: Dispatch<RecipeActionTypes>) {
-        return callApi("recipes", HttpMethod.POST, recipeToJson(newRecipe)).then(
-            response => response.json().then(json => dispatch(addRecipeLocal({...newRecipe, id: json}))),
+        return RecipesApi.addRecipe(newRecipe).then(
+            recipeId => dispatch(addRecipeLocal({...newRecipe, id: recipeId})),
             error => console.error(error) // TODO error handling
         );
     }
@@ -48,8 +47,8 @@ export function addRecipeLocal(newRecipe: Recipe): RecipeActionTypes {
 
 export function deleteRecipe(toDelete: Recipe) {
     return function(dispatch: Dispatch<RecipeActionTypes>) {
-        return callApi("recipes/" + toDelete.id, HttpMethod.DELETE, {}).then(
-            response => response.json().then(json => dispatch(deleteRecipeLocal(toDelete))),
+        return RecipesApi.deleteRecipe(toDelete.id).then(
+            response => dispatch(deleteRecipeLocal(toDelete)),
             error => console.error(error) // TODO error handling
         );
     }
@@ -64,8 +63,8 @@ export function deleteRecipeLocal(toDelete: Recipe): RecipeActionTypes {
 
 export function updateRecipe(updatedRecipe: Recipe) {
     return function(dispatch: Dispatch<RecipeActionTypes>) {
-        return callApi("recipes", HttpMethod.PUT, recipeToJson(updatedRecipe)).then(
-            response => response.json().then(json => dispatch(updateRecipeLocal(updatedRecipe))),
+        return RecipesApi.updateRecipe(updatedRecipe).then(
+            response => dispatch(updateRecipeLocal(updatedRecipe)),
             error => console.error(error) // TODO error handling
         );
     }
@@ -78,18 +77,18 @@ export function updateRecipeLocal(newRecipe: Recipe): RecipeActionTypes {
     }
 }
 
+export function fetchRecipes() {
+    return function(dispatch: Dispatch) {
+        return RecipesApi.getAllRecipes().then(
+            recipes => dispatch(setAllRecipes(recipes)),
+            error => null
+        );
+    }
+}
+
 export function setAllRecipes(allRecipes: Recipe[]): RecipeActionTypes {
     return {
         type: SET_ALL_RECIPES,
         payload: allRecipes
-    }
-}
-
-export function fetchRecipes() {
-    return function(dispatch: Dispatch) {
-        return callApi("recipes", HttpMethod.GET).then(
-            response => response.json().then(json => dispatch(setAllRecipes(parseRecipes(json)))),
-            error => null
-        );
     }
 }

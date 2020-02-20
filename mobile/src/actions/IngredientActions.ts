@@ -1,7 +1,8 @@
 import { Dispatch } from "redux";
-import { callApi, HttpMethod, callApiAsync } from "../services/Server";
+import { callApiRaw, HttpMethod } from "../services/Server";
 import { Ingredient } from "../model/Ingredient";
 import { parseIngredients, ingredientToJson } from "../services/IngredientParser";
+import { IngredientsApi } from "../services/api/Ingredients";
 
 export const ADD_INGREDIENT = "ADD_INGREDIENT";
 export const SET_ALL_INGREDIENTS = "SET_ALL_INGREDIENTS";
@@ -20,9 +21,8 @@ export type IngredientActionTypes = AddIngredientAction | SetAllIngredientsActio
 
 export function addIngredient(newIngredient: Ingredient)  {
     return function(dispatch: Dispatch<IngredientActionTypes>) {
-        return callApi("ingredients", HttpMethod.POST, ingredientToJson(newIngredient)).then(
-            response => response.json().then(json =>
-                dispatch(addIngredientLocal({...newIngredient, id: json}))),
+        return IngredientsApi.addIngredient(newIngredient).then(
+            ingredientId => dispatch(addIngredientLocal({...newIngredient, id: ingredientId})),
             error => console.error(error) // TODO error handling
         );
     }
@@ -35,18 +35,18 @@ export function addIngredientLocal(newIngredient: Ingredient): IngredientActionT
     }
 }
 
+export function fetchIngredients() {
+    return function(dispatch: Dispatch) {
+        return IngredientsApi.getAllIngredients().then(
+            ingredients => dispatch(setAllIngredients(ingredients)),
+            error => null
+        );
+    }
+}
+
 export function setAllIngredients(allIngredients: Ingredient[]): IngredientActionTypes {
     return {
         type: SET_ALL_INGREDIENTS,
         payload: allIngredients
-    }
-}
-
-export function fetchIngredients() {
-    return function(dispatch: Dispatch) {
-        return callApi("ingredients", HttpMethod.GET).then(
-            response => response.json().then(json => dispatch(setAllIngredients(parseIngredients(json)))),
-            error => null
-        );
     }
 }
