@@ -1,6 +1,8 @@
 import { Recipe } from "../model/Recipe";
 import { Dispatch } from "redux";
 import { RecipesApi } from "../services/api/Recipes";
+import { ServerError } from "../services/api/ServerError";
+import { setApiErrorToDisplay } from "./NetworkActions";
 
 export const ADD_RECIPE = "ADD_RECIPE";
 export const DELETE_RECIPE = "DELETE_RECIPE";
@@ -65,7 +67,15 @@ export function updateRecipe(updatedRecipe: Recipe) {
     return function(dispatch: Dispatch<RecipeActionTypes>) {
         return RecipesApi.updateRecipe(updatedRecipe).then(
             response => dispatch(updateRecipeLocal(updatedRecipe)),
-            error => console.error(error) // TODO error handling
+            (error: ServerError) => {
+                switch (error) {
+                    case ServerError.MethodMustNotBeEmpty:
+                    default:
+                        // I don't think we're meant to do this... TODO find some other way
+                        dispatch(setApiErrorToDisplay("Error updating recipe. Please try again."));
+                        return;
+                }
+            }
         );
     }
 }

@@ -44,11 +44,11 @@ module IngredientDataAccess =
         |> Seq.toArray
         |> function results ->
             match results.Length with
-            | 0 -> Result.Error IngredientDoesNotExist
+            | 0 -> Result.Error Error.IngredientDoesNotExist
             | 1 ->
                 mapToIngredient results.[0]
                 |> Result.Ok
-            | _ -> Result.Error ExpectedExactlyOne
+            | _ -> Result.Error Error.ExpectedExactlyOne
         
     let getIngredientsForRecipe (recipeId: int) : IngredientWithQuantity[] = 
         query {

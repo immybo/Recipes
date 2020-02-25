@@ -40,8 +40,16 @@ export const styles = StyleSheet.create({
         alignSelf: "stretch",
         textAlign: "center"
     },
+    smallContainerBottom: {
+        flex: 0.04,
+        alignSelf: "stretch",
+        textAlign: "center"
+    },
     verticalMarginSmall: {
         marginVertical: 10
+    },
+    verticalMargin: {
+        marginVertical: 20
     },
     horizontalMarginSmall: {
         marginHorizontal: 10
@@ -59,5 +67,13 @@ export const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         flex: 1
+    },
+    centerText: {
+        textAlign: "center"
+    },
+    errorMessage: {
+        fontSize: 15,
+        color: "red",
+        fontWeight: "bold"
     }
 });

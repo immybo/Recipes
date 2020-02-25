@@ -58,7 +58,7 @@ let handle<'ParamType, 'ResponseType> (request: HttpRequest, underlyingFunction:
             |> OK
         | Result.Error err ->
             // TODO switch between validation errors vs internal server errors here.
-            ServerErrors.INTERNAL_ERROR (err.ToString())
+            ServerErrors.INTERNAL_ERROR (string (int err))
 
 let app =
     choose
@@ -85,7 +85,7 @@ let main argv =
     let cts = new CancellationTokenSource()
     let conf = { defaultConfig with
                     cancellationToken = cts.Token;
-                    bindings = [ HttpBinding.createSimple HTTP "127.0.0.1" 52354 ];
+                    bindings = [ HttpBinding.createSimple HTTP "192.168.1.5" 52354 ];
     }
     let listening, server = startWebServerAsync conf app
     

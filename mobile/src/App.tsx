@@ -8,12 +8,13 @@ import AddRecipe from './components/AddRecipe';
 import ViewIndividualRecipe from './components/ViewIndividualRecipe';
 import EditRecipe from './components/EditRecipe';
 import InitialStateLoader from './components/InitialStateLoader';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, View, Text } from 'react-native';
 import { Colors } from './style/Colors';
 import { styles } from './style/Style';
 import NoConnectionToServer from './components/NoConnectionToServer';
 import AddIngredient from './components/AddIngredient';
 import MealPlanner from './components/MealPlanner';
+import ErrorDisplay from './components/ErrorDisplay';
 
 const MainNavigator = createStackNavigator({
     ViewRecipes: { screen: ViewRecipes },
@@ -31,12 +32,14 @@ interface AppLocalState {
 }
 
 interface AppProps extends React.Props<App> {
-    hasNetworkConnectivity: boolean
+    hasNetworkConnectivity: boolean,
+    currentError: string | null
 }
 
 const mapStateToProps = (state: AppState) => {
     return {
-        hasNetworkConnectivity: state.network.hasConnectionToServer
+        hasNetworkConnectivity: state.network.hasConnectionToServer,
+        currentError: state.network.currentError
     };
 }
 
@@ -59,6 +62,10 @@ class App extends React.Component<AppProps, AppLocalState> {
                     <View style={styles.centerAlign}>
                         <ActivityIndicator size={72} color={Colors.Blue}/>
                     </View>
+                }
+
+                { this.props.currentError != null &&
+                    <ErrorDisplay errorMessage={this.props.currentError} />
                 }
 
                 { !this.props.hasNetworkConnectivity && this.state.isLoaded &&

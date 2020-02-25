@@ -45,8 +45,8 @@ module MacronutrientsDataAccess =
         |> Seq.toArray
         |> function results ->
             match results.Length with
-            | 0 -> Result.Error NoNutritionalInformationForIngredient
+            | 0 -> Result.Error Error.NoNutritionalInformationForIngredient
             | 1 ->
                 mapToMacronutrientInformation results.[0]
                 |> Result.Ok
-            | _ -> Result.Error ExpectedExactlyOne
+            | _ -> Result.Error Error.ExpectedExactlyOne

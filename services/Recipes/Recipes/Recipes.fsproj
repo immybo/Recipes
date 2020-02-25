@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Utilities\Railway.fs" />
     <Compile Include="Model\MacronutrientInformation.fs" />
     <Compile Include="Model\NutritionalInformation.fs" />
     <Compile Include="Model\QuantityUnit.fs" />

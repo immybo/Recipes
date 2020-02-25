@@ -1,4 +1,6 @@
-const SERVER_IP = "http://10.0.2.2:52354"
+import { ServerError } from "./api/ServerError";
+
+const SERVER_IP = "http://192.168.1.5:52354"
 
 export enum HttpMethod {
     GET = "GET",
@@ -7,14 +9,44 @@ export enum HttpMethod {
     DELETE = "DELETE"
 }
 
+export enum HttpStatus {
+    SERVER_ERROR = 500,
+    OK = 200
+}
+
 export function callApi<PayloadType, ReturnType>(endpoint: string, method: HttpMethod, parse: (json: any) => ReturnType, payload?: PayloadType): Promise<ReturnType> {
     return callApiRaw(endpoint, method, payload)
         .then(
-            response => response.json(),
+            response => handleResponse(response, parse),
             error => Promise.reject(error)
-        )
+        );
+}
+
+function handleResponse<ReturnType>(response: Response, parse: (json: any) => ReturnType): Promise<ReturnType> {
+    switch (response.status) {
+        case HttpStatus.OK:
+            return handleOkResponse(response, parse);
+        case HttpStatus.SERVER_ERROR:
+            return handleErrorResponse(response);
+        default:
+            return Promise.reject("Unrecognised response code " + response.status.toString());
+    }
+}
+
+function handleOkResponse<ReturnType>(response: Response, parse: (json: any) => ReturnType): Promise<ReturnType> {
+    return response.json()
         .then(
             json => parse(json),
+            error => Promise.reject(error)
+        );
+}
+
+function handleErrorResponse<ReturnType>(response: Response): Promise<ReturnType> {
+    // The server always returns an int response code, which should correspond to our Error enum
+    return response.json()
+        .then(
+            json => Promise.reject((parseInt(json) as ServerError)),
+            // Ironic
             error => Promise.reject(error)
         );
 }
