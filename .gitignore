@@ -67,4 +67,3 @@ buck-out/
 **/bin/
 **/obj/
 */RecipeDB
-**/ResetLog.txt
