@@ -4,11 +4,6 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <FscToolPath>D:\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\FSharp</FscToolPath>
-    <FscToolExe>fsc.exe</FscToolExe>
-  </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="Utilities\Railway.fs" />
     <Compile Include="Model\MacronutrientInformation.fs" />
