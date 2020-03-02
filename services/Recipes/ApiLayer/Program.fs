@@ -8,6 +8,7 @@ open System.Threading
 open System
 open Newtonsoft.Json
 open Model
+open System.Net
 
 let getJsonFromRequest (req: HttpRequest) =
     req.rawForm
@@ -80,19 +81,13 @@ let app =
             [ pathScan "/recipes/%d" (fun id -> callWithJson deleteRecipe id) ]
         ]
 
+let getPort argv =
+    match Array.length argv with
+    | 0 -> 8080us
+    | _ -> argv.[0] |> uint16
+
 [<EntryPoint>]
 let main argv =
-    let cts = new CancellationTokenSource()
-    let conf = { defaultConfig with
-                    cancellationToken = cts.Token;
-                    bindings = [ HttpBinding.createSimple HTTP "192.168.1.5" 52354 ];
-    }
-    let listening, server = startWebServerAsync conf app
-    
-    Async.Start(server, cts.Token)
-    printfn "Make requests now"
-    Console.ReadKey true |> ignore
-
-    cts.Cancel()
-
+    let conf = { defaultConfig with bindings = [ HttpBinding.create HTTP IPAddress.Loopback <| getPort argv ]}
+    startWebServer conf app
     0

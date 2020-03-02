@@ -1,3 +1,3 @@
-CREATE TABLE Recipes.dbo.Methods (
+CREATE TABLE dbo.Methods (
 	methodId INT IDENTITY PRIMARY KEY
 );

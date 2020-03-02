@@ -9,27 +9,47 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
-steps:
+jobs:
+- job: Build
+  displayName: Build .NET project
+  steps:
+  - task: PowerShell@2
+    inputs:
+      filePath: './services/Recipes/CreateConnectionString.ps1'
+      workingDirectory: './services/Recipes'
+    env:
+      DATABASEURL: $(DatabaseUrl)
+      DATABASEUSERNAME: $(DatabaseUsername)
+      DATABASEPASSWORD: $(DatabasePassword)
 
-- task: PowerShell@2
-  inputs:
-    filePath: './services/Database/ResetDB.ps1'
-    workingDirectory: './services/Database'
-    
-- task: NuGetToolInstaller@1
+  - task: NuGetCommand@2
+    inputs:
+      restoreSolution: '$(solution)'
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
+  - task: VSBuild@1
+    inputs:
+      solution: '$(solution)'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+      msbuildArgs: '/p:OutputPath=$(Build.BinariesDirectory)'
 
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$(Build.BinariesDirectory)'
+      includeRootFolder: true
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+      replaceExistingArchive: true
 
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+  - task: AzureRmWebAppDeployment@4
+    inputs:
+      ConnectionType: 'AzureRM'
+      azureSubscription: 'Free Trial(2c6e8e11-7333-4642-a58e-31c4d489f303)'
+      appType: 'webApp'
+      WebAppName: 'recipeapp-rcampbel'
+      deployToSlotOrASE: true
+      ResourceGroupName: 'RecipeApp'
+      SlotName: 'production'
+      packageForLinux: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+      enableCustomDeployment: true
+      DeploymentType: 'zipDeploy'

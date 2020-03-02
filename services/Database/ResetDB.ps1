@@ -30,3 +30,6 @@ ForEach ($script in $schemaScripts)
 	"Running schema script: $script" | out-file $logFile -Append
 	Invoke-SqlCmd -inputfile $script.FullName -serverinstance $server -username $dbUsername -password $dbPassword -database $database
 }
+
+"Running foreign keys script." | out-file $logFile -Append
+Invoke-SqlCmd -inputfile "ForeignKeys.sql" -serverinstance $server -username $dbUsername -password $dbPassword -database $database
