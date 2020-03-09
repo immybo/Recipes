@@ -1,4 +1,5 @@
 trigger:
+
 - master
 
 pool:
@@ -21,17 +22,17 @@ jobs:
       DATABASEURL: $(DatabaseUrl)
       DATABASEUSERNAME: $(DatabaseUsername)
       DATABASEPASSWORD: $(DatabasePassword)
-
-  - task: NuGetCommand@2
+  - task: DotNetCoreCLI@2
     inputs:
-      restoreSolution: '$(solution)'
+      command: 'restore'
+      projects: '**/*.fsproj'
+      feedsToUse: 'select'
 
-  - task: VSBuild@1
+  - task: DotNetCoreCLI@2
     inputs:
-      solution: '$(solution)'
-      platform: '$(buildPlatform)'
-      configuration: '$(buildConfiguration)'
-      msbuildArgs: '/p:OutputPath=$(Build.BinariesDirectory)'
+      command: 'publish'
+      publishWebProjects: false
+      projects: '**/*.fsproj'
 
   - task: ArchiveFiles@2
     inputs:
@@ -41,15 +42,22 @@ jobs:
       archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
       replaceExistingArchive: true
 
-  - task: AzureRmWebAppDeployment@4
+  - task: PublishBuildArtifacts@1
     inputs:
-      ConnectionType: 'AzureRM'
-      azureSubscription: 'Free Trial(2c6e8e11-7333-4642-a58e-31c4d489f303)'
-      appType: 'webApp'
-      WebAppName: 'recipeapp-rcampbel'
-      deployToSlotOrASE: true
-      ResourceGroupName: 'RecipeApp'
-      SlotName: 'production'
-      packageForLinux: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-      enableCustomDeployment: true
-      DeploymentType: 'zipDeploy'
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'drop'
+      publishLocation: 'Container'
+
+- deployment: VMDeploy
+  dependsOn: Build
+  displayName: web
+  pool:
+    vmImage: 'Ubuntu-18.04'
+  environment:
+    name: Dev
+    resourceType: VirtualMachine
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - script: dotnet $(Pipeline.Workspace)/drop/**/Recipes.dll
