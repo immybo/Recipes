@@ -1,81 +1,78 @@
 ﻿namespace DataAccess
 
-open FSharp.Data.Sql
+open FSharp.Data
 open Model
+open System.Linq
 
 module MethodDataAccess =
+    type GetMethodStepsByIdQuery = SqlCommandProvider<"
+        SELECT *
+        FROM dbo.MethodSteps
+        WHERE MethodId = @methodId
+        ", Database.compileTimeConnectionString>
+
+    type AddBaseMethodCommand = SqlCommandProvider<"
+        INSERT INTO dbo.Methods
+        OUTPUT INSERTED.methodId
+        DEFAULT VALUES
+        ", Database.compileTimeConnectionString>
+
+    type AddMethodStepCommand = SqlCommandProvider<"
+        INSERT INTO dbo.MethodSteps (MethodId, StepNumber, Description)
+        VALUES (@methodId, @stepNumber, @description)
+        ", Database.compileTimeConnectionString>
+
+    type DeleteStepsForMethodCommand = SqlCommandProvider<"
+        DELETE FROM dbo.MethodSteps
+        WHERE MethodId = @methodId
+        ", Database.compileTimeConnectionString>
+
+    type DeleteMethodCommand = SqlCommandProvider<"
+        DELETE FROM dbo.Methods
+        WHERE MethodId = @methodId
+        ", Database.compileTimeConnectionString>
+
     let mapToMethod methodId methodSteps : Method = 
         {
             Id = methodId;
-            Steps = Array.map(fun (step: Database.sql.dataContext.``dbo.MethodStepsEntity``) -> step.Description) methodSteps;
+            Steps = Array.map(fun (step: GetMethodStepsByIdQuery.Record) -> step.description) methodSteps;
         }
 
     let getMethodById (methodId: int) : Method = 
-        query {
-            for method in Database.context.Dbo.MethodSteps do
-            where (method.MethodId = methodId)
-            sortBy method.StepNumber
-            select method
-        }
+        let query = new GetMethodStepsByIdQuery(Database.realConnectionString)
+        query.Execute methodId
         |> Seq.toArray
         |> mapToMethod methodId
 
     let addBaseMethod (method: Method) : int =
-        let methodRow = Database.context.Dbo.Methods.Create();
-        Database.context.SubmitUpdates();
-        methodRow.MethodId;
+        let command = new AddBaseMethodCommand(Database.realConnectionString)
+        command.Execute ()
+        |> fun x -> x.Single()
 
-    // TODO not good functional style
     let addMethodStep (methodId: int, index: int, methodStep: string) =
-        let methodRow = Database.context.Dbo.MethodSteps.Create();
-        methodRow.MethodId <- methodId;
-        methodRow.StepNumber <- index;
-        methodRow.Description <- methodStep;
-        ()
+        let command = new AddMethodStepCommand(Database.realConnectionString)
+        command.Execute (methodId, index, methodStep) |> ignore
 
     let addMethodSteps methodSteps methodId : int =
         methodSteps
         |> Array.iteri (fun index methodStep -> addMethodStep (methodId, index, methodStep))
-        |> Database.context.SubmitUpdates
         |> fun () -> methodId
 
     let addMethod (method: Method) =
         addBaseMethod method
         |> addMethodSteps method.Steps
 
-    let deleteStepsForMethod (method: Method) =
-        query {
-            for methodStep in Database.context.Dbo.MethodSteps do
-            where (methodStep.MethodId = method.Id)
-            select methodStep
-        }
-        |> Seq.``delete all items from single table``
-        |> Async.RunSynchronously
-        |> ignore
-        Database.context.SubmitUpdates();
+    let deleteStepsForMethod (methodId: int) =
+        let command = new DeleteStepsForMethodCommand(Database.realConnectionString)
+        command.Execute methodId |> ignore
 
     let updateMethod (method: Method) =
-        deleteStepsForMethod method
+        deleteStepsForMethod method.Id
         addMethodSteps method.Steps method.Id
         |> ignore
 
     let deleteMethod (methodIdToDelete: int) =
-        query {
-            for methodStep in Database.context.Dbo.MethodSteps do
-            where (methodStep.MethodId = methodIdToDelete)
-            select methodStep
-        }
-        |> Seq.``delete all items from single table``
-        |> Async.RunSynchronously
-        |> ignore
-        Database.context.SubmitUpdates();
+        deleteStepsForMethod methodIdToDelete
 
-        query {
-            for method in Database.context.Dbo.Methods do
-            where (method.MethodId = methodIdToDelete)
-            select method
-        }
-        |> Seq.``delete all items from single table``
-        |> Async.RunSynchronously
-        |> ignore
-        Database.context.SubmitUpdates();
+        let command = new DeleteMethodCommand(Database.realConnectionString)
+        command.Execute methodIdToDelete |> ignore

@@ -1,47 +1,46 @@
 ﻿namespace DataAccess
 
-open FSharp.Data.Sql
+open FSharp.Data
 open Model
-open System.Collections.Generic
-open System.Linq
 
 module MacronutrientsDataAccess =
-    let mapToMacronutrientInformation (macronutrientEntity: Database.sql.dataContext.``dbo.MacronutrientsEntity``) : MacronutrientInformation =
+    type DeleteMacronutrientsForIngredientCommand = SqlCommandProvider<"
+        DELETE FROM dbo.Macronutrients
+        WHERE IngredientId = @ingredientId
+        ", Database.compileTimeConnectionString>
+
+    type AddMacronutrientsForIngredientCommand = SqlCommandProvider<"
+        INSERT INTO dbo.Macronutrients (IngredientId, CaloriesPerKilo, ProteinMassPercentage, FatMassPercentage, CarbMassPercentage)
+        VALUES (@ingredientId, @caloriesPerKilo, @proteinMassPercentage, @fatMassPercentage, @carbMassPercentage)
+        ", Database.compileTimeConnectionString>
+
+    type GetMacronutrientsForIngredientQuery = SqlCommandProvider<"
+        SELECT *
+        FROM dbo.Macronutrients
+        WHERE IngredientId = @ingredientId
+        ", Database.compileTimeConnectionString>
+
+    let mapToMacronutrientInformation (macronutrientEntity: GetMacronutrientsForIngredientQuery.Record) : MacronutrientInformation =
         {
-            CaloriesPerKilo = macronutrientEntity.CaloriesPerKilo
-            ProteinMassPercentage = macronutrientEntity.ProteinMassPercentage
-            CarbMassPercentage = macronutrientEntity.CarbMassPercentage
-            FatMassPercentage = macronutrientEntity.FatMassPercentage
+            CaloriesPerKilo = macronutrientEntity.caloriesPerKilo
+            ProteinMassPercentage = macronutrientEntity.proteinMassPercentage
+            CarbMassPercentage = macronutrientEntity.carbMassPercentage
+            FatMassPercentage = macronutrientEntity.fatMassPercentage
         }
 
     let deleteMacronutrientsForIngredient ingredientId =
-        query {
-            for macronutrients in Database.context.Dbo.Macronutrients do
-            where (macronutrients.IngredientId = ingredientId)
-            select macronutrients
-        }
-        |> Seq.``delete all items from single table``
-        |> Async.RunSynchronously
-        |> ignore
-        Database.context.SubmitUpdates();
+        let command = new DeleteMacronutrientsForIngredientCommand(Database.realConnectionString)
+        command.Execute ingredientId
         
     let setMacronutrientsForIngredient ingredientId macronutrientEntity =
-        deleteMacronutrientsForIngredient ingredientId
+        deleteMacronutrientsForIngredient ingredientId |> ignore
 
-        let macronutrients = Database.context.Dbo.Macronutrients.Create();
-        macronutrients.IngredientId <- ingredientId;
-        macronutrients.CaloriesPerKilo <- macronutrientEntity.CaloriesPerKilo;
-        macronutrients.ProteinMassPercentage <- macronutrientEntity.ProteinMassPercentage;
-        macronutrients.FatMassPercentage <- macronutrientEntity.FatMassPercentage;
-        macronutrients.CarbMassPercentage <- macronutrientEntity.CarbMassPercentage;
-        Database.context.SubmitUpdates();
+        let command = new AddMacronutrientsForIngredientCommand(Database.realConnectionString)
+        command.Execute (ingredientId, macronutrientEntity.CaloriesPerKilo, macronutrientEntity.ProteinMassPercentage, macronutrientEntity.FatMassPercentage, macronutrientEntity.CarbMassPercentage)
 
     let getMacronutrientsForIngredient (ingredientId: int) =
-        query {
-            for macronutrients in Database.context.Dbo.Macronutrients do
-            where (macronutrients.IngredientId = ingredientId)
-            select macronutrients
-        }
+        let query = new GetMacronutrientsForIngredientQuery(Database.realConnectionString)
+        query.Execute(ingredientId)
         |> Seq.toArray
         |> function results ->
             match results.Length with

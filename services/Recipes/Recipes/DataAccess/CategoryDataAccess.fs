@@ -1,21 +1,61 @@
 ﻿namespace DataAccess
 
-open FSharp.Data.Sql
+open FSharp.Data
 open Model
+open System.Linq
 
 module CategoryDataAccess =
-    let mapToCategory (categoryEntity: Database.sql.dataContext.``dbo.CategoriesEntity``) : Category = 
+    type GetCategoryQuery = SqlCommandProvider<"
+        SELECT *
+        FROM dbo.Categories
+        WHERE Id = @categoryId
+        ", Database.compileTimeConnectionString>
+
+    type GetCategoriesForRecipeQuery = SqlCommandProvider<"
+        SELECT *
+        FROM dbo.RecipesToCategories
+        INNER JOIN dbo.Categories ON RecipesToCategories.CategoryId = Categories.Id
+        WHERE RecipeId = @recipeId
+        ", Database.compileTimeConnectionString>
+    
+    type DeleteCategoryMappingsForRecipeCommand = SqlCommandProvider<"
+        DELETE FROM dbo.RecipesToCategories
+        WHERE RecipeId = @recipeId
+        ", Database.compileTimeConnectionString>
+    
+    type AddCategoryCommand = SqlCommandProvider<"
+        INSERT INTO dbo.Categories (Name)
+        OUTPUT INSERTED.id
+        VALUES (@name)
+        ", Database.compileTimeConnectionString>
+    
+    type UpdateCategoryCommand = SqlCommandProvider<"
+        UPDATE dbo.Categories
+        SET Name = @name
+        WHERE Id = @categoryId
+        ", Database.compileTimeConnectionString>
+    
+    type AddCategoryMappingCommand = SqlCommandProvider<"
+        INSERT INTO dbo.RecipesToCategories (RecipeId, CategoryId)
+        VALUES (@recipeId, @categoryId)
+        ", Database.compileTimeConnectionString>
+
+    let mapToCategory (categoryEntity: GetCategoryQuery.Record) : Category = 
         {
-            Id = categoryEntity.Id;
-            Name = categoryEntity.Name;
+            Id = categoryEntity.id;
+            Name = categoryEntity.name;
+        }
+       
+    // TODO
+    let mapToCategory2 (categoryEntity: GetCategoriesForRecipeQuery.Record) : Category = 
+        {
+            Id = categoryEntity.id;
+            Name = categoryEntity.name;
         }
         
     let getCategory categoryId: Result<Category, Error> =
-        query {
-            for category in Database.context.Dbo.Categories do
-            where (category.Id = categoryId)
-            select category
-        }
+        let query = new GetCategoryQuery(Database.realConnectionString)
+        query.Execute categoryId
         |> Seq.toArray
         |> function results ->
             match results.Length with
@@ -26,50 +66,28 @@ module CategoryDataAccess =
             | _ -> Result.Error Error.ExpectedExactlyOne
 
     let getCategoriesForRecipe (recipeId: int) : Category[] = 
-        query {
-            for categoryMapping in Database.context.Dbo.RecipesToCategories do
-            join category in Database.context.Dbo.Categories
-                on (categoryMapping.CategoryId = category.Id)
-            where (categoryMapping.RecipeId = recipeId)
-            select category
-        }
-        |> Seq.map mapToCategory
+        let query = new GetCategoriesForRecipeQuery(Database.realConnectionString)
+        query.Execute recipeId
+        |> Seq.map mapToCategory2
         |> Seq.toArray
 
     let deleteCategoryMappingsForRecipe (recipeId: int) =
-        query {
-            for categoryMapping in Database.context.Dbo.RecipesToCategories do
-            where (categoryMapping.RecipeId = recipeId)
-            select categoryMapping
-        }
-        |> Seq.``delete all items from single table``
-        |> Async.RunSynchronously
-        Database.context.SubmitUpdates();
+        let command = new DeleteCategoryMappingsForRecipeCommand(Database.realConnectionString)
+        command.Execute recipeId |> ignore
 
     let addCategory (category: Category) : int =
-        let categoryRow = Database.context.Dbo.Categories.Create();
-        categoryRow.Name <- category.Name;
-        Database.context.SubmitUpdates();
-        categoryRow.Id
+        let command = new AddCategoryCommand(Database.realConnectionString)
+        command.Execute category.Name
+        |> fun x -> x.Single()
 
     let updateCategory (updatedCategory: Category) : int =
-        let category = (query {
-            for category in Database.context.Dbo.Categories do
-            where (category.Id = updatedCategory.Id)
-            select category
-        }
-        |> Seq.toArray
-        |> Seq.exactlyOne)
-        
-        category.Name <- updatedCategory.Name;
-        Database.context.SubmitUpdates();
-        category.Id;
+        let command = new UpdateCategoryCommand(Database.realConnectionString)
+        command.Execute (updatedCategory.Name, updatedCategory.Id) |> ignore
+        updatedCategory.Id
 
     let addCategoryMapping recipeId categoryId =
-        let categoryMapping = Database.context.Dbo.RecipesToCategories.Create();
-        categoryMapping.CategoryId <- categoryId
-        categoryMapping.RecipeId <- recipeId;
-        Database.context.SubmitUpdates();
+        let command = new AddCategoryMappingCommand(Database.realConnectionString)
+        command.Execute (recipeId, categoryId) |> ignore
 
     let writeCategoriesForRecipe recipe recipeId : int =
         for category in recipe.Categories do

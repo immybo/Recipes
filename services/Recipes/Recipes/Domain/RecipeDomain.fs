@@ -11,8 +11,8 @@ let loadIngredientsIntoRecipe recipeId recipe : Recipe =
     IngredientDataAccess.getIngredientsForRecipe recipeId
     |> function ingredients -> { recipe with Ingredients = ingredients }
 
-let loadMethodIntoRecipe methodId recipe : Recipe =
-    MethodDataAccess.getMethodById methodId
+let loadMethodIntoRecipe recipe : Recipe =
+    MethodDataAccess.getMethodById recipe.Method.Id
     |> function method -> { recipe with Method = method }
 
 let getRecipeById (id: int) : Result<Recipe, Error> =
@@ -23,7 +23,7 @@ let getRecipeById (id: int) : Result<Recipe, Error> =
         | Result.Ok recipe ->
             loadCategoriesIntoRecipe id recipe
             |> loadIngredientsIntoRecipe id
-            |> loadMethodIntoRecipe id
+            |> loadMethodIntoRecipe
             |> Result.Ok
 
 // TODO this file will become too big. need multiple domain files

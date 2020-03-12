@@ -1,18 +1,8 @@
 ﻿namespace DataAccess
 
-open Model
-open FSharp.Data.Sql
-open FSharp.Data.Sql.Transactions
-open System
+open FSharp.Data
 
 module Database =
-    type sql = SqlDataProvider<
-                Common.DatabaseProviderTypes.MSSQLSERVER,
-                "Server=(LocalDb)\MSSQLLocalDB;Database=Recipes;Trusted_Connection=True;">
-
-    let realConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings.["DB"].ConnectionString;
-
-    let context = sql.GetDataContext(realConnectionString, {
-        Timeout = TimeSpan.MaxValue;
-        IsolationLevel = Transactions.IsolationLevel.DontCreateTransaction;
-    })
+    [<Literal>]
+    let compileTimeConnectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + __SOURCE_DIRECTORY__ + @"\..\..\..\Database\Recipes.mdf;Integrated Security=True;database=Recipes_Metadata";
+    let realConnectionString = "Data Source=(LocalDB)\MSSQLLocalDB;Integrated Security=True;database=Recipes"

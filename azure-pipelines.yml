@@ -22,17 +22,20 @@ jobs:
       DATABASEURL: $(DatabaseUrl)
       DATABASEUSERNAME: $(DatabaseUsername)
       DATABASEPASSWORD: $(DatabasePassword)
+  - task: PowerShell@2
+    inputs:
+      filePath: './services/Database/BuildMetadataAndResetDB.ps1'
+      workingDirectory: './services/Database'
+
   - task: DotNetCoreCLI@2
     inputs:
       command: 'restore'
       projects: '**/*.fsproj'
       feedsToUse: 'select'
-
-  - task: DotNetCoreCLI@2
+  - task: VSBuild@1
     inputs:
-      command: 'publish'
-      publishWebProjects: false
-      projects: '**/*.fsproj'
+      solution: '**\*.sln'
+      msbuildArgs: '/p:target=publish /p:v=m /p:configuration=release /p:OutputPath=$(Build.BinariesDirectory)'
 
   - task: ArchiveFiles@2
     inputs:
@@ -60,4 +63,4 @@ jobs:
     runOnce:
       deploy:
         steps:
-        - script: dotnet $(Pipeline.Workspace)/drop/**/Recipes.dll
+        - script: dotnet $(Pipeline.Workspace)/drop/**/ApiLayer.dll

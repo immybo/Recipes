@@ -1,29 +1,54 @@
 ﻿namespace DataAccess
 
-open FSharp.Data.Sql
+open FSharp.Data
 open Model
-open System.Collections.Generic
+open System.Linq
 
 module RecipeDataAccess =
-    let mapToRecipe (recipeEntity: Database.sql.dataContext.``dbo.RecipesEntity``) : Recipe = 
+    type GetRecipeByIdQuery = SqlCommandProvider<"
+        SELECT *
+        FROM dbo.Recipes
+        WHERE Id = @id
+        ", Database.compileTimeConnectionString>
+
+    type AddRecipeCommand = SqlCommandProvider<"
+        INSERT INTO dbo.Recipes (Description, Name, MethodId)
+        OUTPUT INSERTED.Id
+        VALUES (@description, @name, @methodId)
+        ", Database.compileTimeConnectionString>
+        
+    type GetAllRecipeIdsQuery = SqlCommandProvider<"
+        SELECT Id
+        FROM dbo.Recipes
+        ", Database.compileTimeConnectionString>
+
+    type UpdateRecipeCommand = SqlCommandProvider<"
+        UPDATE dbo.Recipes
+        SET Description=@description, Name=@name, MethodId=@methodId
+        WHERE Id = @id
+        ", Database.compileTimeConnectionString>
+        
+    type DeleteRecipeCommand = SqlCommandProvider<"
+        DELETE FROM dbo.Recipes
+        WHERE Id = @id
+        ", Database.compileTimeConnectionString>
+
+    let mapToRecipe (recipeEntity: GetRecipeByIdQuery.Record) : Recipe = 
         {
-            Id = recipeEntity.Id;
-            Name = recipeEntity.Name;
-            Description = recipeEntity.Description;
+            Id = recipeEntity.id;
+            Name = recipeEntity.name;
+            Description = recipeEntity.description;
             Ingredients = Array.empty<IngredientWithQuantity>;
             Categories = Array.empty<Category>;
             Method = {
-                Id = -1;
+                Id = recipeEntity.methodId;
                 Steps = Array.empty<string>;
             }
         }
 
     let getPartialRecipeById (id: int) : Result<Recipe, Error> = 
-        query {
-            for recipe in Database.context.Dbo.Recipes do
-            where (recipe.Id = id)
-            select recipe
-        }
+        let query = new GetRecipeByIdQuery(Database.realConnectionString);
+        query.Execute(id)
         |> Seq.toArray
         |> Seq.tryExactlyOne
         |> function recipe -> match recipe with
@@ -31,42 +56,19 @@ module RecipeDataAccess =
             | Some recipe -> Result.Ok (mapToRecipe recipe)
 
     let writePartialRecipe recipe methodId : int =
-        let row = Database.context.Dbo.Recipes.Create();
-        row.Description <- recipe.Description;
-        row.Name <- recipe.Name;
-        row.MethodId <- methodId;
-        Database.context.SubmitUpdates();
-        row.Id;
+        let command = new AddRecipeCommand(Database.realConnectionString);
+        command.Execute(recipe.Description, recipe.Name, methodId)
+        |> fun x -> x.Single()
 
     let getAllRecipeIds : int[] =
-        query {
-            for recipe in Database.context.Dbo.Recipes do
-            select recipe.Id
-        }
+        let query = new GetAllRecipeIdsQuery(Database.realConnectionString);
+        query.Execute()
         |> Seq.toArray
 
     let updatePartialRecipe updatedRecipe =
-        let recipe = (query {
-            for recipe in Database.context.Dbo.Recipes do
-            where (recipe.Id = updatedRecipe.Id)
-            select recipe
-        }
-        |> Seq.toArray
-        |> Seq.exactlyOne)
-
-        recipe.Description <- updatedRecipe.Description;
-        recipe.Name <- updatedRecipe.Name;
-        recipe.MethodId <- updatedRecipe.Method.Id;
-
-        Database.context.SubmitUpdates();
+        let command = new UpdateRecipeCommand(Database.realConnectionString);
+        command.Execute(updatedRecipe.Description, updatedRecipe.Name, updatedRecipe.Method.Id, updatedRecipe.Id)
 
     let deletePartialRecipe recipeId =
-        query {
-            for recipe in Database.context.Dbo.Recipes do
-            where (recipe.Id = recipeId)
-            select recipe
-        }
-        |> Seq.``delete all items from single table``
-        |> Async.RunSynchronously
-        |> ignore
-        Database.context.SubmitUpdates();
+        let command = new DeleteRecipeCommand(Database.realConnectionString);
+        command.Execute(recipeId)

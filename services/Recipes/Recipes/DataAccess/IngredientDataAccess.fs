@@ -1,46 +1,83 @@
 ﻿namespace DataAccess
 
-open FSharp.Data.Sql
+open FSharp.Data
 open Model
+open System.Linq
 
 module IngredientDataAccess =
-    let mapToIngredient (ingredientEntity: Database.sql.dataContext.``dbo.IngredientsEntity``) : Ingredient =
+    type UpdateIngredientCommand = SqlCommandProvider<"
+        UPDATE dbo.Ingredients
+        SET Name = @name
+        WHERE Id = @id
+        ", Database.compileTimeConnectionString>
+        
+    type GetIngredientQuery = SqlCommandProvider<"
+        SELECT *
+        FROM dbo.Ingredients
+        WHERE Id = @id
+        ", Database.compileTimeConnectionString>
+
+    type GetIngredientsForRecipeQuery = SqlCommandProvider<"
+        SELECT *
+        FROM dbo.RecipesToIngredients
+        INNER JOIN dbo.Ingredients ON RecipesToIngredients.IngredientId = Ingredients.Id
+        WHERE RecipeId = @recipeId
+        ", Database.compileTimeConnectionString>
+        
+    type AddIngredientCommand = SqlCommandProvider<"
+        INSERT INTO dbo.Ingredients (Name)
+        OUTPUT INSERTED.Id
+        VALUES (@name)
+        ", Database.compileTimeConnectionString>
+    
+    type GetAllIngredientsQuery = SqlCommandProvider<"
+        SELECT *
+        FROM dbo.Ingredients
+        ", Database.compileTimeConnectionString>
+    
+    type DeleteIngredientMappingsForRecipeCommand = SqlCommandProvider<"
+        DELETE FROM dbo.RecipesToIngredients
+        WHERE RecipeId = @recipeId
+        ", Database.compileTimeConnectionString>
+    
+    type AddIngredientMappingCommand = SqlCommandProvider<"
+        INSERT INTO dbo.RecipesToIngredients (IngredientId, RecipeId, Quantity, QuantityUnit)
+        VALUES (@ingredientId, @recipeId, @quantity, @quantityUnit)
+        ", Database.compileTimeConnectionString>
+
+    let mapToIngredient (ingredientEntity: GetIngredientQuery.Record) : Ingredient =
         {
-            Id = ingredientEntity.Id
-            Name = ingredientEntity.Name
+            Id = ingredientEntity.id
+            Name = ingredientEntity.name
         }
 
-    let mapToIngredientWithQuantity (id: int, name: string, quantityUnit: int, quantity: decimal) : IngredientWithQuantity = 
+    // TODO can we find some way to define these as 1?
+    let mapToIngredient2 (ingredientEntity: GetAllIngredientsQuery.Record) : Ingredient =
+        {
+            Id = ingredientEntity.id
+            Name = ingredientEntity.name
+        }
+
+    let mapToIngredientWithQuantity (entity: GetIngredientsForRecipeQuery.Record) : IngredientWithQuantity = 
         {
             Ingredient = {
-                Id = id
-                Name = name
+                Id = entity.id
+                Name = entity.name
             }
             Quantity = {
-                Unit = enum<QuantityUnit> quantityUnit
-                Amount = quantity
+                Unit = enum<QuantityUnit> entity.quantityUnit
+                Amount = entity.quantity
             }
         }
         
     let updateIngredient (updatedIngredient: Ingredient) : int =
-        let ingredient = (query {
-            for ingredient in Database.context.Dbo.Ingredients do
-            where (ingredient.Id = updatedIngredient.Id)
-            select ingredient
-        }
-        |> Seq.toArray
-        |> Seq.exactlyOne)
-        
-        ingredient.Name <- updatedIngredient.Name;
-        Database.context.SubmitUpdates();
-        ingredient.Id;
+        let command = new UpdateIngredientCommand(Database.realConnectionString)
+        command.Execute (updatedIngredient.Name, updatedIngredient.Id) |> ignore
+        updatedIngredient.Id
 
     let getIngredient (ingredientId: int): Result<Ingredient, Error> =
-        query {
-            for ingredient in Database.context.Dbo.Ingredients do
-            where (ingredient.Id = ingredientId)
-            select ingredient
-        }
+        let query = new GetIngredientQuery(Database.realConnectionString)
+        query.Execute ingredientId
         |> Seq.toArray
         |> function results ->
             match results.Length with
@@ -51,55 +88,35 @@ module IngredientDataAccess =
             | _ -> Result.Error Error.ExpectedExactlyOne
         
     let getIngredientsForRecipe (recipeId: int) : IngredientWithQuantity[] = 
-        query {
-            for ingredientMapping in Database.context.Dbo.RecipesToIngredients do
-            join ingredient in Database.context.Dbo.Ingredients
-                on (ingredientMapping.IngredientId = ingredient.Id)
-            where (ingredientMapping.RecipeId = recipeId)
-            select (ingredient.Id, ingredient.Name, ingredientMapping.QuantityUnit, ingredientMapping.Quantity)
-        }
+        let query = new GetIngredientsForRecipeQuery(Database.realConnectionString)
+        query.Execute recipeId
         |> Seq.map mapToIngredientWithQuantity
         |> Seq.toArray
 
     let getAllIngredients =
-        // TODO what if there are too many recipes? Maybe we need pagination here
-        query {
-            for ingredient in Database.context.Dbo.Ingredients do
-            select ingredient
-        }
-        |> Seq.map mapToIngredient
+        let query = new GetAllIngredientsQuery(Database.realConnectionString)
+        query.Execute ()
+        |> Seq.map mapToIngredient2
         |> Seq.toArray
 
     let deleteIngredientMappingsForRecipe (recipeId: int) =
-        query {
-            for ingredientMapping in Database.context.Dbo.RecipesToIngredients do
-            where (ingredientMapping.RecipeId = recipeId)
-            select ingredientMapping
-        }
-        |> Seq.``delete all items from single table``
-        |> Async.RunSynchronously
-        |> ignore
-        Database.context.SubmitUpdates();
+        let command = new DeleteIngredientMappingsForRecipeCommand(Database.realConnectionString)
+        command.Execute recipeId
         
-    // TODO not good functional style
     let addIngredient (ingredient: Ingredient) : int =
-        let ingredientRow = Database.context.Dbo.Ingredients.Create();
-        ingredientRow.Name <- ingredient.Name;
-        Database.context.SubmitUpdates();
-        ingredientRow.Id
+        let command = new AddIngredientCommand(Database.realConnectionString)
+        command.Execute ingredient.Name
+        |> fun x -> x.Single()
 
     let addIngredientMapping recipeId quantity ingredientId =
-        let ingredientMapping = Database.context.Dbo.RecipesToIngredients.Create();
-        ingredientMapping.IngredientId <- ingredientId;
-        ingredientMapping.RecipeId <- recipeId;
-        ingredientMapping.Quantity <- quantity.Amount;
-        ingredientMapping.QuantityUnit <- int quantity.Unit;
-        Database.context.SubmitUpdates();
+        let command = new AddIngredientMappingCommand(Database.realConnectionString)
+        command.Execute (ingredientId, recipeId, quantity.Amount, (int)quantity.Unit)
 
     let writeIngredientsForRecipe recipe recipeId : int =
         for ingredient in recipe.Ingredients do
             addIngredient ingredient.Ingredient
             |> addIngredientMapping recipeId ingredient.Quantity
+            |> ignore
         recipeId
 
     let updateIngredientsForRecipe recipe =
@@ -112,3 +129,4 @@ module IngredientDataAccess =
                 | Result.Error IngredientDoesNotExist -> addIngredient ingredient.Ingredient
                 | _ -> updateIngredient ingredient.Ingredient
             |> addIngredientMapping recipe.Id ingredient.Quantity
+            |> ignore
