@@ -81,13 +81,13 @@ let app =
             [ pathScan "/recipes/%d" (fun id -> callWithJson deleteRecipe id) ]
         ]
 
-let getPort argv =
+let getIpAddress argv =
     match Array.length argv with
-    | 0 -> 8080us
-    | _ -> argv.[0] |> uint16
+    | 0 -> IPAddress.Loopback
+    | _ -> argv.[0] |> string |> IPAddress.Parse
 
 [<EntryPoint>]
 let main argv =
-    let conf = { defaultConfig with bindings = [ HttpBinding.create HTTP IPAddress.Loopback <| getPort argv ]}
+    let conf = { defaultConfig with bindings = [ HttpBinding.create HTTP (getIpAddress argv) 8080us ]}
     startWebServer conf app
     0
