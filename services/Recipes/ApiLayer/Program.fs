@@ -29,23 +29,11 @@ let callWithJson func argv : WebPart =
     |> logResponse
     |> OK
 
-let callWithJsonParameterless func : WebPart =
-    func
-    |> JsonConvert.SerializeObject
-    |> logResponse
-    |> OK
-
 let getRecipe id =
     GetRecipe.getRecipe id
 
 let deleteRecipe id =
     DeleteRecipe.deleteRecipe id
-
-let getAllRecipes () =
-    GetAllRecipes.getAllRecipes ()
-
-let getAllIngredients () =
-    GetAllIngredients.getAllIngredients ()
 
 let handle<'ParamType, 'ResponseType> (request: HttpRequest, underlyingFunction: 'ParamType -> Result<'ResponseType, Error>) : WebPart =
     logRequest request
@@ -61,13 +49,25 @@ let handle<'ParamType, 'ResponseType> (request: HttpRequest, underlyingFunction:
             // TODO switch between validation errors vs internal server errors here.
             ServerErrors.INTERNAL_ERROR (string (int err))
 
+let handleParameterless<'ResponseType> (request: HttpRequest, underlyingFunction: unit -> Result<'ResponseType, Error>) : WebPart =
+    logRequest request
+    underlyingFunction ()
+    |> logResponse
+    |> function result -> match result with
+        | Result.Ok response ->
+            JsonConvert.SerializeObject response
+            |> OK
+        | Result.Error err ->
+            // TODO switch between validation errors vs internal server errors here.
+            ServerErrors.INTERNAL_ERROR (string (int err))
+
 let app =
     choose
         [ 
           GET >=> choose
-            [ path "/recipes" >=> request(fun context -> callWithJsonParameterless (getAllRecipes ()))
+            [ path "/recipes" >=> request(fun context -> handleParameterless (context, GetAllRecipes.getAllRecipes))
               pathScan "/recipes/%d" (fun id -> callWithJson getRecipe id)
-              path "/ingredients" >=> request(fun context -> callWithJsonParameterless (getAllIngredients ()))
+              path "/ingredients" >=> request(fun context -> handleParameterless (context, GetAllIngredients.getAllIngredients))
               path "/nutrition/ingredients" >=> request(fun context -> handle (context, GetNutritionalInformationForIngredients.getNutritionalInformationForIngredients))]
           POST >=> choose
             [ path "/recipes" >=> request(fun context -> handle (context, AddRecipe.addRecipe))

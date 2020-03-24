@@ -1,6 +1,6 @@
 import { ServerError } from "./api/ServerError";
 
-const SERVER_IP = "http://192.168.1.5:52354"
+const SERVER_IP = "http://13.77.60.116:8080"
 
 export enum HttpMethod {
     GET = "GET",
