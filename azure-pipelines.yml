@@ -63,4 +63,17 @@ jobs:
     runOnce:
       deploy:
         steps:
-        - script: dotnet $(Pipeline.Workspace)/drop/**/ApiLayer.dll
+        - task: ExtractFiles@1
+          inputs:
+            archiveFilePatterns: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+            destinationFolder: '$(Pipeline.Workspace)/drop/$(Build.BuildId)/'
+            cleanDestinationFolder: true
+        - task: SSH@0
+          inputs:
+            sshEndpoint: 'Recipe VM SSH'
+            runOptions: 'commands'
+            commands: |
+              (pgrep dotnet && killall dotnet -9 -q) || true
+              touch $(Pipeline.Workspace)/drop/$(Build.BuildId)/b/Suave.log;
+              dotnet $(Pipeline.Workspace)/drop/$(Build.BuildId)/b/ApiLayer.dll $(LocalIpAddress) &>> $(Pipeline.Workspace)/drop/$(Build.BuildId)/b/Suave.log &
+            readyTimeout: '20000'
