@@ -42,8 +42,8 @@ let handle<'ParamType, 'ResponseType> (request: HttpRequest, underlyingFunction:
     |> underlyingFunction
     |> function result -> match result with
         | Result.Ok response ->
-            logResponse response
-            |> JsonConvert.SerializeObject
+            JsonConvert.SerializeObject response
+            |> logResponse
             |> OK
         | Result.Error err ->
             logResponse err
@@ -55,14 +55,17 @@ let handle<'ParamType, 'ResponseType> (request: HttpRequest, underlyingFunction:
 let handleParameterless<'ResponseType> (request: HttpRequest, underlyingFunction: unit -> Result<'ResponseType, Error>) : WebPart =
     logRequest request
     underlyingFunction ()
-    |> logResponse
     |> function result -> match result with
         | Result.Ok response ->
             JsonConvert.SerializeObject response
+            |> logResponse
             |> OK
         | Result.Error err ->
+            logResponse err
+            |> int
+            |> string
             // TODO switch between validation errors vs internal server errors here.
-            ServerErrors.INTERNAL_ERROR (string (int err))
+            |> ServerErrors.INTERNAL_ERROR
 
 let app =
     choose
