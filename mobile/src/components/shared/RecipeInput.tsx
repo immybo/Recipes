@@ -99,7 +99,11 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
 
     private getMethodStepList(): JSX.Element[] {
         return this.state.method.steps.map(
-            (step: string, key: number) => <CustomTextInput multiline={true} defaultValue={(key+1) + ". " + step} placeholder={"Step " + key} key={"step-" + key} onChangeText={(text) => this.onMethodStepTextChange(text, key)} />
+            (step: string, key: number) => 
+                <View style={styles.rowLayout} key={"step-" + key}>
+                    <Text style={{"flex": 0.1}}>{(key+1) + ". "}</Text>
+                    <CustomTextInput style={{"flex": 0.9}} multiline={true} defaultValue={step} placeholder={"Step " + key} onChangeText={(text) => this.onMethodStepTextChange(text, key)} />
+                </View>
         );
     }
 
