@@ -58,7 +58,7 @@ module RecipeDataAccess =
     let writePartialRecipe recipe : Recipe =
         let command = new AddRecipeCommand(Database.realConnectionString);
         command.Execute(recipe.Description, recipe.Name, recipe.Method.Id)
-        |> fun x -> { recipe with Id = x }
+        |> fun x -> { recipe with Id = x.Single() }
 
     let getAllRecipeIds : int[] =
         let query = new GetAllRecipeIdsQuery(Database.realConnectionString);
