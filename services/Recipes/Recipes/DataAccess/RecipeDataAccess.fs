@@ -55,10 +55,10 @@ module RecipeDataAccess =
             | None -> Result.Error Error.RecipeDoesNotExist
             | Some recipe -> Result.Ok (mapToRecipe recipe)
 
-    let writePartialRecipe recipe methodId : int =
+    let writePartialRecipe recipe : Recipe =
         let command = new AddRecipeCommand(Database.realConnectionString);
-        command.Execute(recipe.Description, recipe.Name, methodId)
-        |> fun x -> x.Single()
+        command.Execute(recipe.Description, recipe.Name, recipe.Method.Id)
+        |> fun x -> { recipe with Id = x }
 
     let getAllRecipeIds : int[] =
         let query = new GetAllRecipeIdsQuery(Database.realConnectionString);

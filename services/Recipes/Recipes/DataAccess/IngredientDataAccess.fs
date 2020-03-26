@@ -112,12 +112,12 @@ module IngredientDataAccess =
         let command = new AddIngredientMappingCommand(Database.realConnectionString)
         command.Execute (ingredientId, recipeId, quantity.Amount, (int)quantity.Unit)
 
-    let writeIngredientsForRecipe recipe recipeId : int =
+    let writeIngredientsForRecipe recipe : Recipe =
         for ingredient in recipe.Ingredients do
             addIngredient ingredient.Ingredient
-            |> addIngredientMapping recipeId ingredient.Quantity
+            |> addIngredientMapping recipe.Id ingredient.Quantity
             |> ignore
-        recipeId
+        recipe
 
     let updateIngredientsForRecipe recipe =
         deleteIngredientMappingsForRecipe recipe.Id |> ignore

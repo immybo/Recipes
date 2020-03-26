@@ -89,11 +89,11 @@ module CategoryDataAccess =
         let command = new AddCategoryMappingCommand(Database.realConnectionString)
         command.Execute (recipeId, categoryId) |> ignore
 
-    let writeCategoriesForRecipe recipe recipeId : int =
+    let writeCategoriesForRecipe recipe : Recipe =
         for category in recipe.Categories do
             addCategory category
-            |> addCategoryMapping recipeId
-        recipeId
+            |> addCategoryMapping recipe.Id
+        recipe
 
     let updateCategoriesForRecipe recipe =
         deleteCategoryMappingsForRecipe recipe.Id |> ignore

@@ -33,9 +33,10 @@ let setMethodId recipe methodId =
 let addRecipe (recipe: Recipe) : Result<int, Error> =
     MethodDataAccess.addMethod recipe.Method
     |> setMethodId recipe
-    |> RecipeDataAccess.writePartialRecipe recipe
-    |> CategoryDataAccess.writeCategoriesForRecipe recipe
-    |> IngredientDataAccess.writeIngredientsForRecipe recipe
+    |> RecipeDataAccess.writePartialRecipe
+    |> CategoryDataAccess.writeCategoriesForRecipe
+    |> IngredientDataAccess.writeIngredientsForRecipe
+    |> fun recipe -> recipe.Id
     |> Result.Ok
 
 let getAllRecipes () : Result<Recipe[], Error> =
