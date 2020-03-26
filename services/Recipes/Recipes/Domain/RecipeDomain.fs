@@ -26,9 +26,13 @@ let getRecipeById (id: int) : Result<Recipe, Error> =
             |> loadMethodIntoRecipe
             |> Result.Ok
 
+let setMethodId recipe methodId =
+    { recipe with Method = { recipe.Method with Id = methodId }}
+
 // TODO this file will become too big. need multiple domain files
 let addRecipe (recipe: Recipe) : Result<int, Error> =
     MethodDataAccess.addMethod recipe.Method
+    |> setMethodId recipe
     |> RecipeDataAccess.writePartialRecipe recipe
     |> CategoryDataAccess.writeCategoriesForRecipe recipe
     |> IngredientDataAccess.writeIngredientsForRecipe recipe
