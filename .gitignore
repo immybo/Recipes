@@ -67,3 +67,7 @@ buck-out/
 **/bin/
 **/obj/
 */RecipeDB
+
+# Misc
+*.ldf
+**/detachdb.sql

@@ -40,14 +40,17 @@ let handle<'ParamType, 'ResponseType> (request: HttpRequest, underlyingFunction:
     |> getJsonFromRequest
     |> JsonConvert.DeserializeObject<'ParamType>
     |> underlyingFunction
-    |> logResponse
     |> function result -> match result with
         | Result.Ok response ->
-            JsonConvert.SerializeObject response
+            logResponse response
+            |> JsonConvert.SerializeObject
             |> OK
         | Result.Error err ->
+            logResponse err
+            |> int
+            |> string
             // TODO switch between validation errors vs internal server errors here.
-            ServerErrors.INTERNAL_ERROR (string (int err))
+            |> ServerErrors.INTERNAL_ERROR
 
 let handleParameterless<'ResponseType> (request: HttpRequest, underlyingFunction: unit -> Result<'ResponseType, Error>) : WebPart =
     logRequest request
