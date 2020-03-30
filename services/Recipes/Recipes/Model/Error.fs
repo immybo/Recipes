@@ -11,3 +11,4 @@ type Error =
     | NoNutritionalInformationForIngredient = 6
     | RequiredParameter = 7
     | MethodMustNotBeEmpty = 8
+    | RecipeMustHaveDescription = 9

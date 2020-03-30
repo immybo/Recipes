@@ -1,6 +1,9 @@
 ﻿module AddRecipe
 
 open Model
+open Railway
+open Validation
 
 let addRecipe (recipe: Recipe) =
-    RecipeDomain.addRecipe recipe;
+    RecipeValidation.validateRecipe recipe
+    >=> RecipeDomain.addRecipe;

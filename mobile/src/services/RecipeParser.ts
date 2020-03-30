@@ -8,7 +8,7 @@ export function parseRecipes(json: any): Array<Recipe> {
     // TODO error handling on the json to make it clear when we're
     // recieving invalid data
     // TODO Maybe some shared config file and automatic mapping
-    return json.Fields[0].map((recipeJson: any) => parseRecipe(recipeJson));
+    return json.map((recipeJson: any) => parseRecipe(recipeJson));
 }
 
 export function parseRecipe(recipeJson: any): Recipe {

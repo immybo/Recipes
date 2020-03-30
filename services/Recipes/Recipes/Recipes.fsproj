@@ -17,6 +17,7 @@
     <Compile Include="Model\Category.fs" />
     <Compile Include="Model\MealPlanEntry.fs" />
     <Compile Include="Model\Recipe.fs" />
+    <Compile Include="Validation\RecipeValidation.fs" />
     <Compile Include="DataAccess\Database.fs" />
     <Compile Include="DataAccess\MealPlanDataAccess.fs" />
     <Compile Include="DataAccess\MacronutrientsDataAccess.fs" />
@@ -39,8 +40,6 @@
     <Compile Include="Interface\AddRecipe.fs" />
     <Compile Include="Interface\GetRecipe.fs" />
   </ItemGroup>
-
-  <ItemGroup />
 
   <ItemGroup>
     <PackageReference Include="FSharp.Core" Version="4.7.0" />

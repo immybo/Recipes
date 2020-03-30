@@ -34,7 +34,7 @@ export type RecipeActionTypes = AddRecipeAction | DeleteRecipeAction | UpdateRec
 export function addRecipe(newRecipe: Recipe)  {
     return function(dispatch: Dispatch<RecipeActionTypes>) {
         return RecipesApi.addRecipe(newRecipe).then(
-            recipeId => dispatch(addRecipeLocal({...newRecipe, id: recipeId})),
+            recipeId => fetchRecipes()(dispatch),
             error => console.error(error) // TODO error handling
         );
     }
@@ -88,10 +88,11 @@ export function updateRecipeLocal(newRecipe: Recipe): RecipeActionTypes {
 }
 
 export function fetchRecipes() {
-    return function(dispatch: Dispatch) {
+    return function(dispatch: Dispatch<RecipeActionTypes>) {
         return RecipesApi.getAllRecipes().then(
             recipes => dispatch(setAllRecipes(recipes)),
-            error => null
+            // I don't think we're meant to do this... TODO find some other way
+            error => dispatch(setApiErrorToDisplay("Error retrieving recipes."))
         );
     }
 }

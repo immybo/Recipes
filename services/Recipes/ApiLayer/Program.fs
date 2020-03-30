@@ -53,7 +53,7 @@ let handle<'ParamType, 'ResponseType> (request: HttpRequest, underlyingFunction:
             |> ServerErrors.INTERNAL_ERROR
 
 let handleParameterless<'ResponseType> (request: HttpRequest, underlyingFunction: unit -> Result<'ResponseType, Error>) : WebPart =
-    logRequest request
+    logRequest request |> ignore
     underlyingFunction ()
     |> function result -> match result with
         | Result.Ok response ->
