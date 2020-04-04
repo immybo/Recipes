@@ -6,4 +6,4 @@ open Validation
 
 let addRecipe (recipe: Recipe) =
     RecipeValidation.validateRecipe recipe
-    >=> RecipeDomain.addRecipe;
+    >=> RecipeDomain.addRecipe

@@ -93,7 +93,7 @@ module IngredientDataAccess =
         |> Seq.map mapToIngredientWithQuantity
         |> Seq.toArray
 
-    let getAllIngredients =
+    let getAllIngredients () =
         let query = new GetAllIngredientsQuery(Database.realConnectionString)
         query.Execute ()
         |> Seq.map mapToIngredient2

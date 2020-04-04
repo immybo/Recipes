@@ -40,7 +40,7 @@ let addRecipe (recipe: Recipe) : Result<int, Error> =
     |> Result.Ok
 
 let getAllRecipes () : Result<Recipe[], Error> =
-    RecipeDataAccess.getAllRecipeIds
+    RecipeDataAccess.getAllRecipeIds ()
     |> Array.map(function recipeId -> getRecipeById recipeId)
     // Remove any that weren't read correctly; might want to handle individual error types here
     // - TODO this behaviour is only correct on RecipeDoesNotExist
@@ -51,7 +51,7 @@ let getAllRecipes () : Result<Recipe[], Error> =
     |> Result.Ok
 
 let getAllIngredients () : Result<Ingredient[], Error> =
-    IngredientDataAccess.getAllIngredients
+    IngredientDataAccess.getAllIngredients ()
     |> Result.Ok 
 
 let updateRecipe (recipe: Recipe) : Result<int, Error> =

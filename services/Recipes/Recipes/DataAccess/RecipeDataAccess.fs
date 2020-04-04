@@ -60,7 +60,7 @@ module RecipeDataAccess =
         command.Execute(recipe.Description, recipe.Name, recipe.Method.Id)
         |> fun x -> { recipe with Id = x.Single() }
 
-    let getAllRecipeIds : int[] =
+    let getAllRecipeIds () : int[] =
         let query = new GetAllRecipeIdsQuery(Database.realConnectionString);
         query.Execute()
         |> Seq.toArray
