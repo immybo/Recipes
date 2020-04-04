@@ -11,3 +11,7 @@ let getMealPlanForUserBetweenDates (userId: int, startDateInclusive: DateTime, e
 let addMealPlansForUser (mealPlans: MealPlanEntry[]) =
     mealPlans
     |> Seq.iter MealPlanDataAccess.addOrUpdateMealPlanEntry
+
+let deleteMealPlansInvolvingRecipe (recipeId: int): Result<int, Error> =
+    MealPlanDataAccess.deleteMealPlanEntriesInvolvingRecipe recipeId
+    Result.Ok recipeId

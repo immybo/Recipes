@@ -22,6 +22,12 @@ module MealPlanDataAccess =
         VALUES (@date, @userId, @mealNumber, @recipeId)
         ", Database.compileTimeConnectionString>
 
+    type DeleteMealPlanEntriesForRecipeCommand = SqlCommandProvider<"
+        DELETE
+        FROM MealPlanner.MealPlans
+        WHERE RecipeId = @recipeId
+        ", Database.compileTimeConnectionString>
+
     let mapToMealPlan (mealPlanEntity: GetMealPlansForUserQuery.Record) : MealPlanEntry = 
         {
             UserId = mealPlanEntity.userId;
@@ -46,4 +52,9 @@ module MealPlanDataAccess =
 
         let command = new AddMealPlanCommand(Database.realConnectionString);
         command.Execute(mealPlanEntry.Date, mealPlanEntry.UserId, mealPlanEntry.MealNumber, mealPlanEntry.RecipeId) |> ignore
+        ()
+
+    let deleteMealPlanEntriesInvolvingRecipe recipeId : unit =
+        let command = new DeleteMealPlanEntriesForRecipeCommand(Database.realConnectionString)
+        command.Execute(recipeId) |> ignore
         ()

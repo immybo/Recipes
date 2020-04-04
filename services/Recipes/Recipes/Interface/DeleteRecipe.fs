@@ -1,6 +1,8 @@
 ﻿module DeleteRecipe
 
 open Model
+open Railway
 
 let deleteRecipe recipeId : Result<int, Error> =
-    RecipeDomain.deleteRecipe recipeId
+    MealPlanDomain.deleteMealPlansInvolvingRecipe recipeId
+    >=> RecipeDomain.deleteRecipe
