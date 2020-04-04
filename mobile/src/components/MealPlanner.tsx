@@ -5,7 +5,7 @@ import { Recipe } from '../model/Recipe';
 import { AppState } from '../reducers/Reducers';
 import { withNavigation } from 'react-navigation';
 import { styles } from '../style/Style';
-import { DayOfWeek, DayUtils } from '../style/DayOfWeek';
+import { DayUtils } from '../style/DayOfWeek';
 import RecipeCompactDisplay from './shared/RecipeCompactDisplay';
 import { setMealPlan } from '../actions/MealPlannerActions';
 import { MealPlanEntry } from '../model/MealPlanEntry';
@@ -92,7 +92,8 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
         } else {
             // TODO change this to an autocomplete text field
             return (
-                <Picker key={date.getDay()} selectedValue={ "" } onValueChange={(value, _) => this.props.setMealPlan(date, value)}>
+                <Picker key={date.getDay()} selectedValue={ "" } onValueChange={(value, _) => { if (value != -1) this.props.setMealPlan(date, value) }}>
+                    <Picker.Item label="" key={-1} value={-1} />
                     { this.props.allRecipes.map((recipe: Recipe) => {
                         return <Picker.Item label={recipe.name} key={recipe.id} value={recipe.id} />
                     })}

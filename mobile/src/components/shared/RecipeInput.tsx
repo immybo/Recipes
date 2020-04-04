@@ -1,9 +1,8 @@
 import React from 'react';
 import {
     View,
-    TextInput,
     Button,
-    TouchableHighlight,
+    TouchableOpacity,
     Text
 } from 'react-native';
 import { IngredientWithQuantity, getBlankIngredient } from '../../model/IngredientWithQuantity';
@@ -13,7 +12,6 @@ import { ScrollView } from 'react-navigation';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Category, getBlankCategory } from '../../model/Category';
 import { styles } from '../../style/Style';
-import { Colors } from '../../style/Colors';
 import CustomTextInput from './CustomTextInput';
 import { Method } from '../../model/Method';
 import { Ingredient } from '../../model/Ingredient';
@@ -55,31 +53,31 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
                         
                         <View style={styles.rowLayout}>
                             <Text style={[styles.h1, styles.verticalMarginSmall]}>Ingredients</Text>
-                            <TouchableHighlight onPress={(event) => this.addNewIngredient()}>
+                            <TouchableOpacity onPress={(event) => this.addNewIngredient()}>
                                 <View style={[styles.rightAlign, styles.verticalMarginSmall]}>
                                     <Icon name="plus" size={20} color="black" />
                                 </View>
-                            </TouchableHighlight>
+                            </TouchableOpacity>
                         </View>
                         {this.getIngredientInputList()}
 
                         <View style={styles.rowLayout}>
                             <Text style={[styles.h1, styles.verticalMarginSmall]}>Method</Text>
-                            <TouchableHighlight onPress={(event) => this.addNewStep()}>
+                            <TouchableOpacity onPress={(event) => this.addNewStep()}>
                                 <View style={[styles.rightAlign, styles.verticalMarginSmall]}>
                                     <Icon name="plus" size={20} color="black" />
                                 </View>
-                            </TouchableHighlight>
+                            </TouchableOpacity>
                         </View>
                         {this.getMethodStepList()}
 
                         <View style={styles.rowLayout}>
                             <Text style={[styles.h1, styles.verticalMarginSmall]}>Categories</Text>
-                            <TouchableHighlight onPress={(event) => this.addNewCategory()}>
+                            <TouchableOpacity onPress={(event) => this.addNewCategory()}>
                                 <View style={[styles.rightAlign, styles.verticalMarginSmall]}>
                                     <Icon name="plus" size={20} color="black" />
                                 </View>
-                            </TouchableHighlight>
+                            </TouchableOpacity>
                         </View>
                         {this.getCategoryList()}
                     </View>

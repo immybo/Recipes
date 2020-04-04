@@ -16,13 +16,19 @@ import AddIngredient from './components/AddIngredient';
 import MealPlanner from './components/MealPlanner';
 import ErrorDisplay from './components/ErrorDisplay';
 
+const PageHeaderStyle = {
+    headerTitleStyle: {
+        fontWeight: 'bold'
+    }
+};
+
 const MainNavigator = createStackNavigator({
-    ViewRecipes: { screen: ViewRecipes },
-    AddRecipe: { screen: AddRecipe },
-    ViewIndividualRecipe: { screen: ViewIndividualRecipe },
-    EditRecipe: { screen: EditRecipe },
-    AddIngredient: { screen: AddIngredient },
-    MealPlanner: { screen: MealPlanner }
+    ViewRecipes: { screen: ViewRecipes, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "Recipe List" })},
+    AddRecipe: { screen: AddRecipe, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "Add Recipe" })},
+    ViewIndividualRecipe: { screen: ViewIndividualRecipe, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "View Recipe" })},
+    EditRecipe: { screen: EditRecipe, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "Edit Recipe" })},
+    AddIngredient: { screen: AddIngredient, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "Add Ingredient" })},
+    MealPlanner: { screen: MealPlanner, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "Meal Planner" })}
 });
 
 let Navigation = createAppContainer(MainNavigator);
