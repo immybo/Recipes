@@ -83,7 +83,7 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
                         </View>
                         {this.getCategoryList()}
                     </View>
-                    <View style={[styles.bottomButtonContainer, styles.topMargin]}>
+                    <View style={[styles.topMargin]}>
                         <Button title="Submit Recipe" onPress={(event) => this.submitRecipe()}>Submit Recipe</Button>
                     </View>
                 </ScrollView>

@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { Colors } from './Colors';
 
 export const styles = StyleSheet.create({
     container: {
@@ -6,8 +7,7 @@ export const styles = StyleSheet.create({
         margin: 15
     },
     scrollContainer: {
-        flexGrow: 1,
-        marginRight: 20
+        flexGrow: 1
     },
     h1: {
         fontSize: 20,

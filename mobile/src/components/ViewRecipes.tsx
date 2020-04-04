@@ -12,6 +12,7 @@ import { RouteAddRecipe, RouteViewIndividualRecipe, RouteEditRecipe, RouteAddIng
 import { deleteRecipe } from '../actions/RecipeActions';
 import RecipeCompactDisplay from './shared/RecipeCompactDisplay';
 import { styles } from '../style/Style';
+import NavigationBar from './shared/NavigationBar';
 
 interface ViewRecipesProps extends React.Props<ViewRecipes> {
     navigation: any,
@@ -42,9 +43,7 @@ class ViewRecipes extends React.Component<ViewRecipesProps, any> {
                         {this.getRecipeList()}
                     </View>
                     <View style={styles.bottomButtonContainer}>
-                        <Button title="Add Recipe" onPress={(event: any) => this.props.navigation.navigate(RouteAddRecipe)}>Add Recipe</Button>
-                        <Button title="Add Ingredient" onPress={(event: any) => this.props.navigation.navigate(RouteAddIngredient)}>Add Ingredient</Button>
-                        <Button title="Meal Planner" onPress={(event: any) => this.props.navigation.navigate(RouteMealPlanner)}>Meal Planner</Button>
+                        <NavigationBar navigate={route => this.props.navigation.navigate(route)} />
                     </View>
                 </ScrollView>
             </View>
