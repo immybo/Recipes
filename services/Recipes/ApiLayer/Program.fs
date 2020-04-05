@@ -84,7 +84,8 @@ let app =
               // Can't send a body in get requests... we could just use multiple query string params?
               path "/mealplanner/mealplans" >=> request(fun context -> handle (context, GetMealPlan.getMealPlan))]
           DELETE >=> choose
-            [ pathScan "/recipes/%d" (fun id -> callWithJson deleteRecipe id) ]
+            [ pathScan "/recipes/%d" (fun id -> callWithJson deleteRecipe id)
+              path "/mealplanner/mealplans" >=> request(fun context -> handle (context, DeleteMealPlanEntry.deleteMealPlanEntry))]
         ]
 
 let getIpAddress argv =

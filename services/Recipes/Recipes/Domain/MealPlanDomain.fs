@@ -15,3 +15,7 @@ let addMealPlansForUser (mealPlans: MealPlanEntry[]) =
 let deleteMealPlansInvolvingRecipe (recipeId: int): Result<int, Error> =
     MealPlanDataAccess.deleteMealPlanEntriesInvolvingRecipe recipeId
     Result.Ok recipeId
+
+let deleteMealPlan (userId: int, date: DateTime, mealNumber: int): Result<unit, Error> =
+    MealPlanDataAccess.deleteMealPlanEntry (userId, date, mealNumber)
+    |> Result.Ok

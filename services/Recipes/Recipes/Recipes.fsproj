@@ -28,6 +28,7 @@
     <Compile Include="Domain\MealPlanDomain.fs" />
     <Compile Include="Domain\NutritionalInformationDomain.fs" />
     <Compile Include="Domain\RecipeDomain.fs" />
+    <Compile Include="Interface\DeleteMealPlanEntry.fs" />
     <Compile Include="Interface\GetMealPlan.fs" />
     <Compile Include="Interface\AddOrUpdateMealPlan.fs" />
     <Compile Include="Interface\AddIngredient.fs" />

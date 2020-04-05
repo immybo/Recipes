@@ -7,16 +7,20 @@ import { withNavigation } from 'react-navigation';
 import { styles } from '../style/Style';
 import { DayUtils } from '../style/DayOfWeek';
 import RecipeCompactDisplay from './shared/RecipeCompactDisplay';
-import { setMealPlan } from '../actions/MealPlannerActions';
+import { getMealPlan, setMealPlan, deleteMealPlanEntry } from '../actions/MealPlannerActions';
 import { MealPlanEntry } from '../model/MealPlanEntry';
 
 interface MealPlannerProps extends React.Props<MealPlanner> {
     mealPlan: MealPlanEntry[];
     allRecipes: Recipe[];
+    getMealPlan: (startDate: Date, endDate: Date) => void;
     setMealPlan: (day: Date, recipeId: number) => void;
+    deleteMealPlanEntry: (day: Date) => void;
 }
 
 interface MealPlannerState {
+    startDate: Date,
+    endDate: Date
 }
 
 const mapStateToProps = (state: AppState) => {
@@ -27,15 +31,30 @@ const mapStateToProps = (state: AppState) => {
 }
 
 const mapDispatchToProps = {
-    setMealPlan
+    getMealPlan,
+    setMealPlan,
+    deleteMealPlanEntry
 };
 
 class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
     constructor(props: MealPlannerProps) {
         super(props);
+        
+        let today: Date = new Date();
+        let sundayThisWeek: Date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        sundayThisWeek.setDate(today.getDate()-today.getDay());
+
+        let endDate = new Date(sundayThisWeek);
+        endDate.setDate(sundayThisWeek.getDate() + 6);
 
         this.state = {
+            startDate: sundayThisWeek,
+            endDate: endDate
         };
+    }
+
+    public componentDidMount() {
+        this.props.getMealPlan(this.state.startDate, this.state.endDate);
     }
 
     public render(): JSX.Element {
@@ -47,13 +66,9 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
     }
 
     private getDateRows(): JSX.Element[] {
-        let today: Date = new Date();
-        let sundayThisWeek: Date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-        sundayThisWeek.setDate(today.getDate()-today.getDay());
-
         let rows: JSX.Element[] = [];
         for (var i = 0; i < 7; i++) {
-            let dayOfWeek: Date = new Date(sundayThisWeek);
+            let dayOfWeek: Date = new Date(this.state.startDate);
             dayOfWeek.setDate(dayOfWeek.getDate() + i);
             rows.push(this.getRow(dayOfWeek));
         }
@@ -88,7 +103,7 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
     private getIngredientRowSection(date: Date) {
         if (this.hasMealOnDate(date)) {
             let selectedRecipe: Recipe = this.getMealOnDate(date);
-            return <RecipeCompactDisplay recipe={selectedRecipe} onDelete={() => /* TODO */ {}} />
+            return <RecipeCompactDisplay recipe={selectedRecipe} onDelete={() => this.props.deleteMealPlanEntry(date)} />
         } else {
             // TODO change this to an autocomplete text field
             return (

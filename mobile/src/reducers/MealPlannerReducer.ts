@@ -1,4 +1,4 @@
-import { MealPlannerActionTypes, SET_MEAL_PLAN } from "../actions/MealPlannerActions";
+import { MealPlannerActionTypes, SET_MEAL_PLAN, DELETE_MEAL_PLAN } from "../actions/MealPlannerActions";
 import { MealPlanEntry } from "../model/MealPlanEntry";
 
 export interface MealPlannerState {
@@ -28,6 +28,12 @@ export default function(state = initialState, action: MealPlannerActionTypes): M
             return {
                 ...state,
                 mealPlan: newPlan
+            }
+        case DELETE_MEAL_PLAN:
+            let planWithDeletedEntry: MealPlanEntry[] = state.mealPlan.filter(entry => +entry.date != +action.payload);
+            return {
+                ...state,
+                mealPlan: planWithDeletedEntry
             }
         default:
             return state;
