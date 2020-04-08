@@ -3,9 +3,10 @@ import { connect } from 'react-redux';
 import { AppState } from '../reducers/Reducers';
 import { withNavigation } from 'react-navigation';
 import { RouteViewRecipes } from '../Routes';
-import { addIngredient } from '../actions/IngredientActions';
+import { addIngredientWithNutritionalInformation } from '../actions/IngredientActions';
 import { Ingredient, getBlankIngredient } from '../model/Ingredient';
 import IngredientInput from './shared/IngredientInput';
+import { NutritionalInformation } from '../model/NutritionalInformation';
 
 interface AddIngredientState {
 }
@@ -15,7 +16,7 @@ const mapStateToProps = (state: AppState) => {
 }
 
 const mapDispatchToProps = {
-    addIngredient
+    addIngredientWithNutritionalInformation
 };
 
 class AddIngredient extends React.Component<any, AddIngredientState> {
@@ -25,12 +26,12 @@ class AddIngredient extends React.Component<any, AddIngredientState> {
 
     public render(): JSX.Element {
         return (
-            <IngredientInput initialIngredient={getBlankIngredient()} submitIngredient={(ingredient) => this.submitIngredient(ingredient)} />
+            <IngredientInput initialIngredient={getBlankIngredient()} submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)} />
         );
     }
 
-    private submitIngredient(ingredient: Ingredient): void {
-        this.props.addIngredient(ingredient);
+    private submitIngredient(ingredient: Ingredient, nutrition: NutritionalInformation): void {
+        this.props.addIngredientWithNutritionalInformation(ingredient, nutrition);
         this.props.navigation.navigate(RouteViewRecipes);
     }
 }

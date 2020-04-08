@@ -6,10 +6,10 @@
 
   <ItemGroup>
     <Compile Include="Utilities\Railway.fs" />
-    <Compile Include="Model\MacronutrientInformation.fs" />
-    <Compile Include="Model\NutritionalInformation.fs" />
     <Compile Include="Model\QuantityUnit.fs" />
     <Compile Include="Model\Quantity.fs" />
+    <Compile Include="Model\MacronutrientInformation.fs" />
+    <Compile Include="Model\NutritionalInformation.fs" />
     <Compile Include="Model\Method.fs" />
     <Compile Include="Model\Error.fs" />
     <Compile Include="Model\Ingredient.fs" />
@@ -28,6 +28,7 @@
     <Compile Include="Domain\MealPlanDomain.fs" />
     <Compile Include="Domain\NutritionalInformationDomain.fs" />
     <Compile Include="Domain\RecipeDomain.fs" />
+    <Compile Include="Interface\AddNutritionalInformationForIngredient.fs" />
     <Compile Include="Interface\DeleteMealPlanEntry.fs" />
     <Compile Include="Interface\GetMealPlan.fs" />
     <Compile Include="Interface\AddOrUpdateMealPlan.fs" />

@@ -78,7 +78,8 @@ let app =
           POST >=> choose
             [ path "/recipes" >=> request(fun context -> handle (context, AddRecipe.addRecipe))
               path "/ingredients" >=> request(fun context -> handle (context, AddIngredient.addIngredient))
-              path "/mealplanner/mealplans" >=> request(fun context -> handle (context, AddOrUpdateMealPlan.addOrUpdateMealPlan))]
+              path "/mealplanner/mealplans" >=> request(fun context -> handle (context, AddOrUpdateMealPlan.addOrUpdateMealPlan))
+              path "/nutrition/ingredients" >=> request(fun context -> handle (context, AddNutritionalInformationForIngredient.addNutritionalInformationForIngredient))]
           PUT >=> choose
             [ path "/recipes" >=> request(fun context -> handle (context, UpdateRecipe.updateRecipe))
               // Can't send a body in get requests... we could just use multiple query string params?

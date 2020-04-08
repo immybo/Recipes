@@ -46,6 +46,7 @@ class InitialStateLoader extends React.Component<InitialStateLoaderProps, Initia
         this.setState({ isLoading: true });
 
         this.props.fetchRecipes()
+            .then(_ => this.props.fetchIngredients())
             .then(_ => { this.setState({ isLoading: false }); this.props.onLoad()});
     }
 

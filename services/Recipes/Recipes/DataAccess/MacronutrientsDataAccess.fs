@@ -10,8 +10,8 @@ module MacronutrientsDataAccess =
         ", Database.compileTimeConnectionString>
 
     type AddMacronutrientsForIngredientCommand = SqlCommandProvider<"
-        INSERT INTO dbo.Macronutrients (IngredientId, CaloriesPerKilo, ProteinMassPercentage, FatMassPercentage, CarbMassPercentage)
-        VALUES (@ingredientId, @caloriesPerKilo, @proteinMassPercentage, @fatMassPercentage, @carbMassPercentage)
+        INSERT INTO dbo.Macronutrients (IngredientId, CaloriesPerServing, ProteinGramsPerServing, FatGramsPerServing, CarbGramsPerServing, Quantity, QuantityUnit)
+        VALUES (@ingredientId, @caloriesPerServing, @proteinGramsPerServing, @fatGramsPerServing, @carbGramsPerServing, @quantity, @quantityUnit)
         ", Database.compileTimeConnectionString>
 
     type GetMacronutrientsForIngredientQuery = SqlCommandProvider<"
@@ -22,10 +22,14 @@ module MacronutrientsDataAccess =
 
     let mapToMacronutrientInformation (macronutrientEntity: GetMacronutrientsForIngredientQuery.Record) : MacronutrientInformation =
         {
-            CaloriesPerKilo = macronutrientEntity.caloriesPerKilo
-            ProteinMassPercentage = macronutrientEntity.proteinMassPercentage
-            CarbMassPercentage = macronutrientEntity.carbMassPercentage
-            FatMassPercentage = macronutrientEntity.fatMassPercentage
+            CaloriesPerServing = macronutrientEntity.caloriesPerServing
+            ProteinGramsPerServing = macronutrientEntity.proteinGramsPerServing
+            CarbGramsPerServing = macronutrientEntity.carbGramsPerServing
+            FatGramsPerServing = macronutrientEntity.fatGramsPerServing
+            ServingSize = {
+                Amount = macronutrientEntity.quantity
+                Unit = enum<QuantityUnit> macronutrientEntity.quantityUnit
+            }
         }
 
     let deleteMacronutrientsForIngredient ingredientId =
@@ -36,7 +40,7 @@ module MacronutrientsDataAccess =
         deleteMacronutrientsForIngredient ingredientId |> ignore
 
         let command = new AddMacronutrientsForIngredientCommand(Database.realConnectionString)
-        command.Execute (ingredientId, macronutrientEntity.CaloriesPerKilo, macronutrientEntity.ProteinMassPercentage, macronutrientEntity.FatMassPercentage, macronutrientEntity.CarbMassPercentage)
+        command.Execute (ingredientId, macronutrientEntity.CaloriesPerServing, macronutrientEntity.ProteinGramsPerServing, macronutrientEntity.FatGramsPerServing, macronutrientEntity.CarbGramsPerServing, macronutrientEntity.ServingSize.Amount, (int)macronutrientEntity.ServingSize.Unit)
 
     let getMacronutrientsForIngredient (ingredientId: int) =
         let query = new GetMacronutrientsForIngredientQuery(Database.realConnectionString)

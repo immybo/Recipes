@@ -1,8 +1,9 @@
 ﻿namespace Model
 
 type MacronutrientInformation = {
-    CaloriesPerKilo: decimal
-    ProteinMassPercentage: decimal
-    CarbMassPercentage: decimal
-    FatMassPercentage: decimal
+    CaloriesPerServing: decimal
+    ProteinGramsPerServing: decimal
+    CarbGramsPerServing: decimal
+    FatGramsPerServing: decimal
+    ServingSize: Quantity
 }
