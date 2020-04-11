@@ -54,6 +54,9 @@ export const styles = StyleSheet.create({
     horizontalMarginSmall: {
         marginHorizontal: 10
     },
+    rightMarginSmall: {
+        marginRight: 10
+    },
     marginSmall: {
         margin: 10
     },
@@ -75,5 +78,11 @@ export const styles = StyleSheet.create({
         fontSize: 15,
         color: "red",
         fontWeight: "bold"
+    },
+    pickerItem: {
+        transform: [
+            { scaleX: 0.92 },
+            { scaleY: 0.92 }
+        ]
     }
 });

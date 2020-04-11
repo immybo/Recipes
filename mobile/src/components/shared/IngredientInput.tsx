@@ -47,36 +47,39 @@ export default class IngredientInput extends React.Component<IngredientInputProp
         return (
             <View style={styles.container}>
                 <CustomTextInput style={styles.h1} placeholder="Ingredient Name" defaultValue={this.props.initialIngredient.name} onChangeText={(text) => this.onChangeIngredientName(text)} />
-                <View style={styles.rowLayout}>
+                <View style={styles.rowWithoutJustify}>
+                    <Text style={styles.rightMarginSmall}>Serving size of </Text>
                     <CustomTextInput
                         keyboardType="numeric"
                         onChangeText={(newQuantity) => this.updateServingSizeAmount(newQuantity)}
-                        placeholder={"Serving Size"}
+                        placeholder={"0"}
                         maxLength={10} />
-                    <Picker style={{"flex": 0.5}} selectedValue={this.state.servingSizeUnit} onValueChange={(value, _) => this.updateServingSizeUnit(value)}>
+                    <Picker style={[{"flex": 1}, styles.pickerItem]} selectedValue={this.state.servingSizeUnit} onValueChange={(value, _) => this.updateServingSizeUnit(value)}>
                         { [ QuantityUnit.None, QuantityUnit.Grams, QuantityUnit.Kilograms, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Millilitres, QuantityUnit.Litres ].map((unit: QuantityUnit) => {
                             let formattedUnit: string = QuantityFormatter.formatUnit(unit, true);
                             return <Picker.Item label={formattedUnit} key={formattedUnit} value={unit} />
                         })}
                     </Picker>
                 </View>
-                <View style={styles.rowLayout}>
-                    <CustomTextInput placeholder="" keyboardType="numeric" defaultValue={this.props.initialIngredient.name} onChangeText={(text) => this.onSetCalories(text)} />
-                    <Text>calories per serving</Text>
+                <View style={styles.rowWithoutJustify}>
+                    <CustomTextInput placeholder="0" keyboardType="numeric" defaultValue={this.props.initialIngredient.name} onChangeText={(text) => this.onSetCalories(text)} />
+                    <Text style={styles.horizontalMarginSmall}>calories per serving</Text>
                 </View>
-                <View style={styles.rowLayout}>
-                    <CustomTextInput placeholder="" keyboardType="numeric" defaultValue={this.props.initialIngredient.name} onChangeText={(text) => this.onSetProteinPercentage(text)} />
-                    <Text>grams of protein per serving</Text>
+                <View style={styles.rowWithoutJustify}>
+                    <CustomTextInput placeholder="0" keyboardType="numeric" defaultValue={this.props.initialIngredient.name} onChangeText={(text) => this.onSetProteinPercentage(text)} />
+                    <Text style={styles.horizontalMarginSmall}>grams of protein per serving</Text>
                 </View>
-                <View style={styles.rowLayout}>
-                    <CustomTextInput placeholder="" keyboardType="numeric" defaultValue={this.props.initialIngredient.name} onChangeText={(text) => this.onSetFatPercentage(text)} />
-                    <Text>grams of fat per serving</Text>
+                <View style={styles.rowWithoutJustify}>
+                    <CustomTextInput placeholder="0" keyboardType="numeric" defaultValue={this.props.initialIngredient.name} onChangeText={(text) => this.onSetFatPercentage(text)} />
+                    <Text style={styles.horizontalMarginSmall}>grams of fat per serving</Text>
                 </View>
-                <View style={styles.rowLayout}>
-                    <CustomTextInput placeholder="" keyboardType="numeric" defaultValue={this.props.initialIngredient.name} onChangeText={(text) => this.onSetCarbPercentage(text)} />
-                    <Text>grams of carbs per serving</Text>
+                <View style={styles.rowWithoutJustify}>
+                    <CustomTextInput placeholder="0" keyboardType="numeric" defaultValue={this.props.initialIngredient.name} onChangeText={(text) => this.onSetCarbPercentage(text)} />
+                    <Text style={styles.horizontalMarginSmall}>grams of carbs per serving</Text>
                 </View>
-                <Button title="Submit Ingredient" onPress={(event) => this.submitIngredient()}>Submit Ingredient</Button>
+                <View style={styles.verticalMargin}>
+                    <Button title="Submit" onPress={(event) => this.submitIngredient()}>Submit Ingredient</Button>
+                </View>
             </View>
         );
     }
