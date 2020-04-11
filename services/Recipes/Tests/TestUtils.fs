@@ -38,20 +38,28 @@ module TestUtils =
     let TestNutritionalInformation: NutritionalInformation = {
         IngredientId = -1;
         Macronutrients = {
-            CaloriesPerKilo = 1000m;
-            ProteinMassPercentage = 40m;
-            CarbMassPercentage = 30m;
-            FatMassPercentage = 30m;
+            CaloriesPerServing = 1000m;
+            ProteinGramsPerServing = 40m;
+            CarbGramsPerServing = 30m;
+            FatGramsPerServing = 30m;
+            ServingSize = {
+                Amount = 30m;
+                Unit = QuantityUnit.Cups;
+            };
         }
     }
     
     let TestNutritionalInformation2: NutritionalInformation = {
         IngredientId = -1;
         Macronutrients = {
-            CaloriesPerKilo = 2000m;
-            ProteinMassPercentage = 50m;
-            CarbMassPercentage = 20m;
-            FatMassPercentage = 25m;
+            CaloriesPerServing = 2000m;
+            ProteinGramsPerServing = 50m;
+            CarbGramsPerServing = 20m;
+            FatGramsPerServing = 25m;
+            ServingSize = {
+                Amount = 30m;
+                Unit = QuantityUnit.Cups;
+            };
         }
     }
 
