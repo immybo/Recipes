@@ -2,7 +2,6 @@ import { QuantityUnit } from '../model/QuantityUnit';
 import { Quantity } from '../model/Quantity';
 
 export class QuantityFormatter {
-    // TODO make quantity into an actual object with these methods on it
     public static formatShorthand(quantity: Quantity): string {
         return quantity.amount.toString() + this.formatUnitShorthand(quantity.unit)
     }
@@ -13,6 +12,8 @@ export class QuantityFormatter {
 
     public static formatUnitShorthand(unit: QuantityUnit): string {
         switch (unit) {
+            case QuantityUnit.None:
+                return ""
             case QuantityUnit.Cups:
                 return "c"
             case QuantityUnit.Grams:
@@ -21,11 +22,19 @@ export class QuantityFormatter {
                 return "kg"
             case QuantityUnit.Teaspoons:
                 return "tsp"
+            case QuantityUnit.Litres:
+                return "L"
+            case QuantityUnit.Millilitres:
+                return "mL"
+            case QuantityUnit.Tablespoons:
+                return "Tbsp"
         }
     }
 
     public static formatUnit(unit: QuantityUnit, isPlural: boolean): string {
         switch (unit) {
+            case QuantityUnit.None:
+                return "(no unit)"
             case QuantityUnit.Cups:
                 return isPlural ? " cups" : " cup"
             case QuantityUnit.Grams:
@@ -34,6 +43,12 @@ export class QuantityFormatter {
                 return isPlural ? " kilograms" : " kilogram"
             case QuantityUnit.Teaspoons:
                 return isPlural ? " teaspoons" : " teaspoon"
+            case QuantityUnit.Litres:
+                return isPlural ? " litres" : "litre"
+            case QuantityUnit.Millilitres:
+                return isPlural ? " millilitres" : " millilitre"
+            case QuantityUnit.Tablespoons:
+                return isPlural ? " tablespoons" : " tablespoon"
         }
     }
 }

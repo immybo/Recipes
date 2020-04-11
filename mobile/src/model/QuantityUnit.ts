@@ -1,6 +1,10 @@
 export enum QuantityUnit {
-    Kilograms = 0,
+    None = 0,
     Grams = 1,
-    Cups = 2,
-    Teaspoons = 3
+    Kilograms = 2,
+    Teaspoons = 3,
+    Tablespoons = 4,
+    Cups = 5,
+    Millilitres = 6,
+    Litres = 7
 }

@@ -54,7 +54,7 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                         placeholder={"Serving Size"}
                         maxLength={10} />
                     <Picker style={{"flex": 0.5}} selectedValue={this.state.servingSizeUnit} onValueChange={(value, _) => this.updateServingSizeUnit(value)}>
-                        { [ QuantityUnit.Cups, QuantityUnit.Grams, QuantityUnit.Kilograms, QuantityUnit.Teaspoons].map((unit: QuantityUnit) => {
+                        { [ QuantityUnit.None, QuantityUnit.Grams, QuantityUnit.Kilograms, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Millilitres, QuantityUnit.Litres ].map((unit: QuantityUnit) => {
                             let formattedUnit: string = QuantityFormatter.formatUnit(unit, true);
                             return <Picker.Item label={formattedUnit} key={formattedUnit} value={unit} />
                         })}
