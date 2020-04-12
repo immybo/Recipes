@@ -1,6 +1,6 @@
  import React from 'react';
 import {
-    View, Picker
+    View, Picker, Text
 } from 'react-native';
 import { IngredientWithQuantity } from '../../model/IngredientWithQuantity';
 import { Numbers } from '../../util/Regex';
@@ -14,7 +14,8 @@ import ValidationContainer from './ValidationContainer';
 interface IngredientSelectProps extends React.Props<IngredientSelect> {
     ingredient: IngredientWithQuantity,
     allIngredients: Ingredient[],
-    onChangeIngredient: (ingredient: IngredientWithQuantity) => void
+    onChangeIngredient: (ingredient: IngredientWithQuantity) => void,
+    goToIngredientInput: () => void
 }
 
 class IngredientSelect extends React.Component<IngredientSelectProps, any> {
@@ -29,9 +30,11 @@ class IngredientSelect extends React.Component<IngredientSelectProps, any> {
             <View>
                 <View style={styles.rowLayout}>
                     <Picker style={{ "flex": 0.55 }} selectedValue={this.props.ingredient.ingredient.id} onValueChange={(value, _) => this.updateIngredient(value)}>
+                        <Picker.Item label={""} key={-1} value={-1} />
                         { this.props.allIngredients.map((ingredient: Ingredient) => {
                             return <Picker.Item label={ingredient.name} key={ingredient.id} value={ingredient.id} />
                         })}
+                        <Picker.Item label={"Add New Ingredient"} key={-2} value={-2} />
                     </Picker>
                     <CustomTextInput
                         style={{ "flex": 0.1 }}
@@ -48,9 +51,9 @@ class IngredientSelect extends React.Component<IngredientSelectProps, any> {
                         ]}
                         validationContainer={validationContainer}/>
                     <View style={{ "flex": 0.35 }}>
-                        <Picker selectedValue={this.props.ingredient.quantity.unit} onValueChange={(value, _) => this.updateIngredientQuantityUnit(value)}>
+                        <Picker style={[{"flex": 1}, styles.pickerItem]} selectedValue={this.props.ingredient.quantity.unit} onValueChange={(value, _) => this.updateIngredientQuantityUnit(value)}>
                             { [ QuantityUnit.None, QuantityUnit.Grams, QuantityUnit.Kilograms, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Millilitres, QuantityUnit.Litres ].map((unit: QuantityUnit) => {
-                                let formattedUnit: string = QuantityFormatter.formatUnit(unit, true);
+                                let formattedUnit: string = QuantityFormatter.formatUnitShorthand(unit);
                                 return <Picker.Item label={formattedUnit} key={formattedUnit} value={unit} />
                             })}
                         </Picker>
@@ -64,6 +67,14 @@ class IngredientSelect extends React.Component<IngredientSelectProps, any> {
     }
 
     private updateIngredient(newIngredientId: number): void {
+        // Couple special cases here. Probably the easiest way to do it
+        if (newIngredientId == -1) {
+            return;
+        } else if (newIngredientId == -2) {
+            this.props.goToIngredientInput();
+            return;
+        }
+
         let newIngredient: Ingredient | undefined = this.props.allIngredients.find(ingr => ingr.id === newIngredientId);
 
         if (newIngredient == null) {

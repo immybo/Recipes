@@ -7,6 +7,6 @@ export interface IngredientWithQuantity {
     quantity: Quantity
 }
 
-export function getBlankIngredient(): IngredientWithQuantity {
+export function getBlankIngredientWithQuantity(): IngredientWithQuantity {
     return { ingredient: { id: -1, name: "" }, quantity: { amount: 0, unit: QuantityUnit.Kilograms }};
 }
