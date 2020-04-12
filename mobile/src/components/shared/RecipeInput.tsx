@@ -73,8 +73,8 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
                 <View style={styles.container}>
                     <ScrollView contentContainerStyle={styles.scrollContainer}>
                         <View>
-                            <CustomTextInput style={styles.h1} placeholder="Recipe Name" defaultValue={this.props.initialRecipe.name} onChangeText={(text) => this.onRecipeNameChange(text)} />
-                            <CustomTextInput style={styles.verticalMarginSmall} multiline={true} placeholder="Recipe Description" defaultValue={this.props.initialRecipe.description} onChangeText={(text) => this.onRecipeDescriptionChange(text)} />
+                            <CustomTextInput style={styles.h1} placeholder="Recipe Name" value={this.state.recipeName} onChangeText={(text) => this.onRecipeNameChange(text)} />
+                            <CustomTextInput style={styles.verticalMarginSmall} multiline={true} placeholder="Recipe Description" value={this.state.recipeDescription} onChangeText={(text) => this.onRecipeDescriptionChange(text)} />
                             
                             <View style={styles.rowLayout}>
                                 <Text style={[styles.h1, styles.verticalMarginSmall]}>Ingredients</Text>

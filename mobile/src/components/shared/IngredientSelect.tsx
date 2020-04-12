@@ -44,10 +44,6 @@ class IngredientSelect extends React.Component<IngredientSelectProps, any> {
                         placeholder={"Quantity"}
                         maxLength={10}
                         validationRules={[
-                            {
-                                rule: (value => Number(value) > 0),
-                                errorMessage: (value => "Quantity must be greater than 0." + String(value))
-                            }
                         ]}
                         validationContainer={validationContainer}/>
                     <View style={{ "flex": 0.35 }}>
