@@ -25,9 +25,11 @@
     <Compile Include="DataAccess\IngredientDataAccess.fs" />
     <Compile Include="DataAccess\CategoryDataAccess.fs" />
     <Compile Include="DataAccess\RecipeDataAccess.fs" />
+    <Compile Include="Domain\QuantityDomain.fs" />
     <Compile Include="Domain\MealPlanDomain.fs" />
-    <Compile Include="Domain\NutritionalInformationDomain.fs" />
     <Compile Include="Domain\RecipeDomain.fs" />
+    <Compile Include="Domain\NutritionalInformationDomain.fs" />
+    <Compile Include="Domain\RecipeNutritionDomain.fs" />
     <Compile Include="Interface\AddNutritionalInformationForIngredient.fs" />
     <Compile Include="Interface\DeleteMealPlanEntry.fs" />
     <Compile Include="Interface\GetMealPlan.fs" />

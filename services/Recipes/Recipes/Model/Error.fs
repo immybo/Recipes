@@ -1,7 +1,5 @@
 ﻿namespace Model
-
-open System
-
+    
 type Error =
     | RecipeDoesNotExist = 1
     | CategoryDoesNotExist = 2
@@ -12,3 +10,5 @@ type Error =
     | RequiredParameter = 7
     | MethodMustNotBeEmpty = 8
     | RecipeMustHaveDescription = 9
+    | IncompatibleUnits = 10
+    | ZeroValueProvided = 11

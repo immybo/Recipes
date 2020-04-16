@@ -2,6 +2,7 @@ namespace Tests
 
 open NUnit.Framework
 open Model
+open Railway
 
 module NutritionTests =
     [<SetUp>]
@@ -60,3 +61,31 @@ module NutritionTests =
                                                     match result with
                                                     | Result.Error err -> Assert.False(true, err.ToString())
                                                     | Result.Ok nutritionalInfos -> Assert.AreEqual(nutritionalInfos.[0], {TestUtils.TestNutritionalInformation2 with IngredientId = readRecipe.Ingredients.[0].Ingredient.Id })
+
+    [<Test>]
+    let TestNutritionalInformationForRecipeIsCalculatedCorrectly () =
+        let expectedNutritionResult = {
+            CaloriesPerServing = 1000m * 0.822666667m;
+            ProteinGramsPerServing = 40m * 0.822666667m;
+            CarbGramsPerServing = 30m * 0.822666667m;
+            FatGramsPerServing = 30m * 0.822666667m;
+            ServingSize = {
+                Amount = 0m;
+                Unit = QuantityUnit.None;
+            };
+        }
+
+        let nutritionResult =
+            AddRecipe.addRecipe TestUtils.TestRecipe
+            >=> GetRecipe.getRecipe
+            >=> fun readRecipe ->
+                    NutritionalInformationDomain.setNutritionalInformationForIngredient ({TestUtils.TestNutritionalInformation with IngredientId = readRecipe.Ingredients.[0].Ingredient.Id }) |> ignore
+                    Result.Ok readRecipe.Id
+            >=> RecipeNutritionDomain.getNutritionalInformationForRecipe
+        match nutritionResult with
+        | Result.Error err -> Assert.Fail (err.ToString())
+        | Result.Ok nutrition ->
+            Assert.AreEqual (float expectedNutritionResult.CaloriesPerServing, float nutrition.CaloriesPerServing, 0.01)
+            Assert.AreEqual (float expectedNutritionResult.ProteinGramsPerServing, float nutrition.ProteinGramsPerServing, 0.01)
+            Assert.AreEqual (float expectedNutritionResult.CarbGramsPerServing, float nutrition.CarbGramsPerServing, 0.01)
+            Assert.AreEqual (float expectedNutritionResult.FatGramsPerServing, float nutrition.FatGramsPerServing, 0.01)
