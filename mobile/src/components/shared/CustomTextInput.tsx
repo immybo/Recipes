@@ -34,7 +34,7 @@ class CustomTextInput extends React.Component<CustomTextInputProps, CustomTextIn
         this.setState({...this.state, isFocused: false});
     }
 
-    public render(): JSX.Element {
+    public componentDidUpdate(): void {
         let hasValidation: boolean = this.props.validationRules != null && this.props.validationRules.length > 0;
 
         let validator = null;
@@ -44,13 +44,16 @@ class CustomTextInput extends React.Component<CustomTextInputProps, CustomTextIn
                 currentValue={ this.state.rawValue }
                 onValidChange={ isValid => this.setState({ isValid: isValid }) }
                 rules={ this.props.validationRules }
+                enabled={this.props.validationContainer != null && this.props.validationContainer.current != null}
             />);
 
             if (this.props.validationContainer != null && this.props.validationContainer.current != null) {
-                this.props.validationContainer.current._validator = validator;
+                this.props.validationContainer.current.setValidator(validator);
             }
         }
+    }
 
+    public render(): JSX.Element {
         return (
             <View>
                 <TextInput
@@ -61,7 +64,6 @@ class CustomTextInput extends React.Component<CustomTextInputProps, CustomTextIn
                     { ...this.props }
                     onChangeText={newStr => this.onChange(newStr, this.props.onChangeText)}
                     />
-                { this.props.validationContainer == null && validator != null && validator }
             </View>
         );    
     }

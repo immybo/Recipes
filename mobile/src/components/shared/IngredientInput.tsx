@@ -12,6 +12,7 @@ import { Numbers } from '../../util/Regex';
 import { QuantityUnit } from '../../model/QuantityUnit';
 import { NutritionalInformation } from '../../model/NutritionalInformation';
 import { QuantityFormatter } from '../../util/QuantityFormatter';
+import ValidationContainer from './ValidationContainer';
 
 interface IngredientInputProps extends React.Props<IngredientInput> {
     initialIngredient: Ingredient,
@@ -44,6 +45,8 @@ export default class IngredientInput extends React.Component<IngredientInputProp
     }
 
     public render(): JSX.Element {
+        let validationContainer = React.createRef<ValidationContainer>();
+        
         return (
             <View style={styles.container}>
                 <CustomTextInput style={styles.h1} placeholder="Ingredient Name" defaultValue={this.props.initialIngredient.name} onChangeText={(text) => this.onChangeIngredientName(text)} />
@@ -53,7 +56,11 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                         keyboardType="numeric"
                         onChangeText={(newQuantity) => this.updateServingSizeAmount(newQuantity)}
                         placeholder={"0"}
-                        maxLength={10} />
+                        maxLength={10}
+                        validationRules={[
+                            { rule: value => Numbers.test(value) || value == "", errorMessage: _ => "Please enter a positive number or 0." }
+                        ]}
+                        validationContainer={validationContainer} />
                     <Picker style={[{"flex": 1}, styles.pickerItem]} selectedValue={this.state.servingSizeUnit} onValueChange={(value, _) => this.updateServingSizeUnit(value)}>
                         { [ QuantityUnit.None, QuantityUnit.Grams, QuantityUnit.Kilograms, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Millilitres, QuantityUnit.Litres ].map((unit: QuantityUnit) => {
                             let formattedUnit: string = QuantityFormatter.formatUnit(unit, true);
@@ -61,6 +68,7 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                         })}
                     </Picker>
                 </View>
+                    <ValidationContainer ref={validationContainer} />
                 <View style={styles.rowWithoutJustify}>
                     <CustomTextInput placeholder="0" keyboardType="numeric" defaultValue={this.props.initialIngredient.name} onChangeText={(text) => this.onSetCalories(text)} />
                     <Text style={styles.horizontalMarginSmall}>calories per serving</Text>
@@ -78,14 +86,14 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                     <Text style={styles.horizontalMarginSmall}>grams of carbs per serving</Text>
                 </View>
                 <View style={styles.verticalMargin}>
-                    <Button title="Submit" onPress={(event) => this.submitIngredient()}>Submit Ingredient</Button>
+                    <Button title="Submit" onPress={_ => this.submitIngredient()}>Submit Ingredient</Button>
                 </View>
             </View>
         );
     }
 
     private updateServingSizeAmount(newQuantity: string): void {
-        if (!Numbers.test(newQuantity)) {
+        if (Numbers.test(newQuantity)) {
             this.setState({ servingSizeAmount: Number(newQuantity) });
         }
     }
@@ -99,26 +107,26 @@ export default class IngredientInput extends React.Component<IngredientInputProp
     }
 
     private onSetCalories(newCalories: string): void {
-        if (!Numbers.test(newCalories)) {
+        if (Numbers.test(newCalories)) {
             this.setState({ caloriesPerServing: Number(newCalories) });
         }
     }
 
-    private onSetProteinPercentage(newProteinPercentage: string): void {
-        if (!Numbers.test(newProteinPercentage)) {
-            this.setState({ gramsProteinPerServing: Number(newProteinPercentage) });
+    private onSetProteinPercentage(newProtein: string): void {
+        if (Numbers.test(newProtein)) {
+            this.setState({ gramsProteinPerServing: Number(newProtein) });
         }
     }
 
-    private onSetFatPercentage(newFatPercentage: string): void {
-        if (!Numbers.test(newFatPercentage)) {
-            this.setState({ gramsFatPerServing: Number(newFatPercentage) });
+    private onSetFatPercentage(newFat: string): void {
+        if (Numbers.test(newFat)) {
+            this.setState({ gramsFatPerServing: Number(newFat) });
         }
     }
 
-    private onSetCarbPercentage(newCarbPercentage: string): void {
-        if (!Numbers.test(newCarbPercentage)) {
-            this.setState({ gramsCarbsPerServing: Number(newCarbPercentage) });
+    private onSetCarbPercentage(newCarbs: string): void {
+        if (Numbers.test(newCarbs)) {
+            this.setState({ gramsCarbsPerServing: Number(newCarbs) });
         }
     }
 
@@ -136,7 +144,6 @@ export default class IngredientInput extends React.Component<IngredientInputProp
     }
     
     private buildNutritionalInformation(): NutritionalInformation {
-        // TODO validation
         return {
             ingredientId: -1,
             macronutrients: {

@@ -84,7 +84,7 @@ class IngredientSelect extends React.Component<IngredientSelectProps, any> {
     }
 
     private updateIngredientQuantityNumber(newQuantity: string): void {
-        if (!Numbers.test(newQuantity)) {
+        if (Numbers.test(newQuantity)) {
             this.props.onChangeIngredient({
                 ...this.props.ingredient,
                 quantity: {

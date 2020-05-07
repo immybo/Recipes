@@ -1,7 +1,7 @@
 import { Ingredient } from "../model/Ingredient";
 
 export function parseIngredients(ingredientsJson: any): Array<Ingredient> {
-    return ingredientsJson.Fields[0].map((ingredientJson: any) => parseIngredient(ingredientJson));
+    return ingredientsJson.map((ingredientJson: any) => parseIngredient(ingredientJson));
 }
 
 export function parseIngredient(ingredientJson: any): Ingredient {

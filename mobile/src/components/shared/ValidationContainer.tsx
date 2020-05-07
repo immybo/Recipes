@@ -5,11 +5,10 @@ interface ValidationContainerProps extends React.Props<ValidationContainer> {
 }
 
 interface ValidationContainerState {
+    validator?: JSX.Element
 }
 
 class ValidationContainer extends React.Component<ValidationContainerProps, ValidationContainerState> {
-    public _validator?: JSX.Element;
-
     constructor(props: ValidationContainerProps) {
         super(props);
 
@@ -18,11 +17,15 @@ class ValidationContainer extends React.Component<ValidationContainerProps, Vali
     }
 
     public render(): JSX.Element {
-        if (this._validator != null) {
-            return this._validator;
+        if (this.state.validator != null) {
+            return this.state.validator;
         }
 
         return <View />
+    }
+
+    public setValidator(validator: JSX.Element) {
+        this.setState({ validator: validator });
     }
 }
 

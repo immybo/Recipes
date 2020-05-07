@@ -1,5 +1,6 @@
 import React from "react";
 import { Text, View } from "react-native";
+import { styles } from "../../style/Style";
 
 export interface ValidationRule<T> {
     rule: (value: T) => boolean
@@ -7,8 +8,9 @@ export interface ValidationRule<T> {
 }
 
 interface ValidatorProps<T> extends React.Props<Validator<T>> {
+    enabled: boolean,
     currentValue: T,
-    rules: ValidationRule<T>[]
+    rules?: ValidationRule<T>[]
     onValidChange: (newValue: boolean) => void
 }
 
@@ -28,8 +30,7 @@ class Validator<T> extends React.Component<ValidatorProps<T>, ValidatorState> {
     public componentDidUpdate() {
         let wasPreviouslyValid: boolean = this.state.isValid;
 
-        let errors = this.props.rules
-            .filter(rule => !rule.rule(this.props.currentValue));
+        let errors = this.props.rules ? this.props.rules.filter(rule => !rule.rule(this.props.currentValue)) : [];
 
         let isCurrentlyValid: boolean = errors.length === 0;
         if (wasPreviouslyValid !== isCurrentlyValid) {
@@ -39,19 +40,23 @@ class Validator<T> extends React.Component<ValidatorProps<T>, ValidatorState> {
     }
 
     public render(): JSX.Element {
-        let errors: string[] = this.props.rules
-            .filter(rule => !rule.rule(this.props.currentValue))
-            .map(rule => rule.errorMessage(this.props.currentValue));
+        if (this.props.enabled) {
+            let errors: string[] = this.props.rules ? this.props.rules
+                .filter(rule => !rule.rule(this.props.currentValue))
+                .map(rule => rule.errorMessage(this.props.currentValue)) : [];
 
-        return (
-            <View>
-                { errors.map(message => this.getErrorElement(message)) }
-            </View>
-        );
+            return (
+                <View>
+                    { errors.map((message, i) => this.getErrorElement(message, i)) }
+                </View>
+            );
+        } else {
+            return <View />
+        }
     }
 
-    private getErrorElement(message: string): JSX.Element {
-        return <Text>{message}</Text>// TODO
+    private getErrorElement(message: string, index: number): JSX.Element {
+        return <Text style={styles.smallErrorMessage} key={index}>{message}</Text>
     }
 }
 

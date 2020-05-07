@@ -1,7 +1,6 @@
 import { Recipe } from "../model/Recipe";
 import { Dispatch } from "redux";
 import { RecipesApi } from "../services/api/Recipes";
-import { ServerError } from "../services/api/ServerError";
 import { setApiErrorToDisplay } from "./NetworkActions";
 
 export const ADD_RECIPE = "ADD_RECIPE";
@@ -32,10 +31,10 @@ interface SetAllRecipesAction {
 export type RecipeActionTypes = AddRecipeAction | DeleteRecipeAction | UpdateRecipeAction | SetAllRecipesAction;
 
 export function addRecipe(newRecipe: Recipe)  {
-    return function(dispatch: Dispatch<RecipeActionTypes>) {
+    return function(dispatch: Dispatch) {
         return RecipesApi.addRecipe(newRecipe).then(
-            recipeId => fetchRecipes()(dispatch),
-            error => console.error(error) // TODO error handling
+            _ => fetchRecipes()(dispatch),
+            error => dispatch(setApiErrorToDisplay("Error adding recipe. " + String(error)))
         );
     }
 }
@@ -48,10 +47,10 @@ export function addRecipeLocal(newRecipe: Recipe): RecipeActionTypes {
 }
 
 export function deleteRecipe(toDelete: Recipe) {
-    return function(dispatch: Dispatch<RecipeActionTypes>) {
+    return function(dispatch: Dispatch) {
         return RecipesApi.deleteRecipe(toDelete.id).then(
-            response => dispatch(deleteRecipeLocal(toDelete)),
-            error => console.error(error) // TODO error handling
+            _ => dispatch(deleteRecipeLocal(toDelete)),
+            error => dispatch(setApiErrorToDisplay("Error deleting recipe. " + String(error)))
         );
     }
 }
@@ -64,18 +63,10 @@ export function deleteRecipeLocal(toDelete: Recipe): RecipeActionTypes {
 }
 
 export function updateRecipe(updatedRecipe: Recipe) {
-    return function(dispatch: Dispatch<RecipeActionTypes>) {
+    return function(dispatch: Dispatch) {
         return RecipesApi.updateRecipe(updatedRecipe).then(
-            response => dispatch(updateRecipeLocal(updatedRecipe)),
-            (error: ServerError) => {
-                switch (error) {
-                    case ServerError.MethodMustNotBeEmpty:
-                    default:
-                        // I don't think we're meant to do this... TODO find some other way
-                        dispatch(setApiErrorToDisplay("Error updating recipe. Please try again."));
-                        return;
-                }
-            }
+            _ => dispatch(updateRecipeLocal(updatedRecipe)),
+            error => dispatch(setApiErrorToDisplay("Error updating recipe. " + String(error)))
         );
     }
 }
@@ -88,11 +79,10 @@ export function updateRecipeLocal(newRecipe: Recipe): RecipeActionTypes {
 }
 
 export function fetchRecipes() {
-    return function(dispatch: Dispatch<RecipeActionTypes>) {
+    return function(dispatch: Dispatch) {
         return RecipesApi.getAllRecipes().then(
             recipes => dispatch(setAllRecipes(recipes)),
-            // I don't think we're meant to do this... TODO find some other way
-            error => dispatch(setApiErrorToDisplay("Error retrieving recipes."))
+            error => dispatch(setApiErrorToDisplay("Error retrieving recipes. " + String(error)))
         );
     }
 }

@@ -41,7 +41,7 @@ export const styles = StyleSheet.create({
         textAlign: "center"
     },
     smallContainerBottom: {
-        flex: 0.04,
+        flex: 0.1,
         alignSelf: "stretch",
         textAlign: "center"
     },
@@ -78,6 +78,9 @@ export const styles = StyleSheet.create({
         fontSize: 15,
         color: "red",
         fontWeight: "bold"
+    },
+    smallErrorMessage: {
+        color: "red"
     },
     pickerItem: {
         transform: [

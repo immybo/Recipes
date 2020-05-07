@@ -1,1 +1,1 @@
-export const Numbers = /^\d+S/
+export const Numbers = /^\d+$/
