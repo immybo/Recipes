@@ -7,6 +7,7 @@ import ValidationContainer from "./ValidationContainer";
 interface CustomTextInputProps extends TextInputProps {
     validationRules?: ValidationRule<string>[]
     validationContainer?: React.RefObject<ValidationContainer>
+    onValidChange?: (newValue: boolean) => void
 }
 
 interface CustomTextInputState {
@@ -42,7 +43,13 @@ class CustomTextInput extends React.Component<CustomTextInputProps, CustomTextIn
         if (hasValidation && this.props.validationRules != null) {
             validator = (<Validator 
                 currentValue={ this.state.rawValue }
-                onValidChange={ isValid => this.setState({ isValid: isValid }) }
+                onValidChange={ isValid => { 
+                    this.setState({ isValid: isValid });
+
+                    if (this.props.onValidChange != null) {
+                        this.props.onValidChange(isValid);
+                    }
+                }}
                 rules={ this.props.validationRules }
                 enabled={this.props.validationContainer != null && this.props.validationContainer.current != null}
             />);

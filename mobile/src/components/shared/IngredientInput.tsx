@@ -13,6 +13,7 @@ import { QuantityUnit } from '../../model/QuantityUnit';
 import { NutritionalInformation } from '../../model/NutritionalInformation';
 import { QuantityFormatter } from '../../util/QuantityFormatter';
 import ValidationContainer from './ValidationContainer';
+import { PositiveOrZero } from '../../util/ValidationRules';
 
 interface IngredientInputProps extends React.Props<IngredientInput> {
     initialIngredient: Ingredient,
@@ -26,7 +27,8 @@ interface IngredientInputState {
     caloriesPerServing?: number,
     gramsProteinPerServing?: number,
     gramsFatPerServing?: number,
-    gramsCarbsPerServing?: number
+    gramsCarbsPerServing?: number,
+    numInvalidInputs: number
 }
 
 export default class IngredientInput extends React.Component<IngredientInputProps, IngredientInputState> {
@@ -40,12 +42,17 @@ export default class IngredientInput extends React.Component<IngredientInputProp
             gramsFatPerServing: 0,
             gramsProteinPerServing: 0,
             servingSizeAmount: 0,
-            servingSizeUnit: QuantityUnit.Cups
+            servingSizeUnit: QuantityUnit.Cups,
+            numInvalidInputs: 0
         };
     }
 
     public render(): JSX.Element {
-        let validationContainer = React.createRef<ValidationContainer>();
+        let servingSizeAmountErrors = React.createRef<ValidationContainer>();
+        let caloriesErrors = React.createRef<ValidationContainer>();
+        let proteinErrors = React.createRef<ValidationContainer>();
+        let fatErrors = React.createRef<ValidationContainer>();
+        let carbsErrors = React.createRef<ValidationContainer>();
         
         return (
             <View style={styles.container}>
@@ -57,10 +64,9 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                         onChangeText={(newQuantity) => this.updateServingSizeAmount(newQuantity)}
                         placeholder={"0"}
                         maxLength={10}
-                        validationRules={[
-                            { rule: value => Numbers.test(value) || value == "", errorMessage: _ => "Please enter a positive number or 0." }
-                        ]}
-                        validationContainer={validationContainer} />
+                        validationRules={[ PositiveOrZero ]}
+                        validationContainer={servingSizeAmountErrors}
+                        onValidChange={isValid => this.updateValid(isValid) } />
                     <Picker style={[{"flex": 1}, styles.pickerItem]} selectedValue={this.state.servingSizeUnit} onValueChange={(value, _) => this.updateServingSizeUnit(value)}>
                         { [ QuantityUnit.None, QuantityUnit.Grams, QuantityUnit.Kilograms, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Millilitres, QuantityUnit.Litres ].map((unit: QuantityUnit) => {
                             let formattedUnit: string = QuantityFormatter.formatUnit(unit, true);
@@ -68,28 +74,71 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                         })}
                     </Picker>
                 </View>
-                    <ValidationContainer ref={validationContainer} />
+                <ValidationContainer ref={servingSizeAmountErrors} />
                 <View style={styles.rowWithoutJustify}>
-                    <CustomTextInput placeholder="0" keyboardType="numeric" defaultValue={this.props.initialIngredient.name} onChangeText={(text) => this.onSetCalories(text)} />
+                    <CustomTextInput
+                        placeholder="0"
+                        keyboardType="numeric"
+                        defaultValue={this.props.initialIngredient.name}
+                        onChangeText={(text) => this.onSetCalories(text)}
+                        validationRules={[ PositiveOrZero ]}
+                        validationContainer={caloriesErrors}
+                        onValidChange={isValid => this.updateValid(isValid) } />
                     <Text style={styles.horizontalMarginSmall}>calories per serving</Text>
                 </View>
+                <ValidationContainer ref={caloriesErrors} />
                 <View style={styles.rowWithoutJustify}>
-                    <CustomTextInput placeholder="0" keyboardType="numeric" defaultValue={this.props.initialIngredient.name} onChangeText={(text) => this.onSetProteinPercentage(text)} />
+                    <CustomTextInput
+                        placeholder="0"
+                        keyboardType="numeric"
+                        defaultValue={this.props.initialIngredient.name}
+                        onChangeText={(text) => this.onSetProteinPercentage(text)}
+                        validationRules={[ PositiveOrZero ]}
+                        validationContainer={proteinErrors}
+                        onValidChange={isValid => this.updateValid(isValid) } />
                     <Text style={styles.horizontalMarginSmall}>grams of protein per serving</Text>
                 </View>
+                <ValidationContainer ref={proteinErrors} />
                 <View style={styles.rowWithoutJustify}>
-                    <CustomTextInput placeholder="0" keyboardType="numeric" defaultValue={this.props.initialIngredient.name} onChangeText={(text) => this.onSetFatPercentage(text)} />
+                    <CustomTextInput
+                        placeholder="0"
+                        keyboardType="numeric"
+                        defaultValue={this.props.initialIngredient.name}
+                        onChangeText={(text) => this.onSetFatPercentage(text)}
+                        validationRules={[ PositiveOrZero ]}
+                        validationContainer={fatErrors}
+                        onValidChange={isValid => this.updateValid(isValid) } />
                     <Text style={styles.horizontalMarginSmall}>grams of fat per serving</Text>
                 </View>
+                <ValidationContainer ref={fatErrors} />
                 <View style={styles.rowWithoutJustify}>
-                    <CustomTextInput placeholder="0" keyboardType="numeric" defaultValue={this.props.initialIngredient.name} onChangeText={(text) => this.onSetCarbPercentage(text)} />
+                    <CustomTextInput
+                        placeholder="0"
+                        keyboardType="numeric"
+                        defaultValue={this.props.initialIngredient.name}
+                        onChangeText={(text) => this.onSetCarbPercentage(text)}
+                        validationRules={[ PositiveOrZero ]}
+                        validationContainer={carbsErrors}
+                        onValidChange={isValid => this.updateValid(isValid) } />
                     <Text style={styles.horizontalMarginSmall}>grams of carbs per serving</Text>
                 </View>
+                <ValidationContainer ref={carbsErrors} />
                 <View style={styles.verticalMargin}>
-                    <Button title="Submit" onPress={_ => this.submitIngredient()}>Submit Ingredient</Button>
+                    <Button title="Submit" onPress={_ => this.submitIngredient()} disabled={this.state.numInvalidInputs !== 0}>Submit Ingredient</Button>
                 </View>
             </View>
         );
+    }
+
+    private updateValid(isValid: boolean): void {
+        // This does break if onValidChange is called with the same value as last time
+        if (isValid) {
+            // Passing a lambda is the only safe way to do this, because the normal setState will evaluate
+            // the new numInvalidInputs when it's declared, whereas this does so synchronously when evaluated.
+            this.setState(state => { return { ...state, numInvalidInputs: state.numInvalidInputs - 1 }});
+        } else {
+            this.setState(state => { return { ...state, numInvalidInputs: state.numInvalidInputs + 1 }});
+        }
     }
 
     private updateServingSizeAmount(newQuantity: string): void {
