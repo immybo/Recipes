@@ -14,6 +14,7 @@ interface CustomTextInputState {
     isFocused: boolean
     rawValue: string
     isValid: boolean
+    validator?: React.RefObject<Validator<string>>
 }
 
 class CustomTextInput extends React.Component<CustomTextInputProps, CustomTextInputState> {
@@ -36,13 +37,16 @@ class CustomTextInput extends React.Component<CustomTextInputProps, CustomTextIn
     }
 
     public componentDidUpdate(): void {
+        // All of this stuff really goes against the react mindset.
+        // The actual Validator object is a child of this.props.validationContainer, rather than as a child of this object.
+        // So we're updating the state on a component which is probably not a child of this component... however, I haven't
+        // found any better way to do validation where the error message appears somewhere else.
         let hasValidation: boolean = this.props.validationRules != null && this.props.validationRules.length > 0;
 
-        let validator = null;
-
-        if (hasValidation && this.props.validationRules != null) {
-            validator = (<Validator 
-                currentValue={ this.state.rawValue }
+        if (hasValidation && this.props.validationContainer != null && this.props.validationContainer.current != null && !this.props.validationContainer.current.hasValidator()) {
+            let validatorRef = React.createRef<Validator<string>>();
+            let validator = (<Validator 
+                initialValue={ this.state.rawValue }
                 onValidChange={ isValid => { 
                     this.setState({ isValid: isValid });
 
@@ -51,12 +55,16 @@ class CustomTextInput extends React.Component<CustomTextInputProps, CustomTextIn
                     }
                 }}
                 rules={ this.props.validationRules }
-                enabled={this.props.validationContainer != null && this.props.validationContainer.current != null}
+                enabled={ true }
+                ref={ validatorRef }
             />);
 
-            if (this.props.validationContainer != null && this.props.validationContainer.current != null) {
-                this.props.validationContainer.current.setValidator(validator);
-            }
+            this.props.validationContainer.current.setValidator(validator);
+            this.setState({ validator: validatorRef });
+        }
+
+        if (this.state.validator != null && this.state.validator.current != null) {
+            this.state.validator.current.setValue(this.state.rawValue);
         }
     }
 

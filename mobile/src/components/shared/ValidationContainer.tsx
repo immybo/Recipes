@@ -27,6 +27,10 @@ class ValidationContainer extends React.Component<ValidationContainerProps, Vali
     public setValidator(validator: JSX.Element) {
         this.setState({ validator: validator });
     }
+
+    public hasValidator(): boolean {
+        return this.state.validator != null;
+    }
 }
 
 export default ValidationContainer;

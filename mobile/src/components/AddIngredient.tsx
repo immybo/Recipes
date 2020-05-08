@@ -8,25 +8,31 @@ import { Ingredient, getBlankIngredient } from '../model/Ingredient';
 import IngredientInput from './shared/IngredientInput';
 import { NutritionalInformation } from '../model/NutritionalInformation';
 
+interface AddIngredientProps {
+    allIngredients: Ingredient[]
+}
+
 interface AddIngredientState {
 }
 
 const mapStateToProps = (state: AppState) => {
-    return {};
+    return {
+        allIngredients: state.ingredients.allIngredients
+    };
 }
 
 const mapDispatchToProps = {
     addIngredientWithNutritionalInformation
 };
 
-class AddIngredient extends React.Component<any, AddIngredientState> {
-    constructor(props: any) {
+class AddIngredient extends React.Component<AddIngredientProps, AddIngredientState> {
+    constructor(props: AddIngredientProps) {
         super(props);
     }
 
     public render(): JSX.Element {
         return (
-            <IngredientInput initialIngredient={getBlankIngredient()} submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)} />
+            <IngredientInput initialIngredient={getBlankIngredient()} submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)} allIngredients={this.props.allIngredients} />
         );
     }
 

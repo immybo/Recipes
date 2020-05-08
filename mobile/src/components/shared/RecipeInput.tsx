@@ -67,7 +67,7 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
 
     public render(): JSX.Element {
         if (this.state.isInputtingIngredient) {
-            return <IngredientInput initialIngredient={getBlankIngredient()} submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)} />
+            return <IngredientInput initialIngredient={getBlankIngredient()} submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)} allIngredients={this.props.allIngredients} />
         } else {
             return (
                 <View style={styles.container}>

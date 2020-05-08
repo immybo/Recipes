@@ -17,7 +17,8 @@ import { PositiveOrZero } from '../../util/ValidationRules';
 
 interface IngredientInputProps extends React.Props<IngredientInput> {
     initialIngredient: Ingredient,
-    submitIngredient: (ingredient: Ingredient, nutrition: NutritionalInformation) => void
+    submitIngredient: (ingredient: Ingredient, nutrition: NutritionalInformation) => void,
+    allIngredients: Ingredient[]
 }
 
 interface IngredientInputState {
@@ -48,6 +49,7 @@ export default class IngredientInput extends React.Component<IngredientInputProp
     }
 
     public render(): JSX.Element {
+        let nameErrors = React.createRef<ValidationContainer>();
         let servingSizeAmountErrors = React.createRef<ValidationContainer>();
         let caloriesErrors = React.createRef<ValidationContainer>();
         let proteinErrors = React.createRef<ValidationContainer>();
@@ -56,7 +58,18 @@ export default class IngredientInput extends React.Component<IngredientInputProp
         
         return (
             <View style={styles.container}>
-                <CustomTextInput style={styles.h1} placeholder="Ingredient Name" defaultValue={this.props.initialIngredient.name} onChangeText={(text) => this.onChangeIngredientName(text)} />
+                <CustomTextInput
+                    style={styles.h1}
+                    placeholder="Ingredient Name"
+                    defaultValue={this.props.initialIngredient.name}
+                    onChangeText={(text) => this.onChangeIngredientName(text)}
+                    validationRules={[
+                        { rule: (name: string) => name.length == 0 || this.ingredientNameIsUnique(name), errorMessage: _ => "An ingredient with this name already exists."},
+                        { rule: (name: string) => name.length > 0, errorMessage: _ => "Name must not be empty."}
+                    ]} 
+                    validationContainer={nameErrors}
+                    onValidChange={isValid => this.updateValid(isValid) } />
+                <ValidationContainer ref={nameErrors} />
                 <View style={styles.rowWithoutJustify}>
                     <Text style={styles.rightMarginSmall}>Serving size of </Text>
                     <CustomTextInput
@@ -128,6 +141,10 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                 </View>
             </View>
         );
+    }
+
+    private ingredientNameIsUnique(name: string): boolean {
+        return !this.props.allIngredients.some(ingredient => ingredient.name == name);
     }
 
     private updateValid(isValid: boolean): void {

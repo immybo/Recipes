@@ -9,28 +9,30 @@ export interface ValidationRule<T> {
 
 interface ValidatorProps<T> extends React.Props<Validator<T>> {
     enabled: boolean,
-    currentValue: T,
     rules?: ValidationRule<T>[]
     onValidChange: (newValue: boolean) => void
+    initialValue: T
 }
 
-interface ValidatorState {
-    isValid: boolean
+interface ValidatorState<T> {
+    isValid: boolean,
+    currentValue: T
 }
 
-class Validator<T> extends React.Component<ValidatorProps<T>, ValidatorState> {
+class Validator<T> extends React.Component<ValidatorProps<T>, ValidatorState<T>> {
     constructor(props: ValidatorProps<T>) {
         super(props);
 
         this.state = {
-            isValid: true
+            isValid: true,
+            currentValue: props.initialValue
         };
     }
 
     public componentDidUpdate() {
         let wasPreviouslyValid: boolean = this.state.isValid;
 
-        let errors = this.props.rules ? this.props.rules.filter(rule => !rule.rule(this.props.currentValue)) : [];
+        let errors = this.props.rules ? this.props.rules.filter(rule => !rule.rule(this.state.currentValue)) : [];
 
         let isCurrentlyValid: boolean = errors.length === 0;
         if (wasPreviouslyValid !== isCurrentlyValid) {
@@ -42,8 +44,8 @@ class Validator<T> extends React.Component<ValidatorProps<T>, ValidatorState> {
     public render(): JSX.Element {
         if (this.props.enabled) {
             let errors: string[] = this.props.rules ? this.props.rules
-                .filter(rule => !rule.rule(this.props.currentValue))
-                .map(rule => rule.errorMessage(this.props.currentValue)) : [];
+                .filter(rule => !rule.rule(this.state.currentValue))
+                .map(rule => rule.errorMessage(this.state.currentValue)) : [];
 
             return (
                 <View>
@@ -57,6 +59,10 @@ class Validator<T> extends React.Component<ValidatorProps<T>, ValidatorState> {
 
     private getErrorElement(message: string, index: number): JSX.Element {
         return <Text style={styles.smallErrorMessage} key={index}>{message}</Text>
+    }
+
+    public setValue(newValue: T): void {
+        this.setState({ currentValue: newValue });
     }
 }
 
