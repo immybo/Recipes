@@ -137,7 +137,7 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                 </View>
                 <ValidationContainer ref={carbsErrors} />
                 <View style={styles.verticalMargin}>
-                    <Button title="Submit" onPress={_ => this.submitIngredient()} disabled={this.state.numInvalidInputs !== 0}>Submit Ingredient</Button>
+                    <Button title="Submit" onPress={_ => this.submitIngredient()} disabled={this.state.numInvalidInputs > 0}>Submit Ingredient</Button>
                 </View>
             </View>
         );

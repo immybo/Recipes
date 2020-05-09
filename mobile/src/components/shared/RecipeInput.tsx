@@ -18,10 +18,12 @@ import { Ingredient, getBlankIngredient } from '../../model/Ingredient';
 import IngredientInput from './IngredientInput';
 import { NutritionalInformation } from '../../model/NutritionalInformation';
 import { QuantityUnit } from '../../model/QuantityUnit';
+import ValidationContainer from './ValidationContainer';
 
 interface RecipeInputProps extends React.Props<RecipeInput> {
     initialRecipe: Recipe,
     allIngredients: Ingredient[],
+    allRecipes: Recipe[],
     submitRecipe: (recipe: Recipe) => void,
     submitIngredient: (ingredient: Ingredient, nutrition: NutritionalInformation) => void
 }
@@ -34,7 +36,8 @@ interface RecipeInputState {
     method: Method,
     isInputtingIngredient: boolean,
     ingredientInputKey: number,
-    ingredientWaitingToAdd?: Ingredient
+    ingredientWaitingToAdd?: Ingredient,
+    numInvalidInputs: number
 }
 
 export default class RecipeInput extends React.Component<RecipeInputProps, RecipeInputState> {
@@ -48,7 +51,8 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
             categories: props.initialRecipe.categories,
             method: props.initialRecipe.method,
             isInputtingIngredient: false,
-            ingredientInputKey: -1
+            ingredientInputKey: -1,
+            numInvalidInputs: 0
         };
     }
 
@@ -69,55 +73,83 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
         if (this.state.isInputtingIngredient) {
             return <IngredientInput initialIngredient={getBlankIngredient()} submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)} allIngredients={this.props.allIngredients} />
         } else {
-            return (
-                <View style={styles.container}>
-                    <ScrollView contentContainerStyle={styles.scrollContainer}>
-                        <View>
-                            <CustomTextInput style={styles.h1} placeholder="Recipe Name" value={this.state.recipeName} onChangeText={(text) => this.onRecipeNameChange(text)} />
-                            <CustomTextInput style={styles.verticalMarginSmall} multiline={true} placeholder="Recipe Description" value={this.state.recipeDescription} onChangeText={(text) => this.onRecipeDescriptionChange(text)} />
-                            
-                            <View style={styles.rowLayout}>
-                                <Text style={[styles.h1, styles.verticalMarginSmall]}>Ingredients</Text>
-                                <TouchableOpacity onPress={(event) => this.addNewIngredient()}>
-                                    <View style={[styles.rightAlign, styles.verticalMarginSmall]}>
-                                        <Icon name="plus" size={20} color="black" />
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                            {this.getIngredientInputList()}
+            return this.getRecipeInput();
+        }
+    }
 
-                            <View style={styles.rowLayout}>
-                                <Text style={[styles.h1, styles.verticalMarginSmall]}>Method</Text>
-                                <TouchableOpacity onPress={(event) => this.addNewStep()}>
-                                    <View style={[styles.rightAlign, styles.verticalMarginSmall]}>
-                                        <Icon name="plus" size={20} color="black" />
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                            {this.getMethodStepList()}
+    private getRecipeInput(): JSX.Element {
+        let nameErrors = React.createRef<ValidationContainer>();
 
-                            <View style={styles.rowLayout}>
-                                <Text style={[styles.h1, styles.verticalMarginSmall]}>Categories</Text>
-                                <TouchableOpacity onPress={(event) => this.addNewCategory()}>
-                                    <View style={[styles.rightAlign, styles.verticalMarginSmall]}>
-                                        <Icon name="plus" size={20} color="black" />
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                            {this.getCategoryList()}
+        return (
+            <View style={styles.container}>
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    <View>
+                        <CustomTextInput
+                            style={styles.h1}
+                            placeholder="Recipe Name"
+                            value={this.state.recipeName}
+                            onChangeText={(text) => this.onRecipeNameChange(text)}
+                            validationRules={[
+                                { rule: (name: string) => name.length == 0 || this.recipeNameIsUnique(name), errorMessage: _ => "A recipe with this name already exists."},
+                                { rule: (name: string) => name.length > 0, errorMessage: _ => "Name must not be empty."}
+                            ]} 
+                            validationContainer={nameErrors}
+                            onValidChange={isValid => this.updateValid(isValid) } />
+                        <ValidationContainer ref={nameErrors} />
+                        <CustomTextInput style={styles.verticalMarginSmall} multiline={true} placeholder="Recipe Description" value={this.state.recipeDescription} onChangeText={(text) => this.onRecipeDescriptionChange(text)} />
+                        
+                        <View style={styles.rowLayout}>
+                            <Text style={[styles.h1, styles.verticalMarginSmall]}>Ingredients</Text>
+                            <TouchableOpacity onPress={(event) => this.addNewIngredient()}>
+                                <View style={[styles.rightAlign, styles.verticalMarginSmall]}>
+                                    <Icon name="plus" size={20} color="black" />
+                                </View>
+                            </TouchableOpacity>
                         </View>
-                        <View style={[styles.topMargin]}>
-                            <Button title="Submit Recipe" onPress={(event) => this.submitRecipe()}>Submit Recipe</Button>
+                        {this.getIngredientInputList()}
+
+                        <View style={styles.rowLayout}>
+                            <Text style={[styles.h1, styles.verticalMarginSmall]}>Method</Text>
+                            <TouchableOpacity onPress={(event) => this.addNewStep()}>
+                                <View style={[styles.rightAlign, styles.verticalMarginSmall]}>
+                                    <Icon name="plus" size={20} color="black" />
+                                </View>
+                            </TouchableOpacity>
                         </View>
-                    </ScrollView>
-                </View>
-            );
+                        {this.getMethodStepList()}
+
+                        <View style={styles.rowLayout}>
+                            <Text style={[styles.h1, styles.verticalMarginSmall]}>Categories</Text>
+                            <TouchableOpacity onPress={(event) => this.addNewCategory()}>
+                                <View style={[styles.rightAlign, styles.verticalMarginSmall]}>
+                                    <Icon name="plus" size={20} color="black" />
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        {this.getCategoryList()}
+                    </View>
+                    <View style={[styles.topMargin]}>
+                        <Button title="Submit Recipe" onPress={(event) => this.submitRecipe()} disabled={this.state.numInvalidInputs > 0}>Submit Recipe</Button>
+                    </View>
+                </ScrollView>
+            </View>);
+    }
+
+    private recipeNameIsUnique(name: string): boolean {
+        return !this.props.allRecipes.some(recipe => recipe.name == name);
+    }
+
+    private updateValid(isValid: boolean): void {
+        if (isValid) {
+            this.setState(state => { return { ...state, numInvalidInputs: state.numInvalidInputs - 1 }});
+        } else {
+            this.setState(state => { return { ...state, numInvalidInputs: state.numInvalidInputs + 1 }});
         }
     }
 
     private getIngredientInputList(): JSX.Element[] {
         return this.state.ingredients.map(
-            (ingredient: IngredientWithQuantity, key: number) => <IngredientSelect allIngredients={this.props.allIngredients} ingredient={ingredient} key={"ingredient-" + key} onChangeIngredient={(newIngredient) => this.onChangeIngredient(newIngredient, key)} goToIngredientInput={() => this.switchToIngredientInput(key)} />
+            (ingredient: IngredientWithQuantity, key: number) => <IngredientSelect onValidChange={isValid => this.updateValid(isValid)} allIngredients={this.props.allIngredients} ingredient={ingredient} key={"ingredient-" + key} onChangeIngredient={(newIngredient) => this.onChangeIngredient(newIngredient, key)} goToIngredientInput={() => this.switchToIngredientInput(key)} />
         );
     }
     
@@ -204,8 +236,8 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
             name: this.state.recipeName,
             description: this.state.recipeDescription,
             ingredients: this.state.ingredients.filter((ingredient: IngredientWithQuantity) => this.isValidIngredient(ingredient)),
-            categories: this.state.categories,
-            method: this.state.method
+            categories: this.state.categories.filter((category: Category) => category.name.length > 0),
+            method: { ...this.state.method, steps: this.state.method.steps.filter((step: string) => step.length > 0)}
         };
     }
 

@@ -7,10 +7,14 @@ import { withNavigation, NavigationParams, NavigationState, NavigationScreenProp
 import { RouteViewRecipes } from '../Routes';
 import RecipeInput from './shared/RecipeInput';
 import { Ingredient } from '../model/Ingredient';
+import { addIngredientWithNutritionalInformation } from '../actions/IngredientActions';
+import { NutritionalInformation } from '../model/NutritionalInformation';
 
 interface EditRecipeProps extends React.Props<EditRecipe> {
-    allIngredients: Ingredient[]
-    updateRecipe: (newRecipe: Recipe) => void
+    allIngredients: Ingredient[],
+    allRecipes: Recipe[],
+    updateRecipe: (newRecipe: Recipe) => void,
+    addIngredientWithNutritionalInformation: (ingredient: Ingredient, nutrition: NutritionalInformation) => void
 }
 
 interface EditRecipeState {
@@ -19,12 +23,14 @@ interface EditRecipeState {
 
 const mapStateToProps = (state: AppState) => {
     return {
-        allIngredients: state.ingredients.allIngredients
+        allIngredients: state.ingredients.allIngredients,
+        allRecipes: state.recipes.recipes
     };
 }
 
 const mapDispatchToProps = {
-    updateRecipe
+    updateRecipe,
+    addIngredientWithNutritionalInformation
 };
 
 class EditRecipe extends React.Component<EditRecipeProps, EditRecipeState> {
@@ -38,13 +44,17 @@ class EditRecipe extends React.Component<EditRecipeProps, EditRecipeState> {
 
     public render(): JSX.Element {
         return (
-            <RecipeInput allIngredients={this.props.allIngredients} initialRecipe={this.state.initialRecipe} submitRecipe={(recipe) => this.submitRecipe(recipe)} />
+            <RecipeInput allRecipes={this.props.allRecipes} allIngredients={this.props.allIngredients} initialRecipe={this.state.initialRecipe} submitRecipe={(recipe) => this.submitRecipe(recipe)} submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)} />
         );
     }
 
     private submitRecipe(recipe: Recipe): void {
         this.props.updateRecipe(recipe);
         this.props.navigation.navigate(RouteViewRecipes);
+    }
+
+    private submitIngredient(ingredient: Ingredient, nutrition: NutritionalInformation): void {
+        this.props.addIngredientWithNutritionalInformation(ingredient, nutrition);
     }
 }
 

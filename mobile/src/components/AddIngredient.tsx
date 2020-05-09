@@ -9,7 +9,8 @@ import IngredientInput from './shared/IngredientInput';
 import { NutritionalInformation } from '../model/NutritionalInformation';
 
 interface AddIngredientProps {
-    allIngredients: Ingredient[]
+    allIngredients: Ingredient[],
+    addIngredientWithNutritionalInformation: (ingredient: Ingredient, nutrition: NutritionalInformation) => void
 }
 
 interface AddIngredientState {

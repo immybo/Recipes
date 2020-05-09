@@ -10,12 +10,14 @@ import { QuantityUnit } from '../../model/QuantityUnit';
 import { QuantityFormatter } from '../../util/QuantityFormatter';
 import { Ingredient } from '../../model/Ingredient';
 import ValidationContainer from './ValidationContainer';
+import { PositiveOrZero } from '../../util/ValidationRules';
 
 interface IngredientSelectProps extends React.Props<IngredientSelect> {
     ingredient: IngredientWithQuantity,
     allIngredients: Ingredient[],
     onChangeIngredient: (ingredient: IngredientWithQuantity) => void,
-    goToIngredientInput: () => void
+    goToIngredientInput: () => void,
+    onValidChange?: (isValid: boolean) => void
 }
 
 class IngredientSelect extends React.Component<IngredientSelectProps, any> {
@@ -38,14 +40,13 @@ class IngredientSelect extends React.Component<IngredientSelectProps, any> {
                     </Picker>
                     <CustomTextInput
                         style={{ "flex": 0.1 }}
-                        value={this.props.ingredient.quantity.amount > 0 ? this.props.ingredient.quantity.amount.toString() : ""}
                         keyboardType="numeric"
                         onChangeText={(newQuantity) => this.updateIngredientQuantityNumber(newQuantity)}
                         placeholder={"Quantity"}
                         maxLength={10}
-                        validationRules={[
-                        ]}
-                        validationContainer={validationContainer}/>
+                        validationRules={[ PositiveOrZero ]}
+                        validationContainer={validationContainer}
+                        onValidChange={this.props.onValidChange} />
                     <View style={{ "flex": 0.35 }}>
                         <Picker style={[{"flex": 1}, styles.pickerItem]} selectedValue={this.props.ingredient.quantity.unit} onValueChange={(value, _) => this.updateIngredientQuantityUnit(value)}>
                             { [ QuantityUnit.None, QuantityUnit.Grams, QuantityUnit.Kilograms, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Millilitres, QuantityUnit.Litres ].map((unit: QuantityUnit) => {

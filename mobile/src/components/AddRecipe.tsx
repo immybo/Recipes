@@ -12,6 +12,7 @@ import { addIngredientWithNutritionalInformation } from '../actions/IngredientAc
 
 interface AddRecipeProps extends React.Props<AddRecipe> {
     allIngredients: Ingredient[],
+    allRecipes: Recipe[]
     addRecipe: (recipe: Recipe) => void,
     addIngredientWithNutritionalInformation: (ingredient: Ingredient, nutrition: NutritionalInformation) => void
 }
@@ -21,7 +22,8 @@ interface AddRecipeState {
 
 const mapStateToProps = (state: AppState) => {
     return {
-        allIngredients: state.ingredients.allIngredients
+        allIngredients: state.ingredients.allIngredients,
+        allRecipes: state.recipes.recipes
     };
 }
 
@@ -37,7 +39,7 @@ class AddRecipe extends React.Component<AddRecipeProps, AddRecipeState> {
 
     public render(): JSX.Element {
         return (
-            <RecipeInput allIngredients={this.props.allIngredients} initialRecipe={getBlankRecipe()} submitRecipe={(recipe) => this.submitRecipe(recipe)} submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)} />
+            <RecipeInput allRecipes={this.props.allRecipes} allIngredients={this.props.allIngredients} initialRecipe={getBlankRecipe()} submitRecipe={(recipe) => this.submitRecipe(recipe)} submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)} />
         );
     }
 

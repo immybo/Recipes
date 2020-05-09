@@ -36,6 +36,10 @@ class CustomTextInput extends React.Component<CustomTextInputProps, CustomTextIn
         this.setState({...this.state, isFocused: false});
     }
 
+    public componentDidMount(): void {
+        this.componentDidUpdate();
+    }
+
     public componentDidUpdate(): void {
         // All of this stuff really goes against the react mindset.
         // The actual Validator object is a child of this.props.validationContainer, rather than as a child of this object.
@@ -70,16 +74,14 @@ class CustomTextInput extends React.Component<CustomTextInputProps, CustomTextIn
 
     public render(): JSX.Element {
         return (
-            <View>
-                <TextInput
-                    selectionColor={Colors.Blue}
-                    underlineColorAndroid={this.state.isFocused ? Colors.Blue : Colors.LightGrey }
-                    onFocus={() => this.handleFocus()}
-                    onBlur={() => this.handleBlur()}
-                    { ...this.props }
-                    onChangeText={newStr => this.onChange(newStr, this.props.onChangeText)}
-                    />
-            </View>
+            <TextInput
+                selectionColor={Colors.Blue}
+                underlineColorAndroid={this.state.isFocused ? Colors.Blue : Colors.LightGrey }
+                onFocus={() => this.handleFocus()}
+                onBlur={() => this.handleBlur()}
+                { ...this.props }
+                onChangeText={newStr => this.onChange(newStr, this.props.onChangeText)}
+                />
         );    
     }
 
