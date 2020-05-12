@@ -2,11 +2,14 @@ import { Recipe } from "../model/Recipe";
 import { Dispatch } from "redux";
 import { RecipesApi } from "../services/api/Recipes";
 import { setApiErrorToDisplay } from "./NetworkActions";
+import { NutritionalInformation } from "../model/NutritionalInformation";
+import { MacronutrientInformation } from "../model/MacronutrientInformation";
 
 export const ADD_RECIPE = "ADD_RECIPE";
 export const DELETE_RECIPE = "DELETE_RECIPE";
 export const UPDATE_RECIPE = "UPDATE_RECIPE";
 export const SET_ALL_RECIPES = "SET_ALL_RECIPES";
+export const SET_NUTRITIONAL_INFORMATION_FOR_RECIPE = "SET_NUTRITIONAL_INFORMATION_FOR_RECIPE";
 
 interface AddRecipeAction {
     type: typeof ADD_RECIPE,
@@ -28,7 +31,12 @@ interface SetAllRecipesAction {
     payload: Recipe[]
 }
 
-export type RecipeActionTypes = AddRecipeAction | DeleteRecipeAction | UpdateRecipeAction | SetAllRecipesAction;
+interface SetNutritionalInformationForRecipeAction {
+    type: typeof SET_NUTRITIONAL_INFORMATION_FOR_RECIPE,
+    payload: [number, MacronutrientInformation]
+}
+
+export type RecipeActionTypes = AddRecipeAction | DeleteRecipeAction | UpdateRecipeAction | SetAllRecipesAction | SetNutritionalInformationForRecipeAction;
 
 export function addRecipe(newRecipe: Recipe)  {
     return function(dispatch: Dispatch) {
@@ -91,5 +99,21 @@ export function setAllRecipes(allRecipes: Recipe[]): RecipeActionTypes {
     return {
         type: SET_ALL_RECIPES,
         payload: allRecipes
+    }
+}
+
+export function getNutritionalInformationForRecipe(recipeId: number) {
+    return function(dispatch: Dispatch) {
+        return RecipesApi.getNutritionalInformationForRecipe(recipeId).then(
+            nutrition => dispatch(setNutritionalInformationForRecipe(recipeId, nutrition)),
+            error => dispatch(setApiErrorToDisplay("Couldn't calculate nutrition of recipe. " + String(error)))
+        );
+    }
+}
+
+export function setNutritionalInformationForRecipe(recipeId: number, nutrition: MacronutrientInformation): RecipeActionTypes {
+    return {
+        type: SET_NUTRITIONAL_INFORMATION_FOR_RECIPE,
+        payload: [recipeId, nutrition]
     }
 }

@@ -1,4 +1,4 @@
-import { RecipeActionTypes, ADD_RECIPE, DELETE_RECIPE, UPDATE_RECIPE, SET_ALL_RECIPES } from "../actions/RecipeActions";
+import { RecipeActionTypes, ADD_RECIPE, DELETE_RECIPE, UPDATE_RECIPE, SET_ALL_RECIPES, SET_NUTRITIONAL_INFORMATION_FOR_RECIPE } from "../actions/RecipeActions";
 import { RecipeState, Recipe } from "../model/Recipe";
 
 const initialState: RecipeState = {
@@ -32,6 +32,11 @@ export default function(state = initialState, action: RecipeActionTypes) {
             return {
                 ...state,
                 recipes: action.payload
+            }
+        case SET_NUTRITIONAL_INFORMATION_FOR_RECIPE:
+            return {
+                ...state,
+                nutritionalInformationForCurrentRecipe: action.payload[1]
             }
         default:
             return state;

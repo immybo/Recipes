@@ -73,6 +73,7 @@ let app =
           GET >=> choose
             [ path "/recipes" >=> request(fun context -> handleParameterless (context, GetAllRecipes.getAllRecipes))
               pathScan "/recipes/%d" (fun id -> callWithJson getRecipe id)
+              pathScan "/recipes/%d/nutrition" (fun id -> callWithJson GetNutritionalInformationForRecipe.getNutritionalInformationForRecipe id)
               path "/ingredients" >=> request(fun context -> handleParameterless (context, GetAllIngredients.getAllIngredients))
               path "/nutrition/ingredients" >=> request(fun context -> handle (context, GetNutritionalInformationForIngredients.getNutritionalInformationForIngredients))]
           POST >=> choose

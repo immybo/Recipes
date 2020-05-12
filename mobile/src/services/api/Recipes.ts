@@ -1,6 +1,8 @@
 import { Recipe } from "../../model/Recipe";
 import { HttpMethod, callApi } from "../Server";
 import { parseRecipes, recipeToJson, parseRecipe } from "../RecipeParser";
+import { parseMacronutrientInformation } from "../NutritionalInformationParser";
+import { MacronutrientInformation } from "../../model/MacronutrientInformation";
 
 export class RecipesApi {
     public static addRecipe(recipe: Recipe): Promise<number> {
@@ -38,5 +40,12 @@ export class RecipesApi {
                 HttpMethod.PUT,
                 parseInt,
                 recipeToJson(recipe));
+    }
+
+    public static getNutritionalInformationForRecipe(recipeId: number): Promise<MacronutrientInformation> {
+        return callApi(
+                "recipes/" + recipeId + "/nutrition",
+                HttpMethod.GET,
+                parseMacronutrientInformation);
     }
 } 

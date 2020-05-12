@@ -1,4 +1,5 @@
 import { NutritionalInformation } from "../model/NutritionalInformation";
+import { MacronutrientInformation } from "../model/MacronutrientInformation";
 
 export function parseNutritionalInformation(nutritionJson: any): NutritionalInformation {
     return {
@@ -18,4 +19,18 @@ export function parseNutritionalInformation(nutritionJson: any): NutritionalInfo
 
 export function nutritionalInformationToJson(nutrition: NutritionalInformation) {
     return JSON.stringify(nutrition)
+}
+
+export function parseMacronutrientInformation(json: any): MacronutrientInformation {
+    var nutritionJson = json.Fields[0];
+    return {
+        caloriesPerServing: nutritionJson.CaloriesPerServing,
+        carbGramsPerServing: nutritionJson.CarbGramsPerServing,
+        fatGramsPerServing: nutritionJson.FatGramsPerServing,
+        proteinGramsPerServing: nutritionJson.ProteinGramsPerServing,
+        servingSize: {
+            amount: Number.parseFloat(nutritionJson.ServingSize.Amount),
+            unit: nutritionJson.ServingSize.Unit
+        }
+    };
 }

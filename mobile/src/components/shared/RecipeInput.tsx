@@ -51,7 +51,7 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
             categories: props.initialRecipe.categories,
             method: props.initialRecipe.method,
             isInputtingIngredient: false,
-            ingredientInputKey: -1,
+            ingredientInputKey: -1, 
             numInvalidInputs: 0
         };
     }

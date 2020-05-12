@@ -1,6 +1,8 @@
 import { IngredientWithQuantity } from "./IngredientWithQuantity";
 import { Category } from "./Category";
 import { getEmptyMethod, Method } from "./Method";
+import { NutritionalInformation } from "./NutritionalInformation";
+import { MacronutrientInformation } from "./MacronutrientInformation";
 
 export interface Recipe {
     id: number,
@@ -14,6 +16,7 @@ export interface Recipe {
 export interface RecipeState {
     recipes: Recipe[];
     recipeContext?: Recipe;
+    nutritionalInformationForCurrentRecipe?: MacronutrientInformation
 }
 
 export function getBlankRecipe(): Recipe {
