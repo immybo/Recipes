@@ -3,6 +3,7 @@ namespace Tests
 open NUnit.Framework
 open Model
 open Railway
+open Interface
 
 module NutritionTests =
     [<SetUp>]
@@ -11,17 +12,17 @@ module NutritionTests =
 
     [<Test>]
     let AddRecipeAndCheckThatItHasNoNutritionalInformation () =
-        AddRecipe.addRecipe TestUtils.TestRecipe
+        Recipes.add TestUtils.TestRecipe
         |> function result ->
             match result with
             | Result.Error err -> Assert.False(true, err.ToString())
             | Result.Ok recipeId -> 
-                GetRecipe.getRecipe recipeId
+                Recipes.get recipeId
                 |> fun readRecipe ->
                     match readRecipe with
                     | Result.Error Error.RecipeDoesNotExist -> Assert.False(true)
                     | Result.Ok readRecipe ->
-                        GetNutritionalInformationForIngredients.getNutritionalInformationForIngredients([readRecipe.Ingredients.[0].Ingredient.Id])
+                        Nutrition.getForIngredients([readRecipe.Ingredients.[0].Ingredient.Id])
                         |> fun result ->
                             match result with
                             | Result.Error err -> Assert.False(true, err.ToString())
@@ -30,22 +31,22 @@ module NutritionTests =
 
     [<Test>]
     let AddRecipeAndNutritionalInformationForIngredientsAndMakeSureWeCanRetrieveItThenUpdateItAndEnsureThatItChanges () =
-        AddRecipe.addRecipe TestUtils.TestRecipe
+        Recipes.add TestUtils.TestRecipe
         |> function result ->
             match result with
             | Result.Error err -> Assert.False(true, err.ToString())
             | Result.Ok recipeId -> 
-                GetRecipe.getRecipe recipeId
+                Recipes.get recipeId
                 |> fun readRecipe ->
                     match readRecipe with
                     | Result.Error Error.RecipeDoesNotExist -> Assert.False(true)
                     | Result.Ok readRecipe ->
-                        AddNutritionalInformationForIngredient.addNutritionalInformationForIngredient ({TestUtils.TestNutritionalInformation with IngredientId = readRecipe.Ingredients.[0].Ingredient.Id })
+                        Nutrition.addForIngredient ({TestUtils.TestNutritionalInformation with IngredientId = readRecipe.Ingredients.[0].Ingredient.Id })
                         |> fun result ->
                             match result with
                             | Result.Error err -> Assert.False(true, err.ToString())
                             | Result.Ok _ -> 
-                                GetNutritionalInformationForIngredients.getNutritionalInformationForIngredients([readRecipe.Ingredients.[0].Ingredient.Id])
+                                Nutrition.getForIngredients([readRecipe.Ingredients.[0].Ingredient.Id])
                                 |> fun result ->
                                     match result with
                                     | Result.Error err -> Assert.False(true, err.ToString())
@@ -64,7 +65,7 @@ module NutritionTests =
                                                     };
                                                 }
                                         }), nutritionalInfos.[0])
-                                        AddNutritionalInformationForIngredient.addNutritionalInformationForIngredient({
+                                        Nutrition.addForIngredient({
                                             TestUtils.TestNutritionalInformation2 with
                                                 IngredientId = readRecipe.Ingredients.[0].Ingredient.Id;
                                         })
@@ -72,7 +73,7 @@ module NutritionTests =
                                             match result with
                                             | Result.Error err -> Assert.False(true, err.ToString())
                                             | Result.Ok _ -> 
-                                                GetNutritionalInformationForIngredients.getNutritionalInformationForIngredients([readRecipe.Ingredients.[0].Ingredient.Id])
+                                                Nutrition.getForIngredients([readRecipe.Ingredients.[0].Ingredient.Id])
                                                 |> fun result ->
                                                     match result with
                                                     | Result.Error err -> Assert.False(true, err.ToString())
@@ -101,12 +102,12 @@ module NutritionTests =
         }
 
         let nutritionResult =
-            AddRecipe.addRecipe TestUtils.TestRecipe
-            >=> GetRecipe.getRecipe
+            Recipes.add TestUtils.TestRecipe
+            >=> Recipes.get
             >=> fun readRecipe ->
-                    AddNutritionalInformationForIngredient.addNutritionalInformationForIngredient ({TestUtils.TestNutritionalInformation with IngredientId = readRecipe.Ingredients.[0].Ingredient.Id }) |> ignore
+                    Nutrition.addForIngredient ({TestUtils.TestNutritionalInformation with IngredientId = readRecipe.Ingredients.[0].Ingredient.Id }) |> ignore
                     Result.Ok readRecipe.Id
-            >=> GetNutritionalInformationForRecipe.getNutritionalInformationForRecipe
+            >=> Nutrition.getForRecipe
         match nutritionResult with
         | Result.Error err -> Assert.Fail (err.ToString())
         | Result.Ok nutrition ->

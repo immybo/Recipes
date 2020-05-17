@@ -9,6 +9,7 @@ open System
 open Newtonsoft.Json
 open Model
 open System.Net
+open Interface
 
 let getJsonFromRequest (req: HttpRequest) =
     req.rawForm
@@ -30,10 +31,10 @@ let callWithJson func argv : WebPart =
     |> OK
 
 let getRecipe id =
-    GetRecipe.getRecipe id
+    Recipes.get id
 
 let deleteRecipe id =
-    DeleteRecipe.deleteRecipe id
+    Recipes.delete id
 
 let handle<'ParamType, 'ResponseType> (request: HttpRequest, underlyingFunction: 'ParamType -> Result<'ResponseType, Error>) : WebPart =
     logRequest request
@@ -71,23 +72,23 @@ let app =
     choose
         [ 
           GET >=> choose
-            [ path "/recipes" >=> request(fun context -> handleParameterless (context, GetAllRecipes.getAllRecipes))
+            [ path "/recipes" >=> request(fun context -> handleParameterless (context, Recipes.getAll))
               pathScan "/recipes/%d" (fun id -> callWithJson getRecipe id)
-              pathScan "/recipes/%d/nutrition" (fun id -> callWithJson GetNutritionalInformationForRecipe.getNutritionalInformationForRecipe id)
-              path "/ingredients" >=> request(fun context -> handleParameterless (context, GetAllIngredients.getAllIngredients))
-              path "/nutrition/ingredients" >=> request(fun context -> handle (context, GetNutritionalInformationForIngredients.getNutritionalInformationForIngredients))]
+              pathScan "/recipes/%d/nutrition" (fun id -> callWithJson Nutrition.getForRecipe id)
+              path "/ingredients" >=> request(fun context -> handleParameterless (context, Ingredients.getAll))
+              path "/nutrition/ingredients" >=> request(fun context -> handle (context, Nutrition.getForIngredients))]
           POST >=> choose
-            [ path "/recipes" >=> request(fun context -> handle (context, AddRecipe.addRecipe))
-              path "/ingredients" >=> request(fun context -> handle (context, AddIngredient.addIngredient))
-              path "/mealplanner/mealplans" >=> request(fun context -> handle (context, AddOrUpdateMealPlan.addOrUpdateMealPlan))
-              path "/nutrition/ingredients" >=> request(fun context -> handle (context, AddNutritionalInformationForIngredient.addNutritionalInformationForIngredient))]
+            [ path "/recipes" >=> request(fun context -> handle (context, Recipes.add))
+              path "/ingredients" >=> request(fun context -> handle (context, Ingredients.add))
+              path "/mealplanner/mealplans" >=> request(fun context -> handle (context, MealPlan.addOrUpdate))
+              path "/nutrition/ingredients" >=> request(fun context -> handle (context, Nutrition.addForIngredient))]
           PUT >=> choose
-            [ path "/recipes" >=> request(fun context -> handle (context, UpdateRecipe.updateRecipe))
+            [ path "/recipes" >=> request(fun context -> handle (context, Recipes.update))
               // Can't send a body in get requests... we could just use multiple query string params?
-              path "/mealplanner/mealplans" >=> request(fun context -> handle (context, GetMealPlan.getMealPlan))]
+              path "/mealplanner/mealplans" >=> request(fun context -> handle (context, MealPlan.get))]
           DELETE >=> choose
             [ pathScan "/recipes/%d" (fun id -> callWithJson deleteRecipe id)
-              path "/mealplanner/mealplans" >=> request(fun context -> handle (context, DeleteMealPlanEntry.deleteMealPlanEntry))]
+              path "/mealplanner/mealplans" >=> request(fun context -> handle (context, MealPlan.deleteEntry))]
         ]
 
 let getIpAddress argv =

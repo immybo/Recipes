@@ -30,19 +30,10 @@
     <Compile Include="DataAccess\CategoryDataAccess.fs" />
     <Compile Include="DataAccess\RecipeDataAccess.fs" />
     <Compile Include="Validation\RecipeValidation.fs" />
-    <Compile Include="Interface\GetRecipe.fs" />
-    <Compile Include="Interface\AddNutritionalInformationForIngredient.fs" />
-    <Compile Include="Interface\DeleteMealPlanEntry.fs" />
-    <Compile Include="Interface\GetMealPlan.fs" />
-    <Compile Include="Interface\AddOrUpdateMealPlan.fs" />
-    <Compile Include="Interface\AddIngredient.fs" />
-    <Compile Include="Interface\GetNutritionalInformationForIngredients.fs" />
-    <Compile Include="Interface\GetAllIngredients.fs" />
-    <Compile Include="Interface\GetNutritionalInformationForRecipe.fs" />
-    <Compile Include="Interface\GetAllRecipes.fs" />
-    <Compile Include="Interface\AddRecipe.fs" />
-    <Compile Include="Interface\DeleteRecipe.fs" />
-    <Compile Include="Interface\UpdateRecipe.fs" />
+    <Compile Include="Interface\MealPlan.fs" />
+    <Compile Include="Interface\Recipes.fs" />
+    <Compile Include="Interface\Ingredients.fs" />
+    <Compile Include="Interface\Nutrition.fs" />
   </ItemGroup>
 
   <ItemGroup>

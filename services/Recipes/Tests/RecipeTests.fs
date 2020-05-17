@@ -2,6 +2,7 @@ namespace Tests
 
 open NUnit.Framework
 open Model
+open Interface
 
 module RecipeTests = 
     [<SetUp>]
@@ -10,12 +11,12 @@ module RecipeTests =
 
     [<Test>]
     let AddRecipeAndCheckThatItExistsAndIsEqual () =
-        AddRecipe.addRecipe TestUtils.TestRecipe
+        Recipes.add TestUtils.TestRecipe
         |> function result ->
             match result with
             | Result.Error err -> Assert.False(true, err.ToString())
             | Result.Ok recipeId -> 
-                GetRecipe.getRecipe recipeId
+                Recipes.get recipeId
                 |> fun readRecipe ->
                     match readRecipe with
                     | Result.Error Error.RecipeDoesNotExist -> Assert.False(true)
@@ -23,12 +24,12 @@ module RecipeTests =
 
     [<Test>]
     let AddAndThenUpdateRecipeAndCheckThatItUpdatedCorrectly () =
-        AddRecipe.addRecipe TestUtils.TestRecipe
+        Recipes.add TestUtils.TestRecipe
         |> function result ->
             match result with
             | Result.Error err -> Assert.False(true, err.ToString())
             | Result.Ok recipeId ->
-                GetRecipe.getRecipe recipeId
+                Recipes.get recipeId
                 |> function result -> 
                     match result with
                     | Result.Error err -> Assert.False(true, err.ToString())
@@ -63,12 +64,12 @@ module RecipeTests =
                                 ];
                             }
                         }
-                        UpdateRecipe.updateRecipe updatedRecipe
+                        Recipes.update updatedRecipe
                         |> function result ->
                             match result with
                             | Result.Error err -> Assert.False(true, err.ToString());
                             | Result.Ok recipeId ->
-                                GetRecipe.getRecipe recipeId
+                                Recipes.get recipeId
                                 |> fun readRecipe ->
                                     match readRecipe with
                                     | Result.Error Error.RecipeDoesNotExist -> Assert.False(true)
@@ -77,15 +78,15 @@ module RecipeTests =
 
     [<Test>]
     let AddAndDeleteRecipeAndCheckThatItNoLongerExists () =
-        AddRecipe.addRecipe TestUtils.TestRecipe
+        Recipes.add TestUtils.TestRecipe
         |> function
             | Result.Error err -> Assert.False(true, err.ToString());
             | Result.Ok recipeId ->
-                DeleteRecipe.deleteRecipe recipeId
+                Recipes.delete recipeId
                 |> function
                     | Result.Error err -> Assert.False(true, err.ToString())
                     | Result.Ok recipeId ->
-                        GetRecipe.getRecipe recipeId
+                        Recipes.get recipeId
                         |> function
                             | Result.Error Error.RecipeDoesNotExist -> ()
                             | Result.Error err -> Assert.False(true, "Invalid error raised: " + err.ToString())
