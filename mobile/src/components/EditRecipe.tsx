@@ -8,13 +8,13 @@ import { RouteViewRecipes } from '../Routes';
 import RecipeInput from './shared/RecipeInput';
 import { Ingredient } from '../model/Ingredient';
 import { addIngredientWithNutritionalInformation } from '../actions/IngredientActions';
-import { NutritionalInformation } from '../model/NutritionalInformation';
+import { IngredientNutrition } from '../model/IngredientNutrition';
 
 interface EditRecipeProps extends React.Props<EditRecipe> {
     allIngredients: Ingredient[],
     allRecipes: Recipe[],
     updateRecipe: (newRecipe: Recipe) => void,
-    addIngredientWithNutritionalInformation: (ingredient: Ingredient, nutrition: NutritionalInformation) => void
+    addIngredientWithNutritionalInformation: (ingredient: Ingredient, nutrition: IngredientNutrition) => void
 }
 
 interface EditRecipeState {
@@ -53,7 +53,7 @@ class EditRecipe extends React.Component<EditRecipeProps, EditRecipeState> {
         this.props.navigation.navigate(RouteViewRecipes);
     }
 
-    private submitIngredient(ingredient: Ingredient, nutrition: NutritionalInformation): void {
+    private submitIngredient(ingredient: Ingredient, nutrition: IngredientNutrition): void {
         this.props.addIngredientWithNutritionalInformation(ingredient, nutrition);
     }
 }

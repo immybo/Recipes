@@ -21,7 +21,7 @@ module NutritionTests =
                     match readRecipe with
                     | Result.Error Error.RecipeDoesNotExist -> Assert.False(true)
                     | Result.Ok readRecipe ->
-                        NutritionalInformationDomain.getNutritionalInformationForIngredients([readRecipe.Ingredients.[0].Ingredient.Id])
+                        GetNutritionalInformationForIngredients.getNutritionalInformationForIngredients([readRecipe.Ingredients.[0].Ingredient.Id])
                         |> fun result ->
                             match result with
                             | Result.Error err -> Assert.False(true, err.ToString())
@@ -40,52 +40,77 @@ module NutritionTests =
                     match readRecipe with
                     | Result.Error Error.RecipeDoesNotExist -> Assert.False(true)
                     | Result.Ok readRecipe ->
-                        NutritionalInformationDomain.setNutritionalInformationForIngredient ({TestUtils.TestNutritionalInformation with IngredientId = readRecipe.Ingredients.[0].Ingredient.Id })
+                        AddNutritionalInformationForIngredient.addNutritionalInformationForIngredient ({TestUtils.TestNutritionalInformation with IngredientId = readRecipe.Ingredients.[0].Ingredient.Id })
                         |> fun result ->
                             match result with
                             | Result.Error err -> Assert.False(true, err.ToString())
                             | Result.Ok _ -> 
-                                NutritionalInformationDomain.getNutritionalInformationForIngredients([readRecipe.Ingredients.[0].Ingredient.Id])
+                                GetNutritionalInformationForIngredients.getNutritionalInformationForIngredients([readRecipe.Ingredients.[0].Ingredient.Id])
                                 |> fun result ->
                                     match result with
                                     | Result.Error err -> Assert.False(true, err.ToString())
                                     | Result.Ok nutritionalInfos ->
-                                        Assert.AreEqual(nutritionalInfos.[0], {TestUtils.TestNutritionalInformation with IngredientId = readRecipe.Ingredients.[0].Ingredient.Id })
-                                        NutritionalInformationDomain.setNutritionalInformationForIngredient ({TestUtils.TestNutritionalInformation2 with IngredientId = readRecipe.Ingredients.[0].Ingredient.Id })
+                                        Assert.AreEqual(({
+                                            TestUtils.TestNutritionalInformation with
+                                                IngredientId = readRecipe.Ingredients.[0].Ingredient.Id;
+                                                Density = {
+                                                    EquivalentByVolume = {
+                                                        Amount = 1M;
+                                                        Unit = QuantityUnit.Cups;
+                                                    };
+                                                    EquivalentByWeight = {
+                                                        Amount = 10M;
+                                                        Unit = QuantityUnit.Grams;
+                                                    };
+                                                }
+                                        }), nutritionalInfos.[0])
+                                        AddNutritionalInformationForIngredient.addNutritionalInformationForIngredient({
+                                            TestUtils.TestNutritionalInformation2 with
+                                                IngredientId = readRecipe.Ingredients.[0].Ingredient.Id;
+                                        })
                                         |> fun result ->
                                             match result with
                                             | Result.Error err -> Assert.False(true, err.ToString())
                                             | Result.Ok _ -> 
-                                                NutritionalInformationDomain.getNutritionalInformationForIngredients([readRecipe.Ingredients.[0].Ingredient.Id])
+                                                GetNutritionalInformationForIngredients.getNutritionalInformationForIngredients([readRecipe.Ingredients.[0].Ingredient.Id])
                                                 |> fun result ->
                                                     match result with
                                                     | Result.Error err -> Assert.False(true, err.ToString())
-                                                    | Result.Ok nutritionalInfos -> Assert.AreEqual(nutritionalInfos.[0], {TestUtils.TestNutritionalInformation2 with IngredientId = readRecipe.Ingredients.[0].Ingredient.Id })
+                                                    | Result.Ok nutritionalInfos -> Assert.AreEqual(({
+                                                        TestUtils.TestNutritionalInformation2 with
+                                                            IngredientId = readRecipe.Ingredients.[0].Ingredient.Id;
+                                                            Density = {
+                                                                EquivalentByVolume = {
+                                                                    Amount = 1M;
+                                                                    Unit = QuantityUnit.Cups;
+                                                                };
+                                                                EquivalentByWeight = {
+                                                                    Amount = 10M;
+                                                                    Unit = QuantityUnit.Grams;
+                                                                };
+                                                            }
+                                                    }), nutritionalInfos.[0])
 
     [<Test>]
     let TestNutritionalInformationForRecipeIsCalculatedCorrectly () =
         let expectedNutritionResult = {
-            CaloriesPerServing = 1000m * 0.822666667m;
-            ProteinGramsPerServing = 40m * 0.822666667m;
-            CarbGramsPerServing = 30m * 0.822666667m;
-            FatGramsPerServing = 30m * 0.822666667m;
-            ServingSize = {
-                Amount = 0m;
-                Unit = QuantityUnit.None;
-            };
+            Calories = 1000m;
+            ProteinGrams = 40m;
+            CarbGrams = 30m;
+            FatGrams = 30m;
         }
 
         let nutritionResult =
             AddRecipe.addRecipe TestUtils.TestRecipe
             >=> GetRecipe.getRecipe
             >=> fun readRecipe ->
-                    NutritionalInformationDomain.setNutritionalInformationForIngredient ({TestUtils.TestNutritionalInformation with IngredientId = readRecipe.Ingredients.[0].Ingredient.Id }) |> ignore
+                    AddNutritionalInformationForIngredient.addNutritionalInformationForIngredient ({TestUtils.TestNutritionalInformation with IngredientId = readRecipe.Ingredients.[0].Ingredient.Id }) |> ignore
                     Result.Ok readRecipe.Id
-            >=> RecipeNutritionDomain.getNutritionalInformationForRecipe
+            >=> GetNutritionalInformationForRecipe.getNutritionalInformationForRecipe
         match nutritionResult with
         | Result.Error err -> Assert.Fail (err.ToString())
         | Result.Ok nutrition ->
-            Assert.AreEqual (float expectedNutritionResult.CaloriesPerServing, float nutrition.CaloriesPerServing, 0.01)
-            Assert.AreEqual (float expectedNutritionResult.ProteinGramsPerServing, float nutrition.ProteinGramsPerServing, 0.01)
-            Assert.AreEqual (float expectedNutritionResult.CarbGramsPerServing, float nutrition.CarbGramsPerServing, 0.01)
-            Assert.AreEqual (float expectedNutritionResult.FatGramsPerServing, float nutrition.FatGramsPerServing, 0.01)
+            Assert.AreEqual (float expectedNutritionResult.Calories, float nutrition.Calories, 0.01)
+            Assert.AreEqual (float expectedNutritionResult.ProteinGrams, float nutrition.ProteinGrams, 0.01)
+            Assert.AreEqual (float expectedNutritionResult.CarbGrams, float nutrition.CarbGrams, 0.01)
+            Assert.AreEqual (float expectedNutritionResult.FatGrams, float nutrition.FatGrams, 0.01)

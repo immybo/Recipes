@@ -28,7 +28,7 @@ module RecipeTests =
             match result with
             | Result.Error err -> Assert.False(true, err.ToString())
             | Result.Ok recipeId ->
-                RecipeDomain.getRecipeById recipeId
+                GetRecipe.getRecipe recipeId
                 |> function result -> 
                     match result with
                     | Result.Error err -> Assert.False(true, err.ToString())

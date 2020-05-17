@@ -19,5 +19,8 @@ ADD	CONSTRAINT FK_MethodSteps_methodId_Methods_methodId FOREIGN KEY (methodId) R
 ALTER TABLE MealPlanner.MealPlans
 ADD CONSTRAINT FK_MealPlans_recipeId_Recipes_recipeId FOREIGN KEY (recipeId) REFERENCES dbo.Recipes (id)
 
-ALTER TABLE dbo.Macronutrients
-ADD CONSTRAINT FK_Macronutrients_ingredientId_Ingredients_id FOREIGN KEY (ingredientId) REFERENCES Recipes.dbo.Ingredients (id)
+ALTER TABLE dbo.IngredientNutrition
+ADD CONSTRAINT FK_IngredientNutrition_ingredientId_Ingredients_id FOREIGN KEY (ingredientId) REFERENCES Recipes.dbo.Ingredients (id)
+
+ALTER TABLE dbo.IngredientNutrition
+ADD CONSTRAINT FK_IngredientNutrition_macronutrientsId_Macronutrients_id FOREIGN KEY (macronutrientsId) REFERENCES Recipes.dbo.Macronutrients (id)

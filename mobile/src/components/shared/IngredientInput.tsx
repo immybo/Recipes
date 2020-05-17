@@ -10,14 +10,15 @@ import CustomTextInput from './CustomTextInput';
 import { Ingredient } from '../../model/Ingredient';
 import { Numbers } from '../../util/Regex';
 import { QuantityUnit } from '../../model/QuantityUnit';
-import { NutritionalInformation } from '../../model/NutritionalInformation';
+import { IngredientNutrition } from '../../model/IngredientNutrition';
 import { QuantityFormatter } from '../../util/QuantityFormatter';
 import ValidationContainer from './ValidationContainer';
 import { PositiveOrZero } from '../../util/ValidationRules';
+import { Density } from '../../model/Density';
 
 interface IngredientInputProps extends React.Props<IngredientInput> {
     initialIngredient: Ingredient,
-    submitIngredient: (ingredient: Ingredient, nutrition: NutritionalInformation) => void,
+    submitIngredient: (ingredient: Ingredient, nutrition: IngredientNutrition) => void,
     allIngredients: Ingredient[]
 }
 
@@ -29,7 +30,8 @@ interface IngredientInputState {
     gramsProteinPerServing?: number,
     gramsFatPerServing?: number,
     gramsCarbsPerServing?: number,
-    numInvalidInputs: number
+    numInvalidInputs: number,
+    density: Density
 }
 
 export default class IngredientInput extends React.Component<IngredientInputProps, IngredientInputState> {
@@ -44,7 +46,17 @@ export default class IngredientInput extends React.Component<IngredientInputProp
             gramsProteinPerServing: 0,
             servingSizeAmount: 0,
             servingSizeUnit: QuantityUnit.Cups,
-            numInvalidInputs: 0
+            numInvalidInputs: 0,
+            density: {
+                equivalentByWeight: {
+                    amount: 100,
+                    unit: QuantityUnit.Grams
+                },
+                equivalentByVolume: {
+                    amount: 1,
+                    unit: QuantityUnit.Cups
+                }
+            }
         };
     }
 
@@ -136,12 +148,61 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                     <Text style={styles.horizontalMarginSmall}>grams of carbs per serving</Text>
                 </View>
                 <ValidationContainer ref={carbsErrors} />
+
+                <View style={[styles.rowWithoutJustify, styles.flexWrap, styles.noMargin]}>
+                    <Text>The weight of </Text>
+                    <CustomTextInput
+                        keyboardType="numeric"
+                        defaultValue={String(this.state.density.equivalentByVolume.amount)}
+                        onChangeText={(text) => this.updateDensityVolumeAmount(text)} />
+                    <Picker style={[styles.pickerItem, {"flex": 0.45}]} selectedValue={this.state.density.equivalentByVolume.unit} onValueChange={(value, _) => this.updateDensityVolumeUnit(value)}>
+                        { [ QuantityUnit.Millilitres, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Litres ].map((unit: QuantityUnit) => {
+                            let formattedUnit: string = QuantityFormatter.formatUnitShorthand(unit);
+                            return <Picker.Item label={formattedUnit} key={formattedUnit} value={unit} />
+                        })}
+                    </Picker>
+                </View>
+                <View style={[styles.rowWithoutJustify, styles.flexWrap, styles.noMargin]}>
+                    <Text> is </Text>
+                    <CustomTextInput
+                        keyboardType="numeric"
+                        defaultValue={String(this.state.density.equivalentByWeight.amount)}
+                        onChangeText={(text) => this.updateDensityWeightAmount(text)} />
+                    <Picker style={[styles.pickerItem, {"flex": 0.3}]} selectedValue={this.state.density.equivalentByWeight.unit} onValueChange={(value, _) => this.updateDensityWeightUnit(value)}>
+                        { [ QuantityUnit.Grams, QuantityUnit.Kilograms ].map((unit: QuantityUnit) => {
+                            let formattedUnit: string = QuantityFormatter.formatUnitShorthand(unit);
+                            return <Picker.Item label={formattedUnit} key={formattedUnit} value={unit} />
+                        })}
+                    </Picker>
+                </View>
+
                 <View style={styles.verticalMargin}>
                     <Button title="Submit" onPress={_ => this.submitIngredient()} disabled={this.state.numInvalidInputs > 0}>Submit Ingredient</Button>
                 </View>
             </View>
         );
     }
+
+    private updateDensityWeightAmount(newAmount: string) {
+        if (Numbers.test(newAmount)) {
+            this.setState({ density: { ...this.state.density, equivalentByWeight: { ...this.state.density.equivalentByWeight, amount: Number(newAmount) }}});
+        }
+    }
+
+    private updateDensityWeightUnit(newValue: QuantityUnit) {
+        this.setState({ density: { ...this.state.density, equivalentByWeight: { ...this.state.density.equivalentByWeight, unit: newValue }}});
+    }
+
+    private updateDensityVolumeAmount(newAmount: string) {
+        if (Numbers.test(newAmount)) {
+            this.setState({ density: { ...this.state.density, equivalentByVolume: { ...this.state.density.equivalentByVolume, amount: Number(newAmount) }}});
+        }
+    }
+    
+    private updateDensityVolumeUnit(newValue: QuantityUnit) {
+        this.setState({ density: { ...this.state.density, equivalentByVolume: { ...this.state.density.equivalentByVolume, unit: newValue }}});
+    }
+
 
     private ingredientNameIsUnique(name: string): boolean {
         return !this.props.allIngredients.some(ingredient => ingredient.name == name);
@@ -198,7 +259,7 @@ export default class IngredientInput extends React.Component<IngredientInputProp
 
     private submitIngredient(): void {
         let ingredient: Ingredient = this.buildIngredient();
-        let nutrition: NutritionalInformation = this.buildNutritionalInformation();
+        let nutrition: IngredientNutrition = this.buildNutritionalInformation();
         this.props.submitIngredient(ingredient, nutrition);
     }
 
@@ -209,18 +270,21 @@ export default class IngredientInput extends React.Component<IngredientInputProp
         };
     }
     
-    private buildNutritionalInformation(): NutritionalInformation {
+    private buildNutritionalInformation(): IngredientNutrition {
         return {
             ingredientId: -1,
-            macronutrients: {
-                caloriesPerServing: this.state.caloriesPerServing ?? 0,
-                carbGramsPerServing: this.state.gramsCarbsPerServing ?? 0,
-                fatGramsPerServing: this.state.gramsFatPerServing ?? 0,
-                proteinGramsPerServing: this.state.gramsProteinPerServing ?? 0,
-                servingSize: {
-                    amount: this.state.servingSizeAmount ?? 0,
-                    unit: this.state.servingSizeUnit ?? QuantityUnit.Cups
-                }
+            macronutrientsPerServing: {
+                calories: this.state.caloriesPerServing ?? 0,
+                carbGrams: this.state.gramsCarbsPerServing ?? 0,
+                fatGrams: this.state.gramsFatPerServing ?? 0,
+                proteinGrams: this.state.gramsProteinPerServing ?? 0,
+            },
+            servingSize: {
+                amount: this.state.servingSizeAmount ?? 0,
+                unit: this.state.servingSizeUnit ?? QuantityUnit.Cups
+            },
+            density: {
+                equivalentByWeight
             }
         };
     }

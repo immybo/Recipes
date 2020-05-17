@@ -35,31 +35,52 @@ module TestUtils =
         }
     }
 
-    let TestNutritionalInformation: NutritionalInformation = {
+    let TestNutritionalInformation: IngredientNutrition = {
         IngredientId = -1;
-        Macronutrients = {
-            CaloriesPerServing = 1000m;
-            ProteinGramsPerServing = 40m;
-            CarbGramsPerServing = 30m;
-            FatGramsPerServing = 30m;
-            ServingSize = {
-                Amount = 30m;
-                Unit = QuantityUnit.Cups;
-            };
+        Density = {
+            EquivalentByVolume = {
+                Amount = 10m
+                Unit = QuantityUnit.Cups
+            }
+            EquivalentByWeight = {
+                Amount = 1m
+                Unit = QuantityUnit.Grams
+            }
+        }
+        ServingSize = {
+            Amount = 30m
+            Unit = QuantityUnit.Cups
+        }
+        MacronutrientsPerServing = {
+            Calories = 1000m;
+            ProteinGrams = 40m;
+            CarbGrams = 30m;
+            FatGrams = 30m;
         }
     }
+
     
-    let TestNutritionalInformation2: NutritionalInformation = {
+    let TestNutritionalInformation2: IngredientNutrition = {
         IngredientId = -1;
-        Macronutrients = {
-            CaloriesPerServing = 2000m;
-            ProteinGramsPerServing = 50m;
-            CarbGramsPerServing = 20m;
-            FatGramsPerServing = 25m;
-            ServingSize = {
-                Amount = 30m;
-                Unit = QuantityUnit.Cups;
-            };
+        Density = {
+            EquivalentByVolume = {
+                Amount = 10m
+                Unit = QuantityUnit.Cups
+            }
+            EquivalentByWeight = {
+                Amount = 1m
+                Unit = QuantityUnit.Grams
+            }
+        }
+        ServingSize = {
+            Amount = 30m
+            Unit = QuantityUnit.Cups
+        }
+        MacronutrientsPerServing = {
+            Calories = 2000m;
+            ProteinGrams = 50m;
+            CarbGrams = 20m;
+            FatGrams = 25m;
         }
     }
 

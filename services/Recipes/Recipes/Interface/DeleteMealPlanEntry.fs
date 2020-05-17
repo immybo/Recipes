@@ -2,6 +2,7 @@
 
 open Model
 open System
+open DataAccess
 
 type DeleteMealPlanCommand = {
     UserId: int
@@ -10,4 +11,5 @@ type DeleteMealPlanCommand = {
 }
 
 let deleteMealPlanEntry (command: DeleteMealPlanCommand) : Result<unit, Error> =
-    MealPlanDomain.deleteMealPlan (command.UserId, command.Date, command.MealNumber)
+    MealPlanDataAccess.deleteMealPlanEntry (command.UserId, command.Date, command.MealNumber)
+    |> Result.Ok

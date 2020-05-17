@@ -31,6 +31,19 @@ let getUnitConstant unit : decimal =
     // Should never be called but should be enforced by typing
     | QuantityUnit.None -> -1m;
 
+let convertToUnit newUnit quantity : Result<Quantity, Error> =
+    match areCompatibleUnits quantity.Unit newUnit with
+    | false -> Result.Error Error.IncompatibleUnits
+    | true ->
+        let unitRatio = (getUnitConstant newUnit) / (getUnitConstant quantity.Unit)
+        Result.Ok {
+            Amount = unitRatio * quantity.Amount
+            Unit = newUnit
+        }
+
+let multiplyQuantity quantity factor : Result<Quantity, Error> =
+    Result.Ok { quantity with Amount = quantity.Amount * factor }
+
 let getRatioBetweenQuantities quantity1 quantity2 : Result<decimal, Error> =
     match quantity2.Amount with
     | 0m -> Result.Error Error.ZeroValueProvided

@@ -16,7 +16,7 @@ import CustomTextInput from './CustomTextInput';
 import { Method } from '../../model/Method';
 import { Ingredient, getBlankIngredient } from '../../model/Ingredient';
 import IngredientInput from './IngredientInput';
-import { NutritionalInformation } from '../../model/NutritionalInformation';
+import { IngredientNutrition } from '../../model/IngredientNutrition';
 import { QuantityUnit } from '../../model/QuantityUnit';
 import ValidationContainer from './ValidationContainer';
 
@@ -25,7 +25,7 @@ interface RecipeInputProps extends React.Props<RecipeInput> {
     allIngredients: Ingredient[],
     allRecipes: Recipe[],
     submitRecipe: (recipe: Recipe) => void,
-    submitIngredient: (ingredient: Ingredient, nutrition: NutritionalInformation) => void
+    submitIngredient: (ingredient: Ingredient, nutrition: IngredientNutrition) => void
 }
 
 interface RecipeInputState {
@@ -161,7 +161,7 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
         this.setState({ isInputtingIngredient: false });
     }
 
-    private submitIngredient(ingredient: Ingredient, nutrition: NutritionalInformation): void {
+    private submitIngredient(ingredient: Ingredient, nutrition: IngredientNutrition): void {
         this.props.submitIngredient(ingredient, nutrition);
         this.setState({ ingredientWaitingToAdd: ingredient });
         this.switchToRecipeInput();

@@ -6,11 +6,11 @@ import { RouteViewRecipes } from '../Routes';
 import { addIngredientWithNutritionalInformation } from '../actions/IngredientActions';
 import { Ingredient, getBlankIngredient } from '../model/Ingredient';
 import IngredientInput from './shared/IngredientInput';
-import { NutritionalInformation } from '../model/NutritionalInformation';
+import { IngredientNutrition } from '../model/IngredientNutrition';
 
 interface AddIngredientProps {
     allIngredients: Ingredient[],
-    addIngredientWithNutritionalInformation: (ingredient: Ingredient, nutrition: NutritionalInformation) => void
+    addIngredientWithNutritionalInformation: (ingredient: Ingredient, nutrition: IngredientNutrition) => void
 }
 
 interface AddIngredientState {
@@ -37,7 +37,7 @@ class AddIngredient extends React.Component<AddIngredientProps, AddIngredientSta
         );
     }
 
-    private submitIngredient(ingredient: Ingredient, nutrition: NutritionalInformation): void {
+    private submitIngredient(ingredient: Ingredient, nutrition: IngredientNutrition): void {
         this.props.addIngredientWithNutritionalInformation(ingredient, nutrition);
         this.props.navigation.navigate(RouteViewRecipes);
     }

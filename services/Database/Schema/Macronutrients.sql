@@ -1,9 +1,7 @@
 CREATE TABLE dbo.Macronutrients (
-	ingredientId int NOT NULL UNIQUE,
-	caloriesPerServing decimal(14, 4) NOT NULL,
-	proteinGramsPerServing decimal(14, 4) NOT NULL,
-	carbGramsPerServing decimal(14, 4) NOT NULL,
-	fatGramsPerServing decimal(14, 4) NOT NULL,
-	quantity decimal(14, 4) NOT NULL,
-	quantityUnit int NOT NULL,
+	id int NOT NULL PRIMARY KEY IDENTITY(1,1),
+	calories decimal(14, 4) NOT NULL,
+	proteinGrams decimal(14, 4) NOT NULL,
+	carbGrams decimal(14, 4) NOT NULL,
+	fatGrams decimal(14, 4) NOT NULL
 );

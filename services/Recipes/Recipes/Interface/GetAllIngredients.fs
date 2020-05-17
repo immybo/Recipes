@@ -1,6 +1,8 @@
 ﻿module GetAllIngredients
 
 open Model
+open DataAccess
 
-let getAllIngredients () =
-    RecipeDomain.getAllIngredients ()
+let getAllIngredients () : Result<Ingredient[], Error> =
+    IngredientDataAccess.getAllIngredients ()
+    |> Result.Ok 

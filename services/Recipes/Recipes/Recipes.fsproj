@@ -8,8 +8,9 @@
     <Compile Include="Utilities\Railway.fs" />
     <Compile Include="Model\QuantityUnit.fs" />
     <Compile Include="Model\Quantity.fs" />
+    <Compile Include="Model\Density.fs" />
     <Compile Include="Model\MacronutrientInformation.fs" />
-    <Compile Include="Model\NutritionalInformation.fs" />
+    <Compile Include="Model\IngredientNutrition.fs" />
     <Compile Include="Model\Method.fs" />
     <Compile Include="Model\Error.fs" />
     <Compile Include="Model\Ingredient.fs" />
@@ -17,19 +18,19 @@
     <Compile Include="Model\Category.fs" />
     <Compile Include="Model\MealPlanEntry.fs" />
     <Compile Include="Model\Recipe.fs" />
-    <Compile Include="Validation\RecipeValidation.fs" />
+    <Compile Include="Domain\QuantityDomain.fs" />
+    <Compile Include="Domain\NutritionalInformationDomain.fs" />
+    <Compile Include="Domain\RecipeNutritionDomain.fs" />
     <Compile Include="DataAccess\Database.fs" />
+    <Compile Include="DataAccess\IngredientNutritionDataAccess.fs" />
     <Compile Include="DataAccess\MealPlanDataAccess.fs" />
     <Compile Include="DataAccess\MacronutrientsDataAccess.fs" />
     <Compile Include="DataAccess\MethodDataAccess.fs" />
     <Compile Include="DataAccess\IngredientDataAccess.fs" />
     <Compile Include="DataAccess\CategoryDataAccess.fs" />
     <Compile Include="DataAccess\RecipeDataAccess.fs" />
-    <Compile Include="Domain\QuantityDomain.fs" />
-    <Compile Include="Domain\MealPlanDomain.fs" />
-    <Compile Include="Domain\RecipeDomain.fs" />
-    <Compile Include="Domain\NutritionalInformationDomain.fs" />
-    <Compile Include="Domain\RecipeNutritionDomain.fs" />
+    <Compile Include="Validation\RecipeValidation.fs" />
+    <Compile Include="Interface\GetRecipe.fs" />
     <Compile Include="Interface\AddNutritionalInformationForIngredient.fs" />
     <Compile Include="Interface\DeleteMealPlanEntry.fs" />
     <Compile Include="Interface\GetMealPlan.fs" />
@@ -38,11 +39,10 @@
     <Compile Include="Interface\GetNutritionalInformationForIngredients.fs" />
     <Compile Include="Interface\GetAllIngredients.fs" />
     <Compile Include="Interface\GetNutritionalInformationForRecipe.fs" />
-    <Compile Include="Interface\DeleteRecipe.fs" />
-    <Compile Include="Interface\UpdateRecipe.fs" />
     <Compile Include="Interface\GetAllRecipes.fs" />
     <Compile Include="Interface\AddRecipe.fs" />
-    <Compile Include="Interface\GetRecipe.fs" />
+    <Compile Include="Interface\DeleteRecipe.fs" />
+    <Compile Include="Interface\UpdateRecipe.fs" />
   </ItemGroup>
 
   <ItemGroup>

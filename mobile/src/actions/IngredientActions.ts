@@ -1,7 +1,7 @@
 import { Dispatch } from "redux";
 import { Ingredient } from "../model/Ingredient";
 import { IngredientsApi } from "../services/api/Ingredients";
-import { NutritionalInformation } from "../model/NutritionalInformation";
+import { IngredientNutrition } from "../model/IngredientNutrition";
 import { NutritionApi } from "../services/api/Nutrition";
 import { setApiErrorToDisplay } from "./NetworkActions";
 
@@ -29,7 +29,7 @@ export function addIngredient(newIngredient: Ingredient)  {
     }
 }
 
-export function addIngredientWithNutritionalInformation(newIngredient: Ingredient, nutrition: NutritionalInformation) {
+export function addIngredientWithNutritionalInformation(newIngredient: Ingredient, nutrition: IngredientNutrition) {
     return function(dispatch: Dispatch) {
         return IngredientsApi.addIngredient(newIngredient).then(
             ingredientId => {

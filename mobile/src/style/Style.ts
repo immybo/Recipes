@@ -66,6 +66,9 @@ export const styles = StyleSheet.create({
     topMargin: {
         marginTop: 20
     },
+    noMargin: {
+        margin: 0
+    },
     centerAlign: {
         alignItems: "center",
         justifyContent: "center",
@@ -87,5 +90,8 @@ export const styles = StyleSheet.create({
             { scaleX: 0.92 },
             { scaleY: 0.92 }
         ]
+    },
+    flexWrap: {
+        flexWrap: "wrap"
     }
 });

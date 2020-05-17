@@ -1,7 +1,9 @@
 ﻿module AddOrUpdateMealPlan
 
 open Model
+open DataAccess
 
 let addOrUpdateMealPlan (mealPlans: MealPlanEntry[]): Result<unit, Error> =
-    MealPlanDomain.addMealPlansForUser mealPlans
+    mealPlans
+    |> Seq.iter MealPlanDataAccess.addOrUpdateMealPlanEntry
     |> Result.Ok

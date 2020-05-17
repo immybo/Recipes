@@ -1,36 +1,42 @@
-import { NutritionalInformation } from "../model/NutritionalInformation";
+import { IngredientNutrition } from "../model/IngredientNutrition";
 import { MacronutrientInformation } from "../model/MacronutrientInformation";
 
-export function parseNutritionalInformation(nutritionJson: any): NutritionalInformation {
+export function parseIngredientNutrition(nutritionJson: any): IngredientNutrition {
     return {
         ingredientId: nutritionJson.IngredientId,
-        macronutrients: {
-            caloriesPerServing: nutritionJson.Macronutrients.CaloriesPerServing,
-            carbGramsPerServing: nutritionJson.Macronutrients.CarbGramsPerServing,
-            fatGramsPerServing: nutritionJson.Macronutrients.FatGramsPerServing,
-            proteinGramsPerServing: nutritionJson.Macronutrients.ProteinGramsPerServing,
-            servingSize: {
-                amount: Number.parseFloat(nutritionJson.Macronutrients.ServingSize.Amount),
-                unit: nutritionJson.Macronutrients.ServingSize.Unit
+        servingSize: {
+            unit: nutritionJson.ServingSize.Unit,
+            amount: nutritionJson.ServingSize.Amount
+        },
+        density: {
+            equivalentByVolume: {
+                unit: nutritionJson.Density.EquivalentByVolume.Unit,
+                amount: nutritionJson.Density.EquivalentByVolume.Amount
+            },
+            equivalentByWeight: {
+                unit: nutritionJson.Density.EquivalentByWeight.Unit,
+                amount: nutritionJson.Density.EquivalentByWeight.Amount
             }
+        },
+        macronutrientsPerServing: {
+            calories: nutritionJson.MacronutrientsPerServing.Calories,
+            carbGrams: nutritionJson.MacronutrientsPerServing.CarbGrams,
+            fatGrams: nutritionJson.MacronutrientsPerServing.FatGrams,
+            proteinGrams: nutritionJson.MacronutrientsPerServing.ProteinGrams
         }
     };
 }
 
-export function nutritionalInformationToJson(nutrition: NutritionalInformation) {
+export function ingredientNutritionToJson(nutrition: IngredientNutrition) {
     return JSON.stringify(nutrition)
 }
 
 export function parseMacronutrientInformation(json: any): MacronutrientInformation {
     var nutritionJson = json.Fields[0];
     return {
-        caloriesPerServing: nutritionJson.CaloriesPerServing,
-        carbGramsPerServing: nutritionJson.CarbGramsPerServing,
-        fatGramsPerServing: nutritionJson.FatGramsPerServing,
-        proteinGramsPerServing: nutritionJson.ProteinGramsPerServing,
-        servingSize: {
-            amount: Number.parseFloat(nutritionJson.ServingSize.Amount),
-            unit: nutritionJson.ServingSize.Unit
-        }
+        calories: nutritionJson.Calories,
+        carbGrams: nutritionJson.CarbGrams,
+        fatGrams: nutritionJson.FatGrams,
+        proteinGrams: nutritionJson.ProteinGrams
     };
 }

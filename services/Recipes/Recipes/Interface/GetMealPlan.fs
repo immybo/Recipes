@@ -2,6 +2,7 @@
 
 open Model
 open System
+open DataAccess
 
 type MealPlanQuery = {
     UserId: int
@@ -10,4 +11,5 @@ type MealPlanQuery = {
 }
 
 let getMealPlan (query: MealPlanQuery) : Result<MealPlanEntry[], Error> =
-    MealPlanDomain.getMealPlanForUserBetweenDates (query.UserId, query.StartDateInclusive, query.EndDateInclusive)
+    MealPlanDataAccess.getMealPlansForUser (query.UserId, query.StartDateInclusive, query.EndDateInclusive)
+    |> Result.Ok

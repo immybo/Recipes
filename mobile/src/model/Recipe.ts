@@ -1,7 +1,7 @@
 import { IngredientWithQuantity } from "./IngredientWithQuantity";
 import { Category } from "./Category";
 import { getEmptyMethod, Method } from "./Method";
-import { NutritionalInformation } from "./NutritionalInformation";
+import { IngredientNutrition } from "./IngredientNutrition";
 import { MacronutrientInformation } from "./MacronutrientInformation";
 
 export interface Recipe {

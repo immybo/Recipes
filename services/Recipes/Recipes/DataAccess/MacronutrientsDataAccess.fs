@@ -2,54 +2,42 @@
 
 open FSharp.Data
 open Model
+open System.Linq
 
 module MacronutrientsDataAccess =
-    type DeleteMacronutrientsForIngredientCommand = SqlCommandProvider<"
-        DELETE FROM dbo.Macronutrients
-        WHERE IngredientId = @ingredientId
-        ", Database.compileTimeConnectionString>
-
-    type AddMacronutrientsForIngredientCommand = SqlCommandProvider<"
-        INSERT INTO dbo.Macronutrients (IngredientId, CaloriesPerServing, ProteinGramsPerServing, FatGramsPerServing, CarbGramsPerServing, Quantity, QuantityUnit)
-        VALUES (@ingredientId, @caloriesPerServing, @proteinGramsPerServing, @fatGramsPerServing, @carbGramsPerServing, @quantity, @quantityUnit)
-        ", Database.compileTimeConnectionString>
-
-    type GetMacronutrientsForIngredientQuery = SqlCommandProvider<"
+    type GetMacronutrientsByIdQuery = SqlCommandProvider<"
         SELECT *
         FROM dbo.Macronutrients
-        WHERE IngredientId = @ingredientId
+        WHERE Id = @id
         ", Database.compileTimeConnectionString>
 
-    let mapToMacronutrientInformation (macronutrientEntity: GetMacronutrientsForIngredientQuery.Record) : MacronutrientInformation =
+    type AddMacronutrientsCommand = SqlCommandProvider<"
+        INSERT INTO dbo.Macronutrients (calories, proteinGrams, carbGrams, fatGrams)
+        OUTPUT INSERTED.id
+        VALUES (@calories, @proteinGrams, @carbGrams, @fatGrams)
+        ", Database.compileTimeConnectionString>
+
+    type DeleteMacronutrientsCommand = SqlCommandProvider<"
+        DELETE FROM dbo.Macronutrients
+        WHERE id = @id
+        ", Database.compileTimeConnectionString>
+
+    let mapToMacronutrientInformation (macronutrientEntity: GetMacronutrientsByIdQuery.Record) : MacronutrientInformation =
         {
-            CaloriesPerServing = macronutrientEntity.caloriesPerServing
-            ProteinGramsPerServing = macronutrientEntity.proteinGramsPerServing
-            CarbGramsPerServing = macronutrientEntity.carbGramsPerServing
-            FatGramsPerServing = macronutrientEntity.fatGramsPerServing
-            ServingSize = {
-                Amount = macronutrientEntity.quantity
-                Unit = enum<QuantityUnit> macronutrientEntity.quantityUnit
-            }
+            Calories = macronutrientEntity.calories
+            ProteinGrams = macronutrientEntity.proteinGrams
+            CarbGrams = macronutrientEntity.carbGrams
+            FatGrams = macronutrientEntity.fatGrams
         }
 
-    let deleteMacronutrientsForIngredient ingredientId =
-        let command = new DeleteMacronutrientsForIngredientCommand(Database.realConnectionString)
-        command.Execute ingredientId
-        
-    let setMacronutrientsForIngredient ingredientId macronutrientEntity =
-        deleteMacronutrientsForIngredient ingredientId |> ignore
+    let getMacronutrientsById macronutrientsId =
+        let query = new GetMacronutrientsByIdQuery(Database.realConnectionString)
+        query.Execute(macronutrientsId)
 
-        let command = new AddMacronutrientsForIngredientCommand(Database.realConnectionString)
-        command.Execute (ingredientId, macronutrientEntity.CaloriesPerServing, macronutrientEntity.ProteinGramsPerServing, macronutrientEntity.FatGramsPerServing, macronutrientEntity.CarbGramsPerServing, macronutrientEntity.ServingSize.Amount, (int)macronutrientEntity.ServingSize.Unit)
+    let deleteMacronutrientsById macronutrientsId =
+        let command = new DeleteMacronutrientsCommand(Database.realConnectionString)
+        command.Execute(macronutrientsId)
 
-    let getMacronutrientsForIngredient (ingredientId: int) =
-        let query = new GetMacronutrientsForIngredientQuery(Database.realConnectionString)
-        query.Execute(ingredientId)
-        |> Seq.toArray
-        |> function results ->
-            match results.Length with
-            | 0 -> Result.Error Error.NoNutritionalInformationForIngredient
-            | 1 ->
-                mapToMacronutrientInformation results.[0]
-                |> Result.Ok
-            | _ -> Result.Error Error.ExpectedExactlyOne
+    let addMacronutrients macronutrients =
+        let command = new AddMacronutrientsCommand(Database.realConnectionString)
+        command.Execute(macronutrients.Calories, macronutrients.ProteinGrams, macronutrients.CarbGrams, macronutrients.FatGrams).Single()

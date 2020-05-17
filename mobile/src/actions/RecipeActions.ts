@@ -2,7 +2,7 @@ import { Recipe } from "../model/Recipe";
 import { Dispatch } from "redux";
 import { RecipesApi } from "../services/api/Recipes";
 import { setApiErrorToDisplay } from "./NetworkActions";
-import { NutritionalInformation } from "../model/NutritionalInformation";
+import { IngredientNutrition } from "../model/IngredientNutrition";
 import { MacronutrientInformation } from "../model/MacronutrientInformation";
 
 export const ADD_RECIPE = "ADD_RECIPE";

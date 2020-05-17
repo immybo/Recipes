@@ -1,14 +1,14 @@
 import { callApi, HttpMethod } from "../Server";
-import { nutritionalInformationToJson } from "../NutritionalInformationParser";
-import { NutritionalInformation } from "../../model/NutritionalInformation";
+import { ingredientNutritionToJson } from "../NutritionalInformationParser";
+import { IngredientNutrition } from "../../model/IngredientNutrition";
 import { parseNull } from "../NullParser";
 
 export class NutritionApi {
-    public static addNutritionalInformationForIngredient(nutrition: NutritionalInformation): Promise<void> {
+    public static addNutritionalInformationForIngredient(nutrition: IngredientNutrition): Promise<void> {
         return callApi(
                 "nutrition/ingredients",
                 HttpMethod.POST,
                 parseNull,
-                nutritionalInformationToJson(nutrition));
+                ingredientNutritionToJson(nutrition));
     }
 } 
