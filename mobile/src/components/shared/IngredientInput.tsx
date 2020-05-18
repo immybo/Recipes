@@ -283,9 +283,7 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                 amount: this.state.servingSizeAmount ?? 0,
                 unit: this.state.servingSizeUnit ?? QuantityUnit.Cups
             },
-            density: {
-                equivalentByWeight
-            }
+            density: this.state.density
         };
     }
 }

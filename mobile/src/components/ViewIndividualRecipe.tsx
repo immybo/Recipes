@@ -59,10 +59,10 @@ class ViewIndividualRecipe extends React.Component<ViewIndividualRecipeProps, Vi
                     {
                         this.props.nutritionalInformation != null &&
                             <View style={styles.verticalMarginSmall}>
-                                <Text>Calories: { this.props.nutritionalInformation.caloriesPerServing }</Text>
-                                <Text>Protein: { this.props.nutritionalInformation.proteinGramsPerServing }g</Text>
-                                <Text>Fat: { this.props.nutritionalInformation.fatGramsPerServing }g</Text>
-                                <Text>Carbs: { this.props.nutritionalInformation.carbGramsPerServing }g</Text>
+                                <Text>Calories: { this.props.nutritionalInformation.calories }</Text>
+                                <Text>Protein: { this.props.nutritionalInformation.proteinGrams }g</Text>
+                                <Text>Fat: { this.props.nutritionalInformation.fatGrams }g</Text>
+                                <Text>Carbs: { this.props.nutritionalInformation.carbGrams }g</Text>
                             </View>
                     }
                     <View>

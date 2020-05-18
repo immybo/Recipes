@@ -112,10 +112,18 @@ module IngredientDataAccess =
         let command = new AddIngredientMappingCommand(Database.realConnectionString)
         command.Execute (ingredientId, recipeId, quantity.Amount, (int)quantity.Unit)
 
-    let writeIngredientsForRecipe recipe : Recipe =
+    let writeIngredientsForRecipe (recipe: Recipe) : Recipe =
+        let existingIngredients = getIngredientsForRecipe recipe.Id
+
         for ingredient in recipe.Ingredients do
-            addIngredient ingredient.Ingredient
-            |> addIngredientMapping recipe.Id ingredient.Quantity
+            
+            let ingredientExistsAlready = ingredient.Ingredient.Id <> -1 && existingIngredients.Any (fun ingr -> ingr.Ingredient.Id = ingredient.Ingredient.Id) 
+
+            let newIngredientId = match ingredientExistsAlready with
+                | true -> ingredient.Ingredient.Id
+                | false -> addIngredient ingredient.Ingredient
+
+            addIngredientMapping recipe.Id ingredient.Quantity newIngredientId
             |> ignore
         recipe
 
