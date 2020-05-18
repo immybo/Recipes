@@ -95,10 +95,10 @@ module NutritionTests =
     [<Test>]
     let TestNutritionalInformationForRecipeIsCalculatedCorrectly () =
         let expectedNutritionResult = {
-            Calories = 1000m;
-            ProteinGrams = 40m;
-            CarbGrams = 30m;
-            FatGrams = 30m;
+            Calories = 1000m * 0.822666667m;
+            ProteinGrams = 40m * 0.822666667m;
+            CarbGrams = 30m * 0.822666667m;
+            FatGrams = 30m * 0.822666667m;
         }
 
         let nutritionResult =
