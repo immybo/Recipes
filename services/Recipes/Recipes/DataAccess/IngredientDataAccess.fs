@@ -116,8 +116,10 @@ module IngredientDataAccess =
         let existingIngredients = getIngredientsForRecipe recipe.Id
 
         for ingredient in recipe.Ingredients do
-            
-            let ingredientExistsAlready = ingredient.Ingredient.Id <> -1 && existingIngredients.Any (fun ingr -> ingr.Ingredient.Id = ingredient.Ingredient.Id) 
+            let ingredientExistsAlready = ingredient.Ingredient.Id <> -1 && 
+                match getIngredient ingredient.Ingredient.Id with
+                | Result.Error err -> false
+                | _ -> true
 
             let newIngredientId = match ingredientExistsAlready with
                 | true -> ingredient.Ingredient.Id
