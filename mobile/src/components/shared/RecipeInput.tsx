@@ -25,7 +25,8 @@ interface RecipeInputProps extends React.Props<RecipeInput> {
     allIngredients: Ingredient[],
     allRecipes: Recipe[],
     submitRecipe: (recipe: Recipe) => void,
-    submitIngredient: (ingredient: Ingredient, nutrition: IngredientNutrition) => void
+    submitIngredient: (ingredient: Ingredient, nutrition: IngredientNutrition) => void,
+    submitIngredientWithoutNutrition: (ingredient: Ingredient) => void
 }
 
 interface RecipeInputState {
@@ -71,7 +72,10 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
 
     public render(): JSX.Element {
         if (this.state.isInputtingIngredient) {
-            return <IngredientInput initialIngredient={getBlankIngredient()} submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)} allIngredients={this.props.allIngredients} />
+            return <IngredientInput initialIngredient={getBlankIngredient()}
+                submitIngredientWithoutNutrition={ingredient => this.submitIngredientWithoutNutrition(ingredient)}
+                submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)}
+                allIngredients={this.props.allIngredients} />
         } else {
             return this.getRecipeInput();
         }
@@ -163,6 +167,12 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
 
     private submitIngredient(ingredient: Ingredient, nutrition: IngredientNutrition): void {
         this.props.submitIngredient(ingredient, nutrition);
+        this.setState({ ingredientWaitingToAdd: ingredient });
+        this.switchToRecipeInput();
+    }
+
+    private submitIngredientWithoutNutrition(ingredient: Ingredient): void {
+        this.props.submitIngredientWithoutNutrition(ingredient);
         this.setState({ ingredientWaitingToAdd: ingredient });
         this.switchToRecipeInput();
     }

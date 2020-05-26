@@ -113,8 +113,6 @@ module IngredientDataAccess =
         command.Execute (ingredientId, recipeId, quantity.Amount, (int)quantity.Unit)
 
     let writeIngredientsForRecipe (recipe: Recipe) : Recipe =
-        let existingIngredients = getIngredientsForRecipe recipe.Id
-
         for ingredient in recipe.Ingredients do
             let ingredientExistsAlready = ingredient.Ingredient.Id <> -1 && 
                 match getIngredient ingredient.Ingredient.Id with
@@ -136,7 +134,7 @@ module IngredientDataAccess =
             getIngredient ingredient.Ingredient.Id
             |> function result ->
                 match result with
-                | Result.Error IngredientDoesNotExist -> addIngredient ingredient.Ingredient
+                | Result.Error Error.IngredientDoesNotExist -> addIngredient ingredient.Ingredient
                 | _ -> updateIngredient ingredient.Ingredient
             |> addIngredientMapping recipe.Id ingredient.Quantity
             |> ignore

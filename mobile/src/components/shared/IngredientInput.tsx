@@ -3,7 +3,8 @@ import {
     View,
     Button,
     Text,
-    Picker
+    Picker,
+    CheckBox
 } from 'react-native';
 import { styles } from '../../style/Style';
 import CustomTextInput from './CustomTextInput';
@@ -19,6 +20,7 @@ import { Density } from '../../model/Density';
 interface IngredientInputProps extends React.Props<IngredientInput> {
     initialIngredient: Ingredient,
     submitIngredient: (ingredient: Ingredient, nutrition: IngredientNutrition) => void,
+    submitIngredientWithoutNutrition: (ingredient: Ingredient) => void,
     allIngredients: Ingredient[]
 }
 
@@ -31,7 +33,8 @@ interface IngredientInputState {
     gramsFatPerServing?: number,
     gramsCarbsPerServing?: number,
     numInvalidInputs: number,
-    density: Density
+    density: Density,
+    noNutrition: boolean
 }
 
 export default class IngredientInput extends React.Component<IngredientInputProps, IngredientInputState> {
@@ -56,7 +59,8 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                     amount: 1,
                     unit: QuantityUnit.Cups
                 }
-            }
+            },
+            noNutrition: false
         };
     }
 
@@ -82,99 +86,109 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                     validationContainer={nameErrors}
                     onValidChange={isValid => this.updateValid(isValid) } />
                 <ValidationContainer ref={nameErrors} />
-                <View style={styles.rowWithoutJustify}>
-                    <Text style={styles.rightMarginSmall}>Serving size of </Text>
-                    <CustomTextInput
-                        keyboardType="numeric"
-                        onChangeText={(newQuantity) => this.updateServingSizeAmount(newQuantity)}
-                        placeholder={"0"}
-                        maxLength={10}
-                        validationRules={[ PositiveOrZero ]}
-                        validationContainer={servingSizeAmountErrors}
-                        onValidChange={isValid => this.updateValid(isValid) } />
-                    <Picker style={[{"flex": 1}, styles.pickerItem]} selectedValue={this.state.servingSizeUnit} onValueChange={(value, _) => this.updateServingSizeUnit(value)}>
-                        { [ QuantityUnit.None, QuantityUnit.Grams, QuantityUnit.Kilograms, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Millilitres, QuantityUnit.Litres ].map((unit: QuantityUnit) => {
-                            let formattedUnit: string = QuantityFormatter.formatUnit(unit, true);
-                            return <Picker.Item label={formattedUnit} key={formattedUnit} value={unit} />
-                        })}
-                    </Picker>
-                </View>
-                <ValidationContainer ref={servingSizeAmountErrors} />
-                <View style={styles.rowWithoutJustify}>
-                    <CustomTextInput
-                        placeholder="0"
-                        keyboardType="numeric"
-                        defaultValue={this.props.initialIngredient.name}
-                        onChangeText={(text) => this.onSetCalories(text)}
-                        validationRules={[ PositiveOrZero ]}
-                        validationContainer={caloriesErrors}
-                        onValidChange={isValid => this.updateValid(isValid) } />
-                    <Text style={styles.horizontalMarginSmall}>calories per serving</Text>
-                </View>
-                <ValidationContainer ref={caloriesErrors} />
-                <View style={styles.rowWithoutJustify}>
-                    <CustomTextInput
-                        placeholder="0"
-                        keyboardType="numeric"
-                        defaultValue={this.props.initialIngredient.name}
-                        onChangeText={(text) => this.onSetProteinPercentage(text)}
-                        validationRules={[ PositiveOrZero ]}
-                        validationContainer={proteinErrors}
-                        onValidChange={isValid => this.updateValid(isValid) } />
-                    <Text style={styles.horizontalMarginSmall}>grams of protein per serving</Text>
-                </View>
-                <ValidationContainer ref={proteinErrors} />
-                <View style={styles.rowWithoutJustify}>
-                    <CustomTextInput
-                        placeholder="0"
-                        keyboardType="numeric"
-                        defaultValue={this.props.initialIngredient.name}
-                        onChangeText={(text) => this.onSetFatPercentage(text)}
-                        validationRules={[ PositiveOrZero ]}
-                        validationContainer={fatErrors}
-                        onValidChange={isValid => this.updateValid(isValid) } />
-                    <Text style={styles.horizontalMarginSmall}>grams of fat per serving</Text>
-                </View>
-                <ValidationContainer ref={fatErrors} />
-                <View style={styles.rowWithoutJustify}>
-                    <CustomTextInput
-                        placeholder="0"
-                        keyboardType="numeric"
-                        defaultValue={this.props.initialIngredient.name}
-                        onChangeText={(text) => this.onSetCarbPercentage(text)}
-                        validationRules={[ PositiveOrZero ]}
-                        validationContainer={carbsErrors}
-                        onValidChange={isValid => this.updateValid(isValid) } />
-                    <Text style={styles.horizontalMarginSmall}>grams of carbs per serving</Text>
-                </View>
-                <ValidationContainer ref={carbsErrors} />
 
-                <View style={[styles.rowWithoutJustify, styles.flexWrap, styles.noMargin]}>
-                    <Text>The weight of </Text>
-                    <CustomTextInput
-                        keyboardType="numeric"
-                        defaultValue={String(this.state.density.equivalentByVolume.amount)}
-                        onChangeText={(text) => this.updateDensityVolumeAmount(text)} />
-                    <Picker style={[styles.pickerItem, {"flex": 0.45}]} selectedValue={this.state.density.equivalentByVolume.unit} onValueChange={(value, _) => this.updateDensityVolumeUnit(value)}>
-                        { [ QuantityUnit.Millilitres, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Litres ].map((unit: QuantityUnit) => {
-                            let formattedUnit: string = QuantityFormatter.formatUnitShorthand(unit);
-                            return <Picker.Item label={formattedUnit} key={formattedUnit} value={unit} />
-                        })}
-                    </Picker>
+                <View style={styles.rowWithoutJustify}>
+                    <CheckBox value={this.state.noNutrition} onValueChange={newValue => this.setState({noNutrition: newValue})}/>
+                    <Text>No nutrition</Text>
                 </View>
-                <View style={[styles.rowWithoutJustify, styles.flexWrap, styles.noMargin]}>
-                    <Text> is </Text>
-                    <CustomTextInput
-                        keyboardType="numeric"
-                        defaultValue={String(this.state.density.equivalentByWeight.amount)}
-                        onChangeText={(text) => this.updateDensityWeightAmount(text)} />
-                    <Picker style={[styles.pickerItem, {"flex": 0.3}]} selectedValue={this.state.density.equivalentByWeight.unit} onValueChange={(value, _) => this.updateDensityWeightUnit(value)}>
-                        { [ QuantityUnit.Grams, QuantityUnit.Kilograms ].map((unit: QuantityUnit) => {
-                            let formattedUnit: string = QuantityFormatter.formatUnitShorthand(unit);
-                            return <Picker.Item label={formattedUnit} key={formattedUnit} value={unit} />
-                        })}
-                    </Picker>
-                </View>
+
+                { !this.state.noNutrition &&
+                    <View>
+                        <View style={styles.rowWithoutJustify}>
+                            <Text style={styles.rightMarginSmall}>Serving size of </Text>
+                            <CustomTextInput
+                                keyboardType="numeric"
+                                onChangeText={(newQuantity) => this.updateServingSizeAmount(newQuantity)}
+                                placeholder={"0"}
+                                maxLength={10}
+                                validationRules={[ PositiveOrZero ]}
+                                validationContainer={servingSizeAmountErrors}
+                                onValidChange={isValid => this.updateValid(isValid) } />
+                            <Picker style={[{"flex": 1}, styles.pickerItem]} selectedValue={this.state.servingSizeUnit} onValueChange={(value, _) => this.updateServingSizeUnit(value)}>
+                                { [ QuantityUnit.None, QuantityUnit.Grams, QuantityUnit.Kilograms, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Millilitres, QuantityUnit.Litres ].map((unit: QuantityUnit) => {
+                                    let formattedUnit: string = QuantityFormatter.formatUnit(unit, true);
+                                    return <Picker.Item label={formattedUnit} key={formattedUnit} value={unit} />
+                                })}
+                            </Picker>
+                        </View>
+                        <ValidationContainer ref={servingSizeAmountErrors} />
+                        <View style={styles.rowWithoutJustify}>
+                            <CustomTextInput
+                                placeholder="0"
+                                keyboardType="numeric"
+                                defaultValue={this.props.initialIngredient.name}
+                                onChangeText={(text) => this.onSetCalories(text)}
+                                validationRules={[ PositiveOrZero ]}
+                                validationContainer={caloriesErrors}
+                                onValidChange={isValid => this.updateValid(isValid) } />
+                            <Text style={styles.horizontalMarginSmall}>calories per serving</Text>
+                        </View>
+                        <ValidationContainer ref={caloriesErrors} />
+                        <View style={styles.rowWithoutJustify}>
+                            <CustomTextInput
+                                placeholder="0"
+                                keyboardType="numeric"
+                                defaultValue={this.props.initialIngredient.name}
+                                onChangeText={(text) => this.onSetProteinPercentage(text)}
+                                validationRules={[ PositiveOrZero ]}
+                                validationContainer={proteinErrors}
+                                onValidChange={isValid => this.updateValid(isValid) } />
+                            <Text style={styles.horizontalMarginSmall}>grams of protein per serving</Text>
+                        </View>
+                        <ValidationContainer ref={proteinErrors} />
+                        <View style={styles.rowWithoutJustify}>
+                            <CustomTextInput
+                                placeholder="0"
+                                keyboardType="numeric"
+                                defaultValue={this.props.initialIngredient.name}
+                                onChangeText={(text) => this.onSetFatPercentage(text)}
+                                validationRules={[ PositiveOrZero ]}
+                                validationContainer={fatErrors}
+                                onValidChange={isValid => this.updateValid(isValid) } />
+                            <Text style={styles.horizontalMarginSmall}>grams of fat per serving</Text>
+                        </View>
+                        <ValidationContainer ref={fatErrors} />
+                        <View style={styles.rowWithoutJustify}>
+                            <CustomTextInput
+                                placeholder="0"
+                                keyboardType="numeric"
+                                defaultValue={this.props.initialIngredient.name}
+                                onChangeText={(text) => this.onSetCarbPercentage(text)}
+                                validationRules={[ PositiveOrZero ]}
+                                validationContainer={carbsErrors}
+                                onValidChange={isValid => this.updateValid(isValid) } />
+                            <Text style={styles.horizontalMarginSmall}>grams of carbs per serving</Text>
+                        </View>
+                        <ValidationContainer ref={carbsErrors} />
+
+                        <View style={[styles.rowWithoutJustify, styles.flexWrap, styles.noMargin]}>
+                            <Text>The weight of </Text>
+                            <CustomTextInput
+                                keyboardType="numeric"
+                                defaultValue={String(this.state.density.equivalentByVolume.amount)}
+                                onChangeText={(text) => this.updateDensityVolumeAmount(text)} />
+                            <Picker style={[styles.pickerItem, {"flex": 0.45}]} selectedValue={this.state.density.equivalentByVolume.unit} onValueChange={(value, _) => this.updateDensityVolumeUnit(value)}>
+                                { [ QuantityUnit.Millilitres, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Litres ].map((unit: QuantityUnit) => {
+                                    let formattedUnit: string = QuantityFormatter.formatUnitShorthand(unit);
+                                    return <Picker.Item label={formattedUnit} key={formattedUnit} value={unit} />
+                                })}
+                            </Picker>
+                        </View>
+                        <View style={[styles.rowWithoutJustify, styles.flexWrap, styles.noMargin]}>
+                            <Text> is </Text>
+                            <CustomTextInput
+                                keyboardType="numeric"
+                                defaultValue={String(this.state.density.equivalentByWeight.amount)}
+                                onChangeText={(text) => this.updateDensityWeightAmount(text)} />
+                            <Picker style={[styles.pickerItem, {"flex": 0.3}]} selectedValue={this.state.density.equivalentByWeight.unit} onValueChange={(value, _) => this.updateDensityWeightUnit(value)}>
+                                { [ QuantityUnit.Grams, QuantityUnit.Kilograms ].map((unit: QuantityUnit) => {
+                                    let formattedUnit: string = QuantityFormatter.formatUnitShorthand(unit);
+                                    return <Picker.Item label={formattedUnit} key={formattedUnit} value={unit} />
+                                })}
+                            </Picker>
+                        </View>
+                    </View>
+                }
 
                 <View style={styles.verticalMargin}>
                     <Button title="Submit" onPress={_ => this.submitIngredient()} disabled={this.state.numInvalidInputs > 0}>Submit Ingredient</Button>
@@ -259,8 +273,12 @@ export default class IngredientInput extends React.Component<IngredientInputProp
 
     private submitIngredient(): void {
         let ingredient: Ingredient = this.buildIngredient();
-        let nutrition: IngredientNutrition = this.buildNutritionalInformation();
-        this.props.submitIngredient(ingredient, nutrition);
+        let nutrition: IngredientNutrition | null = this.buildNutritionalInformation();
+        if (nutrition == null) {
+            this.props.submitIngredientWithoutNutrition(ingredient);
+        } else {
+            this.props.submitIngredient(ingredient, nutrition);
+        }
     }
 
     private buildIngredient(): Ingredient {
@@ -270,7 +288,11 @@ export default class IngredientInput extends React.Component<IngredientInputProp
         };
     }
     
-    private buildNutritionalInformation(): IngredientNutrition {
+    private buildNutritionalInformation(): IngredientNutrition | null {
+        if (this.state.noNutrition) {
+            return null;
+        }
+
         return {
             ingredientId: -1,
             macronutrientsPerServing: {

@@ -11,7 +11,7 @@ type IngredientWithQuantityAndNutrition = {
 }
 
 let getNutritionForQuantityOfIngredient (ingredient: IngredientWithQuantityAndNutrition) =
-    getRatioBetweenQuantities ingredient.Ingredient.Quantity ingredient.Nutrition.ServingSize
+    getRatioBetweenQuantities (ingredient.Ingredient.Quantity, ingredient.Nutrition.Density, ingredient.Nutrition.ServingSize)
     >=> multiplyNutrition ingredient.Nutrition.MacronutrientsPerServing
 
 let getTotalNutrition ingredients =

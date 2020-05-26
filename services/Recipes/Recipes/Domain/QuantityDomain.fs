@@ -1,14 +1,16 @@
 ﻿module QuantityDomain
 
 open Model
+open Railway
+
+let isVolume (unit: QuantityUnit) : bool =
+    let volumeUnits = [ QuantityUnit.Cups; QuantityUnit.Litres; QuantityUnit.Millilitres; QuantityUnit.Teaspoons; QuantityUnit.Tablespoons ]
+    List.contains unit volumeUnits
+
+let isWeight (unit: QuantityUnit): bool = not (isVolume unit)
 
 let areCompatibleUnits unit1 unit2 : bool =
-    // TODO how do we reconcile the difference between a weight and a volume?
-    // we could use density to convert in between.
-    // Hmm maybe have volume/weight be two separate objects joined in a discriminated union so we can easily separate
-    let volumeUnits = [ QuantityUnit.Cups; QuantityUnit.Litres; QuantityUnit.Millilitres; QuantityUnit.Teaspoons; QuantityUnit.Tablespoons ]
-    
-    if (List.contains unit1 volumeUnits <> List.contains unit2 volumeUnits) then
+    if (isVolume unit1 <> isVolume unit2) then
         false
     else if (unit1.Equals(QuantityUnit.None) && unit2.Equals(QuantityUnit.None)) then
         false
@@ -44,10 +46,42 @@ let convertToUnit newUnit quantity : Result<Quantity, Error> =
 let multiplyQuantity quantity factor : Result<Quantity, Error> =
     Result.Ok { quantity with Amount = quantity.Amount * factor }
 
-let getRatioBetweenQuantities quantity1 quantity2 : Result<decimal, Error> =
+let getRatioBetweenQuantitiesOfSameType quantity1 quantity2 : Result<decimal, Error> =
     match quantity2.Amount with
     | 0m -> Result.Error Error.ZeroValueProvided
     | _ ->
         match areCompatibleUnits quantity1.Unit quantity2.Unit with
         | false -> Result.Error Error.IncompatibleUnits
         | true -> Result.Ok (((getUnitConstant quantity1.Unit) * quantity1.Amount) / ((getUnitConstant quantity2.Unit) * quantity2.Amount))
+    
+let toGramsPerCup (density: Density) : Result<decimal, Error> =
+    let oneCup = { Amount = 1m; Unit = QuantityUnit.Cups }
+        
+    getRatioBetweenQuantitiesOfSameType density.EquivalentByVolume oneCup
+    >=> multiplyQuantity density.EquivalentByWeight
+    >=> convertToUnit QuantityUnit.Grams
+    >=> fun quantity -> Result.Ok quantity.Amount
+    
+let convertToVolumeQuantity (quantity: Quantity, density: Density) : Result<Quantity, Error> =
+    if isVolume quantity.Unit then
+        Result.Ok quantity
+    else
+        toGramsPerCup density
+        >=> fun ratio -> Result.Ok { Amount = quantity.Amount / ratio; Unit = QuantityUnit.Cups }
+
+let convertToWeightQuantity (quantity: Quantity, density: Density) : Result<Quantity, Error> =
+    if not (isVolume quantity.Unit) then
+        Result.Ok quantity
+    else
+        toGramsPerCup density
+        >=> fun ratio -> Result.Ok { Amount = quantity.Amount * ratio; Unit = QuantityUnit.Grams }
+
+let getRatioBetweenQuantities (quantity1: Quantity, quantity1Density: Density, quantity2: Quantity): Result<decimal, Error> =
+    if isVolume quantity1.Unit && isWeight quantity2.Unit then
+        convertToWeightQuantity (quantity1, quantity1Density)
+        >=> fun q1 -> getRatioBetweenQuantitiesOfSameType q1 quantity2
+    elif isWeight quantity1.Unit && isVolume quantity2.Unit then
+        convertToVolumeQuantity (quantity1, quantity1Density)
+        >=> fun q1 -> getRatioBetweenQuantitiesOfSameType q1 quantity2
+    else
+        getRatioBetweenQuantitiesOfSameType quantity1 quantity2

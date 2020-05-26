@@ -35,7 +35,10 @@ export function addIngredientWithNutritionalInformation(newIngredient: Ingredien
             ingredientId => {
                 dispatch(addIngredientLocal({...newIngredient, id: ingredientId}));
                 nutrition.ingredientId = ingredientId;
-                NutritionApi.addNutritionalInformationForIngredient(nutrition);
+
+                if (nutrition != null) {
+                    NutritionApi.addNutritionalInformationForIngredient(nutrition);
+                }
             },
             error => dispatch(setApiErrorToDisplay("Error adding ingredient. " + String(error)))
         );

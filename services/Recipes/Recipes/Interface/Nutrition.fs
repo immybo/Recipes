@@ -14,7 +14,7 @@ module Nutrition =
             | Result.Error err -> Result.Error err
             | Result.Ok _ ->
                 let macronutrientsId = MacronutrientsDataAccess.addMacronutrients nutritionalInformation.MacronutrientsPerServing
-                match NutritionalInformationDomain.toGramsPerCup nutritionalInformation.Density with
+                match QuantityDomain.toGramsPerCup nutritionalInformation.Density with
                 | Result.Error err -> Result.Error err
                 | Result.Ok gramsPerCup ->
                     IngredientNutritionDataAccess.addNutritionMappingForIngredient nutritionalInformation macronutrientsId gramsPerCup
@@ -27,8 +27,7 @@ module Nutrition =
             IngredientNutritionDataAccess.getNutritionForIngredient(ingredientId)
             |> function result ->
                 match result with
-                // Hmm maybe we should do something here
-                // Error if there's a single problem, or should we return a Result<NutritionalInformation, Error>[]?
+                // If we can't find the nutritional information, we treat it as having no nutrition
                 | Result.Error err -> ()
                 | Result.Ok nutrition ->
                     nutritionalInformation.Add(nutrition)
@@ -48,5 +47,10 @@ module Nutrition =
             | Result.Ok recipe ->
                 recipe.Ingredients
                 |> Seq.map addNutrition
+                |> Seq.where (fun res ->
+                    match res with
+                        | Result.Error Error.NoNutritionalInformationForIngredient -> false
+                        | _ -> true
+                    )
                 |> coalesceResults
                 >=> RecipeNutritionDomain.getTotalNutrition

@@ -7,14 +7,15 @@ import { withNavigation, NavigationParams, NavigationState, NavigationScreenProp
 import { RouteViewRecipes } from '../Routes';
 import RecipeInput from './shared/RecipeInput';
 import { Ingredient } from '../model/Ingredient';
-import { addIngredientWithNutritionalInformation } from '../actions/IngredientActions';
+import { addIngredientWithNutritionalInformation, addIngredient } from '../actions/IngredientActions';
 import { IngredientNutrition } from '../model/IngredientNutrition';
 
 interface EditRecipeProps extends React.Props<EditRecipe> {
     allIngredients: Ingredient[],
     allRecipes: Recipe[],
     updateRecipe: (newRecipe: Recipe) => void,
-    addIngredientWithNutritionalInformation: (ingredient: Ingredient, nutrition: IngredientNutrition) => void
+    addIngredientWithNutritionalInformation: (ingredient: Ingredient, nutrition: IngredientNutrition) => void,
+    addIngredient: (ingredient: Ingredient) => void
 }
 
 interface EditRecipeState {
@@ -30,7 +31,8 @@ const mapStateToProps = (state: AppState) => {
 
 const mapDispatchToProps = {
     updateRecipe,
-    addIngredientWithNutritionalInformation
+    addIngredientWithNutritionalInformation,
+    addIngredient
 };
 
 class EditRecipe extends React.Component<EditRecipeProps, EditRecipeState> {
@@ -44,7 +46,12 @@ class EditRecipe extends React.Component<EditRecipeProps, EditRecipeState> {
 
     public render(): JSX.Element {
         return (
-            <RecipeInput allRecipes={this.props.allRecipes} allIngredients={this.props.allIngredients} initialRecipe={this.state.initialRecipe} submitRecipe={(recipe) => this.submitRecipe(recipe)} submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)} />
+            <RecipeInput allRecipes={this.props.allRecipes}
+                allIngredients={this.props.allIngredients}
+                initialRecipe={this.state.initialRecipe}
+                submitRecipe={(recipe) => this.submitRecipe(recipe)}
+                submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)}
+                submitIngredientWithoutNutrition={(ingredient) => this.submitIngredientWithoutNutrition(ingredient)} />
         );
     }
 
@@ -55,6 +62,10 @@ class EditRecipe extends React.Component<EditRecipeProps, EditRecipeState> {
 
     private submitIngredient(ingredient: Ingredient, nutrition: IngredientNutrition): void {
         this.props.addIngredientWithNutritionalInformation(ingredient, nutrition);
+    }
+
+    private submitIngredientWithoutNutrition(ingredient: Ingredient): void {
+        this.props.addIngredient(ingredient);
     }
 }
 

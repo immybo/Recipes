@@ -1,7 +1,6 @@
 ﻿module NutritionalInformationDomain
 
 open Model
-open Railway
 
 let multiplyNutrition macronutrientInformation factor =
     Result.Ok {
@@ -29,12 +28,3 @@ let sumNutrition nutritionList =
         ProteinGrams = 0m;
     }) nutritionList
     |> Result.Ok
-
-let toGramsPerCup (density: Density) : Result<decimal, Error> =
-    // TODO move all the util stuff here out of the domain, which should just orchestrate the dal
-    let oneCup = { Amount = 1m; Unit = QuantityUnit.Cups }
-    
-    QuantityDomain.getRatioBetweenQuantities density.EquivalentByVolume oneCup
-    >=> QuantityDomain.multiplyQuantity density.EquivalentByWeight
-    >=> QuantityDomain.convertToUnit QuantityUnit.Grams
-    >=> fun quantity -> Result.Ok quantity.Amount

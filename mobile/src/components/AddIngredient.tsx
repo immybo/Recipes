@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { AppState } from '../reducers/Reducers';
 import { withNavigation } from 'react-navigation';
 import { RouteViewRecipes } from '../Routes';
-import { addIngredientWithNutritionalInformation } from '../actions/IngredientActions';
+import { addIngredientWithNutritionalInformation, addIngredient } from '../actions/IngredientActions';
 import { Ingredient, getBlankIngredient } from '../model/Ingredient';
 import IngredientInput from './shared/IngredientInput';
 import { IngredientNutrition } from '../model/IngredientNutrition';
@@ -11,6 +11,7 @@ import { IngredientNutrition } from '../model/IngredientNutrition';
 interface AddIngredientProps {
     allIngredients: Ingredient[],
     addIngredientWithNutritionalInformation: (ingredient: Ingredient, nutrition: IngredientNutrition) => void
+    addIngredient: (ingredient: Ingredient) => void
 }
 
 interface AddIngredientState {
@@ -23,7 +24,8 @@ const mapStateToProps = (state: AppState) => {
 }
 
 const mapDispatchToProps = {
-    addIngredientWithNutritionalInformation
+    addIngredientWithNutritionalInformation,
+    addIngredient
 };
 
 class AddIngredient extends React.Component<AddIngredientProps, AddIngredientState> {
@@ -33,12 +35,20 @@ class AddIngredient extends React.Component<AddIngredientProps, AddIngredientSta
 
     public render(): JSX.Element {
         return (
-            <IngredientInput initialIngredient={getBlankIngredient()} submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)} allIngredients={this.props.allIngredients} />
+            <IngredientInput initialIngredient={getBlankIngredient()}
+                submitIngredientWithoutNutrition={ingredient => this.submitIngredientWithoutNutrition(ingredient)}
+                submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)}
+                allIngredients={this.props.allIngredients} />
         );
     }
 
     private submitIngredient(ingredient: Ingredient, nutrition: IngredientNutrition): void {
         this.props.addIngredientWithNutritionalInformation(ingredient, nutrition);
+        this.props.navigation.navigate(RouteViewRecipes);
+    }
+
+    private submitIngredientWithoutNutrition(ingredient: Ingredient): void {
+        this.props.addIngredient(ingredient);
         this.props.navigation.navigate(RouteViewRecipes);
     }
 }
