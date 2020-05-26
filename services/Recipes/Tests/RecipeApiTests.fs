@@ -4,7 +4,7 @@ open NUnit.Framework
 open Model
 open Interface
 
-module RecipeTests = 
+module RecipeApiTests = 
     [<SetUp>]
     let Setup () =
         ()
@@ -91,3 +91,21 @@ module RecipeTests =
                             | Result.Error Error.RecipeDoesNotExist -> ()
                             | Result.Error err -> Assert.False(true, "Invalid error raised: " + err.ToString())
                             | Result.Ok recipeId -> Assert.False(true, "Recipe was not deleted...")
+    
+    [<Test>]
+    let AddRecipeAndCheckThatItHasNoNutritionalInformation () =
+        Recipes.add TestUtils.TestRecipe
+        |> function result ->
+            match result with
+            | Result.Error err -> Assert.False(true, err.ToString())
+            | Result.Ok recipeId -> 
+                Recipes.get recipeId
+                |> fun readRecipe ->
+                    match readRecipe with
+                    | Result.Error Error.RecipeDoesNotExist -> Assert.False(true)
+                    | Result.Ok readRecipe ->
+                        Nutrition.getForIngredients([readRecipe.Ingredients.[0].Ingredient.Id])
+                        |> fun result ->
+                            match result with
+                            | Result.Error err -> Assert.False(true, err.ToString())
+                            | Result.Ok nutritionalInfos -> Assert.IsEmpty(nutritionalInfos, "There should be no nutritional information for a newly created ingredient.")

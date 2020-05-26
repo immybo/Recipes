@@ -4,6 +4,12 @@ open Model
 open NUnit.Framework
 
 module TestUtils =
+    let TestIngredient: Ingredient =
+        {
+            Id = -1;
+            Name = "test ingredient 1234";
+        }
+
     let TestRecipe: Recipe = {
         Id = -1;
         Name = "test recipe";

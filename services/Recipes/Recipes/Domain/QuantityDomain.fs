@@ -57,7 +57,7 @@ let getRatioBetweenQuantitiesOfSameType quantity1 quantity2 : Result<decimal, Er
 let toGramsPerCup (density: Density) : Result<decimal, Error> =
     let oneCup = { Amount = 1m; Unit = QuantityUnit.Cups }
         
-    getRatioBetweenQuantitiesOfSameType density.EquivalentByVolume oneCup
+    getRatioBetweenQuantitiesOfSameType oneCup density.EquivalentByVolume
     >=> multiplyQuantity density.EquivalentByWeight
     >=> convertToUnit QuantityUnit.Grams
     >=> fun quantity -> Result.Ok quantity.Amount
