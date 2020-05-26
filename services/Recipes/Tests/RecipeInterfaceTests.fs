@@ -4,7 +4,7 @@ open NUnit.Framework
 open Model
 open Interface
 
-module RecipeApiTests = 
+module RecipeInterfaceTests = 
     [<SetUp>]
     let Setup () =
         ()

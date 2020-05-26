@@ -17,10 +17,10 @@
 
   <ItemGroup>
     <Compile Include="TestUtils.fs" />
-    <Compile Include="ApiTests.fs" />
     <Compile Include="NutritionInterfaceTests.fs" />
     <Compile Include="QuantityDomainTests.fs" />
-    <Compile Include="RecipeApiTests.fs" />
+    <Compile Include="RecipeInterfaceTests.fs" />
+    <Compile Include="MealPlanInterfaceTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

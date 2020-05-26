@@ -2,6 +2,7 @@
 
 open Model
 open NUnit.Framework
+open Interface
 
 module TestUtils =
     let TestIngredient: Ingredient =
@@ -105,3 +106,12 @@ module TestUtils =
             Assert.AreEqual(c1.Name, c2.Name);
 
         Assert.AreEqual(r1.Method.Steps, r2.Method.Steps);
+
+    let addRecipe : int =
+        let addRecipeResult = Recipes.add TestRecipe
+
+        match addRecipeResult with
+        | Result.Error err ->
+            Assert.Fail (err.ToString())
+            -1
+        | Result.Ok recipeId -> recipeId
