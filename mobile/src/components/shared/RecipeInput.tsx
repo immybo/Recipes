@@ -19,6 +19,7 @@ import IngredientInput from './IngredientInput';
 import { IngredientNutrition } from '../../model/IngredientNutrition';
 import { QuantityUnit } from '../../model/QuantityUnit';
 import ValidationContainer from './ValidationContainer';
+import Form from './Form';
 
 interface RecipeInputProps extends React.Props<RecipeInput> {
     initialRecipe: Recipe,
@@ -85,7 +86,7 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
         let nameErrors = React.createRef<ValidationContainer>();
 
         return (
-            <View style={styles.container}>
+            <Form style={styles.container}>
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View>
                         <CustomTextInput
@@ -136,7 +137,7 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
                         <Button title="Submit Recipe" onPress={(event) => this.submitRecipe()} disabled={this.state.numInvalidInputs > 0}>Submit Recipe</Button>
                     </View>
                 </ScrollView>
-            </View>);
+            </Form>);
     }
 
     private recipeNameIsUnique(name: string): boolean {

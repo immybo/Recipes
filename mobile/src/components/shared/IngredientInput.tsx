@@ -16,6 +16,7 @@ import { QuantityFormatter } from '../../util/QuantityFormatter';
 import ValidationContainer from './ValidationContainer';
 import { PositiveOrZero } from '../../util/ValidationRules';
 import { Density } from '../../model/Density';
+import Form from './Form';
 
 interface IngredientInputProps extends React.Props<IngredientInput> {
     initialIngredient: Ingredient,
@@ -73,7 +74,7 @@ export default class IngredientInput extends React.Component<IngredientInputProp
         let carbsErrors = React.createRef<ValidationContainer>();
         
         return (
-            <View style={styles.container}>
+            <Form style={styles.container}>
                 <CustomTextInput
                     style={styles.h1}
                     placeholder="Ingredient Name"
@@ -193,7 +194,7 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                 <View style={styles.verticalMargin}>
                     <Button title="Submit" onPress={_ => this.submitIngredient()} disabled={this.state.numInvalidInputs > 0}>Submit Ingredient</Button>
                 </View>
-            </View>
+            </Form>
         );
     }
 

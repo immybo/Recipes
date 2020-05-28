@@ -1,6 +1,6 @@
 import { Colors } from "../../style/Colors";
 import React from "react";
-import { TextInput, TextInputProps, View } from "react-native";
+import { TextInput, TextInputProps } from "react-native";
 import Validator, { ValidationRule } from "./Validator";
 import ValidationContainer from "./ValidationContainer";
 
@@ -8,6 +8,9 @@ interface CustomTextInputProps extends TextInputProps {
     validationRules?: ValidationRule<string>[]
     validationContainer?: React.RefObject<ValidationContainer>
     onValidChange?: (newValue: boolean) => void
+    onSubmitEditing?: () => void
+    onEnter?: () => void
+    inputRef?: (input: TextInput | null) => void
 }
 
 interface CustomTextInputState {
@@ -75,12 +78,17 @@ class CustomTextInput extends React.Component<CustomTextInputProps, CustomTextIn
     public render(): JSX.Element {
         return (
             <TextInput
+                ref={ref => { if (this.props.inputRef != null) this.props.inputRef(ref)}}
                 selectionColor={Colors.Blue}
                 underlineColorAndroid={this.state.isFocused ? Colors.Blue : Colors.LightGrey }
                 onFocus={() => this.handleFocus()}
                 onBlur={() => this.handleBlur()}
                 { ...this.props }
                 onChangeText={newStr => this.onChange(newStr, this.props.onChangeText)}
+                onSubmitEditing={() => {
+                    if (this.props.onEnter != null) this.props.onEnter();
+                    if (this.props.onSubmitEditing != null) this.props.onSubmitEditing();
+                }}
                 />
         );    
     }
