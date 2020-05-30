@@ -9,6 +9,7 @@ import RecipeInput from './shared/RecipeInput';
 import { Ingredient } from '../model/Ingredient';
 import { IngredientNutrition } from '../model/IngredientNutrition';
 import { addIngredientWithNutritionalInformation, addIngredient } from '../actions/IngredientActions';
+import { LoadingType, LoadingActionTypes, beginLoading, endLoading } from '../actions/LoadingActions';
 
 interface AddRecipeProps extends React.Props<AddRecipe> {
     allIngredients: Ingredient[],
@@ -16,6 +17,8 @@ interface AddRecipeProps extends React.Props<AddRecipe> {
     addRecipe: (recipe: Recipe) => void,
     addIngredientWithNutritionalInformation: (ingredient: Ingredient, nutrition: IngredientNutrition) => void,
     addIngredient: (ingredient: Ingredient) => void
+    beginLoading: (type: LoadingType) => LoadingActionTypes
+    endLoading: (type: LoadingType) => LoadingActionTypes
 }
 
 interface AddRecipeState {
@@ -31,7 +34,9 @@ const mapStateToProps = (state: AppState) => {
 const mapDispatchToProps = {
     addRecipe,
     addIngredientWithNutritionalInformation,
-    addIngredient
+    addIngredient,
+    endLoading,
+    beginLoading
 };
 
 class AddRecipe extends React.Component<AddRecipeProps, AddRecipeState> {
@@ -52,16 +57,22 @@ class AddRecipe extends React.Component<AddRecipeProps, AddRecipeState> {
     }
 
     private submitRecipe(recipe: Recipe): void {
+        this.props.beginLoading(LoadingType.SubmitRecipe);
         this.props.addRecipe(recipe);
+        this.props.endLoading(LoadingType.SubmitRecipe);
         this.props.navigation.navigate(RouteViewRecipes);
     }
 
     private submitIngredient(ingredient: Ingredient, nutrition: IngredientNutrition): void {
+        this.props.beginLoading(LoadingType.SubmitIngredient);
         this.props.addIngredientWithNutritionalInformation(ingredient, nutrition);
+        this.props.endLoading(LoadingType.SubmitIngredient);
     }
 
     private submitIngredientWithoutNutrition(ingredient: Ingredient): void {
+        this.props.beginLoading(LoadingType.SubmitIngredient);
         this.props.addIngredient(ingredient);
+        this.props.endLoading(LoadingType.SubmitIngredient);
     }
 }
 

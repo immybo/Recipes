@@ -7,11 +7,14 @@ import { addIngredientWithNutritionalInformation, addIngredient } from '../actio
 import { Ingredient, getBlankIngredient } from '../model/Ingredient';
 import IngredientInput from './shared/IngredientInput';
 import { IngredientNutrition } from '../model/IngredientNutrition';
+import { LoadingType, beginLoading, endLoading } from '../actions/LoadingActions';
 
 interface AddIngredientProps {
     allIngredients: Ingredient[],
     addIngredientWithNutritionalInformation: (ingredient: Ingredient, nutrition: IngredientNutrition) => void
     addIngredient: (ingredient: Ingredient) => void
+    beginLoading: (type: LoadingType) => void
+    endLoading: (type: LoadingType) => void
 }
 
 interface AddIngredientState {
@@ -25,7 +28,9 @@ const mapStateToProps = (state: AppState) => {
 
 const mapDispatchToProps = {
     addIngredientWithNutritionalInformation,
-    addIngredient
+    addIngredient,
+    beginLoading,
+    endLoading
 };
 
 class AddIngredient extends React.Component<AddIngredientProps, AddIngredientState> {
@@ -43,12 +48,16 @@ class AddIngredient extends React.Component<AddIngredientProps, AddIngredientSta
     }
 
     private submitIngredient(ingredient: Ingredient, nutrition: IngredientNutrition): void {
+        this.props.beginLoading(LoadingType.SubmitIngredient);
         this.props.addIngredientWithNutritionalInformation(ingredient, nutrition);
+        this.props.endLoading(LoadingType.SubmitIngredient);
         this.props.navigation.navigate(RouteViewRecipes);
     }
 
     private submitIngredientWithoutNutrition(ingredient: Ingredient): void {
+        this.props.beginLoading(LoadingType.SubmitIngredient);
         this.props.addIngredient(ingredient);
+        this.props.endLoading(LoadingType.SubmitIngredient);
         this.props.navigation.navigate(RouteViewRecipes);
     }
 }

@@ -3,12 +3,14 @@ import { fetchIngredients } from "../actions/IngredientActions";
 import { View } from "react-native";
 import React from "react";
 import { connect } from "react-redux";
+import { LoadingType, beginLoading, endLoading } from "../actions/LoadingActions";
 
 interface InitialStateLoaderProps extends React.Props<InitialStateLoader> {
     fetchRecipes: () => Promise<void>
     fetchIngredients: () => Promise<void>
-    onLoad: () => void
     shouldReload: boolean
+    beginLoading: (type: LoadingType) => void
+    endLoading: (type: LoadingType) => void
 }
 
 interface InitialStateLoaderState {
@@ -17,15 +19,18 @@ interface InitialStateLoaderState {
 
 const mapDispatchToProps = {
     fetchRecipes,
-    fetchIngredients
+    fetchIngredients,
+    beginLoading,
+    endLoading
 };
 
 const mergeProps = (stateProps: InitialStateLoaderProps, dispatchProps: InitialStateLoaderProps, ownProps: InitialStateLoaderProps): InitialStateLoaderProps => {
     return {
         fetchRecipes: dispatchProps.fetchRecipes,
         fetchIngredients: dispatchProps.fetchIngredients,
-        onLoad: ownProps.onLoad,
-        shouldReload: ownProps.shouldReload
+        shouldReload: ownProps.shouldReload,
+        beginLoading: dispatchProps.beginLoading,
+        endLoading: dispatchProps.endLoading
     }
 }
 
@@ -47,7 +52,7 @@ class InitialStateLoader extends React.Component<InitialStateLoaderProps, Initia
 
         this.props.fetchRecipes()
             .then(_ => this.props.fetchIngredients())
-            .then(_ => { this.setState({ isLoading: false }); this.props.onLoad()});
+            .then(_ => { this.setState({ isLoading: false }); this.props.beginLoading(LoadingType.InitialState)});
     }
 
     public componentDidUpdate(): void {
@@ -56,7 +61,7 @@ class InitialStateLoader extends React.Component<InitialStateLoaderProps, Initia
 
             this.props.fetchRecipes()
                 .then(_ => this.props.fetchIngredients())
-                .then(_ => { this.setState({ isLoading: false }); this.props.onLoad()});
+                .then(_ => { this.setState({ isLoading: false }); this.props.endLoading(LoadingType.InitialState)});
         }
     }
 }

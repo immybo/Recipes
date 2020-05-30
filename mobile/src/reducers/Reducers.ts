@@ -5,13 +5,15 @@ import thunk from 'redux-thunk';
 import NetworkReducer from "./NetworkReducer";
 import IngredientReducer from "./IngredientReducer";
 import MealPlannerReducer from "./MealPlannerReducer";
+import LoadingReducer from "./LoadingReducer";
 
 const rootReducer = combineReducers({
     recipes: RecipeReducer,
     categories: CategoryReducer,
     network: NetworkReducer,
     ingredients: IngredientReducer,
-    mealPlanner: MealPlannerReducer
+    mealPlanner: MealPlannerReducer,
+    loadingState: LoadingReducer
 });
 
 export type AppState = ReturnType<typeof rootReducer>;

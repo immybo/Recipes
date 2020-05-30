@@ -34,37 +34,34 @@ const MainNavigator = createStackNavigator({
 let Navigation = createAppContainer(MainNavigator);
 
 interface AppLocalState {
-    isLoaded: boolean
 }
 
 interface AppProps extends React.Props<App> {
     hasNetworkConnectivity: boolean,
-    currentError: string | null
+    currentError: string | null,
+    isLoaded: boolean
 }
 
 const mapStateToProps = (state: AppState) => {
     return {
         hasNetworkConnectivity: state.network.hasConnectionToServer,
-        currentError: state.network.currentError
+        currentError: state.network.currentError,
+        isLoaded: state.loadingState.currentlyLoading == null ? true : state.loadingState.currentlyLoading.size === 0
     };
 }
 
 class App extends React.Component<AppProps, AppLocalState> {
     constructor(props: any) {
         super(props);
-
-        this.state = {
-            isLoaded: false
-        };
     }
 
     public render(): JSX.Element {
         return (
             <Provider store={store}>
-                <InitialStateLoader shouldReload={!this.state.isLoaded} onLoad={() => this.setState({isLoaded: true})} />
-                { this.state.isLoaded && this.props.hasNetworkConnectivity && <Navigation />}
+                <InitialStateLoader shouldReload={!this.props.isLoaded} />
+                { this.props.isLoaded && this.props.hasNetworkConnectivity && <Navigation />}
 
-                { !this.state.isLoaded && 
+                { !this.props.isLoaded && 
                     <View style={styles.centerAlign}>
                         <ActivityIndicator size={72} color={Colors.Blue}/>
                     </View>
@@ -74,7 +71,7 @@ class App extends React.Component<AppProps, AppLocalState> {
                     <ErrorDisplay errorMessage={this.props.currentError} />
                 }
 
-                { !this.props.hasNetworkConnectivity && this.state.isLoaded &&
+                { !this.props.hasNetworkConnectivity && this.props.isLoaded &&
                     <NoConnectionToServer attemptReload={() => this.setState({isLoaded: false})}/>
                 }
             </Provider>
