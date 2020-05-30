@@ -3,7 +3,8 @@ import {
     View,
     Button,
     TouchableOpacity,
-    Text
+    Text,
+    Keyboard
 } from 'react-native';
 import { IngredientWithQuantity, getBlankIngredientWithQuantity } from '../../model/IngredientWithQuantity';
 import IngredientSelect from './IngredientSelect';
@@ -87,7 +88,7 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
 
         return (
             <Form style={styles.container}>
-                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps={"handled"}>
                     <View>
                         <CustomTextInput
                             style={styles.h1}
@@ -105,9 +106,9 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
                         
                         <View style={styles.rowLayout}>
                             <Text style={[styles.h1, styles.verticalMarginSmall]}>Ingredients</Text>
-                            <TouchableOpacity onPress={(event) => this.addNewIngredient()}>
+                            <TouchableOpacity onPress={(event) => { Keyboard.dismiss(); this.addNewIngredient()}}>
                                 <View style={[styles.rightAlign, styles.verticalMarginSmall]}>
-                                    <Icon name="plus" size={20} color="black" />
+                                    <Icon name="plus" size={35} color="black" />
                                 </View>
                             </TouchableOpacity>
                         </View>
@@ -115,26 +116,26 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
 
                         <View style={styles.rowLayout}>
                             <Text style={[styles.h1, styles.verticalMarginSmall]}>Method</Text>
-                            <TouchableOpacity onPress={(event) => this.addNewStep()}>
+                            <TouchableOpacity onPress={(event) => { Keyboard.dismiss(); this.addNewStep()}}>
                                 <View style={[styles.rightAlign, styles.verticalMarginSmall]}>
-                                    <Icon name="plus" size={20} color="black" />
+                                    <Icon name="plus" size={35} color="black" />
                                 </View>
                             </TouchableOpacity>
                         </View>
                         {this.getMethodStepList()}
 
-                        <View style={styles.rowLayout}>
+                        <View style={[styles.rowLayout]}>
                             <Text style={[styles.h1, styles.verticalMarginSmall]}>Categories</Text>
-                            <TouchableOpacity onPress={(event) => this.addNewCategory()}>
+                            <TouchableOpacity onPress={(event) => {Keyboard.dismiss(); this.addNewCategory()}}>
                                 <View style={[styles.rightAlign, styles.verticalMarginSmall]}>
-                                    <Icon name="plus" size={20} color="black" />
+                                    <Icon name="plus" size={35} color="black" />
                                 </View>
                             </TouchableOpacity>
                         </View>
                         {this.getCategoryList()}
                     </View>
                     <View style={[styles.topMargin]}>
-                        <Button title="Submit Recipe" onPress={(event) => this.submitRecipe()} disabled={this.state.numInvalidInputs > 0}>Submit Recipe</Button>
+                        <Button title="Submit Recipe" onPress={(event) => { Keyboard.dismiss(); this.submitRecipe()}} disabled={this.state.numInvalidInputs > 0}>Submit Recipe</Button>
                     </View>
                 </ScrollView>
             </Form>);
@@ -193,14 +194,14 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
             (step: string, key: number) => 
                 <View style={styles.rowLayout} key={"step-" + key}>
                     <Text style={{"flex": 0.1}}>{(key+1) + ". "}</Text>
-                    <CustomTextInput style={{"flex": 0.9}} multiline={true} defaultValue={step} placeholder={"Step " + key} onChangeText={(text) => this.onMethodStepTextChange(text, key)} />
+                    <CustomTextInput style={{"flex": 0.9}} multiline={true} blurOnSubmit={true} returnKeyType={"done"} defaultValue={step} placeholder={"Step " + (key+1)} onChangeText={(text) => this.onMethodStepTextChange(text, key)} />
                 </View>
         );
     }
 
     private getCategoryList(): JSX.Element[] {
         return this.state.categories.map(
-            (category: Category, key: number) => <CustomTextInput defaultValue={category.name} placeholder="Category Name" key={"category-" + key} onChangeText={(text) => this.onCategoryTextChange(text, key)} />
+            (category: Category, key: number) => <CustomTextInput style={{"flex": 0.3}} defaultValue={category.name} placeholder="Category Name" key={"category-" + key} onChangeText={(text) => this.onCategoryTextChange(text, key)} />
         );
     }
 

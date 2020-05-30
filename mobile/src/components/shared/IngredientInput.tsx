@@ -88,7 +88,7 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                     onValidChange={isValid => this.updateValid(isValid) } />
                 <ValidationContainer ref={nameErrors} />
 
-                <View style={styles.rowWithoutJustify}>
+                <View style={[styles.rowWithoutJustify, styles.verticalMarginSmall]}>
                     <CheckBox value={this.state.noNutrition} onValueChange={newValue => this.setState({noNutrition: newValue})}/>
                     <Text>No nutrition</Text>
                 </View>
