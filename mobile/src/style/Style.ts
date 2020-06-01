@@ -17,6 +17,9 @@ export const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: "bold"
     },
+    largeText: {
+        fontSize: 20
+    },
     rowLayout: {
         flexDirection: "row",
         justifyContent: "space-between",

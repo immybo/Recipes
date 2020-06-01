@@ -24,16 +24,16 @@ class RecipeCompactDisplay extends React.Component<RecipeCompactDisplayProps, an
         return (
             <TouchableOpacity onPress={(event) => { if (this.props.onClick != null) { this.props.onClick(this.props.recipe)}}}>
                 <View style={styles.rowLayout}>
-                    <Text>{this.props.recipe.name}</Text>
+                    <Text style={styles.largeText}>{this.props.recipe.name}</Text>
                     <View style={styles.rowRightButton}>
                         { this.props.onEdit != null &&
                             <TouchableOpacity style={styles.marginSmall} onPress={(event) => { if (this.props.onEdit != null) { this.props.onEdit(this.props.recipe)}}}>
-                                <Icon name="edit" size={20} color="black" />
+                                <Icon name="edit" size={30} color="black" />
                             </TouchableOpacity>
                         }
                         { this.props.onDelete != null &&
                             <TouchableOpacity style={styles.marginSmall} onPress={(event) => { if (this.props.onDelete != null) { this.props.onDelete(this.props.recipe)}}}>
-                                <Icon name="trash" size={20} color="black" />
+                                <Icon name="trash" size={30} color="black" />
                             </TouchableOpacity>
                         }
                     </View>
