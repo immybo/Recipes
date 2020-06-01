@@ -26,7 +26,7 @@ class CustomTextInput extends React.Component<CustomTextInputProps, CustomTextIn
 
         this.state = {
             isFocused: false,
-            rawValue: "",
+            rawValue: props.value ?? props.defaultValue ?? "",
             isValid: true
         };
     }

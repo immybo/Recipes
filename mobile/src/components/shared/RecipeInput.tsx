@@ -63,7 +63,6 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
         // If we just added an ingredient and we've got the ID back from the server, fill it in
         if (this.state.ingredientInputKey >= 0 && this.state.ingredientWaitingToAdd != null) {
             let waitingToAdd: Ingredient = this.state.ingredientWaitingToAdd;
-            // There's actually no unique constraint on ingredient names TODO add that
             let matchingIngredients: Ingredient[] = this.props.allIngredients.filter(ingredient => ingredient.name === waitingToAdd.name);
             if (matchingIngredients.length > 0) {
                 waitingToAdd.id = matchingIngredients[0].id;

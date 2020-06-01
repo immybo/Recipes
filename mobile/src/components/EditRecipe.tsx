@@ -46,7 +46,7 @@ class EditRecipe extends React.Component<EditRecipeProps, EditRecipeState> {
 
     public render(): JSX.Element {
         return (
-            <RecipeInput allRecipes={this.props.allRecipes}
+            <RecipeInput allRecipes={this.props.allRecipes.filter(x => x.id !== this.state.initialRecipe.id)}
                 allIngredients={this.props.allIngredients}
                 initialRecipe={this.state.initialRecipe}
                 submitRecipe={(recipe) => this.submitRecipe(recipe)}
