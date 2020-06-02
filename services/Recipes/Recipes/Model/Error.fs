@@ -12,3 +12,4 @@ type Error =
     | RecipeMustHaveDescription = 9
     | IncompatibleUnits = 10
     | ZeroValueProvided = 11
+    | IngredientIsUsedByARecipe = 12

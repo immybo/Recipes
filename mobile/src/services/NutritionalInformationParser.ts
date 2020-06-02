@@ -1,6 +1,10 @@
 import { IngredientNutrition } from "../model/IngredientNutrition";
 import { MacronutrientInformation } from "../model/MacronutrientInformation";
 
+export function parseIngredientNutritions(nutritionsJson: any): IngredientNutrition[] {
+    return nutritionsJson.map((nutritionJson: any) => parseIngredientNutrition(nutritionJson));
+}
+
 export function parseIngredientNutrition(nutritionJson: any): IngredientNutrition {
     return {
         ingredientId: nutritionJson.IngredientId,

@@ -1,23 +1,23 @@
 import React from 'react';
 import {
-    View,
-    Text,
-    Button
+    View
 } from 'react-native';
 import { connect } from 'react-redux';
 import { Recipe } from '../model/Recipe';
 import { AppState } from '../reducers/Reducers';
 import { withNavigation, ScrollView } from 'react-navigation';
-import { RouteAddRecipe, RouteViewIndividualRecipe, RouteEditRecipe, RouteAddIngredient, RouteMealPlanner } from '../Routes';
+import { RouteViewIndividualRecipe, RouteEditRecipe } from '../Routes';
 import { deleteRecipe } from '../actions/RecipeActions';
 import RecipeCompactDisplay from './shared/RecipeCompactDisplay';
 import { styles } from '../style/Style';
 import NavigationBar from './shared/NavigationBar';
+import { removeDisplayedError } from '../actions/NetworkActions';
 
 interface ViewRecipesProps extends React.Props<ViewRecipes> {
     navigation: any,
     recipes: Recipe[],
-    deleteRecipe: (deletedRecipe: Recipe) => void
+    deleteRecipe: (deletedRecipe: Recipe) => void,
+    removeDisplayedError: () => void
 }
 
 const mapStateToProps = (state: AppState) => {
@@ -27,7 +27,8 @@ const mapStateToProps = (state: AppState) => {
 }
 
 const mapDispatchToProps = {
-    deleteRecipe
+    deleteRecipe,
+    removeDisplayedError
 };
 
 class ViewRecipes extends React.Component<ViewRecipesProps, any> {
@@ -43,7 +44,7 @@ class ViewRecipes extends React.Component<ViewRecipesProps, any> {
                         {this.getRecipeList()}
                     </View>
                     <View style={styles.bottomButtonContainer}>
-                        <NavigationBar navigate={route => this.props.navigation.navigate(route)} />
+                        <NavigationBar navigate={route => this.props.navigation.navigate(route)} removeDisplayedError={this.props.removeDisplayedError} />
                     </View>
                 </ScrollView>
             </View>

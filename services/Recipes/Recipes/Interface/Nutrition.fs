@@ -17,8 +17,25 @@ module Nutrition =
                 match QuantityDomain.toGramsPerCup nutritionalInformation.Density with
                 | Result.Error err -> Result.Error err
                 | Result.Ok gramsPerCup ->
-                    IngredientNutritionDataAccess.addNutritionMappingForIngredient nutritionalInformation macronutrientsId gramsPerCup
+                    IngredientNutritionDataAccess.addOrUpdateNutritionMappingForIngredient nutritionalInformation macronutrientsId gramsPerCup
                     |> Result.Ok
+    
+    let updateForIngredient nutritionalInformation : Result<int, Error> =
+        IngredientDataAccess.getIngredient nutritionalInformation.IngredientId
+        |> function result ->
+            match result with
+            | Result.Error err -> Result.Error err
+            | Result.Ok _ ->
+                match IngredientNutritionDataAccess.getNutritionIdForIngredient nutritionalInformation.IngredientId with
+                | Result.Ok macronutrientId ->
+                    MacronutrientsDataAccess.updateMacronutrients macronutrientId nutritionalInformation.MacronutrientsPerServing
+                    match QuantityDomain.toGramsPerCup nutritionalInformation.Density with
+                    | Result.Error err -> Result.Error err
+                    | Result.Ok gramsPerCup ->
+                        IngredientNutritionDataAccess.addOrUpdateNutritionMappingForIngredient nutritionalInformation macronutrientId gramsPerCup
+                        |> Result.Ok
+                | Result.Error Error.NoNutritionalInformationForIngredient -> addForIngredient nutritionalInformation
+                | Result.Error err -> Result.Error err
 
     let getForIngredients (ingredientIds: IEnumerable<int>) : Result<IngredientNutrition[], Error> =
         let nutritionalInformation = new List<IngredientNutrition>();

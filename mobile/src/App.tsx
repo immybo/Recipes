@@ -15,6 +15,9 @@ import NoConnectionToServer from './components/NoConnectionToServer';
 import AddIngredient from './components/AddIngredient';
 import MealPlanner from './components/MealPlanner';
 import ErrorDisplay from './components/ErrorDisplay';
+import ViewIngredients from './components/ViewIngredients';
+import { removeDisplayedError } from './actions/NetworkActions';
+import EditIngredient from './components/EditIngredient';
 
 const PageHeaderStyle = {
     headerTitleStyle: {
@@ -28,7 +31,9 @@ const MainNavigator = createStackNavigator({
     ViewIndividualRecipe: { screen: ViewIndividualRecipe, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "View Recipe" })},
     EditRecipe: { screen: EditRecipe, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "Edit Recipe" })},
     AddIngredient: { screen: AddIngredient, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "Add Ingredient" })},
-    MealPlanner: { screen: MealPlanner, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "Meal Planner" })}
+    MealPlanner: { screen: MealPlanner, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "Meal Planner" })},
+    ViewIngredients: { screen: ViewIngredients, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "Ingredient List" })},
+    EditIngredient: { screen: EditIngredient, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "Edit Ingredient" })}
 });
 
 let Navigation = createAppContainer(MainNavigator);
@@ -49,6 +54,9 @@ const mapStateToProps = (state: AppState) => {
         isLoaded: state.loadingState.currentlyLoading == null ? true : state.loadingState.currentlyLoading.size === 0
     };
 }
+
+const mapDispatchToProps = {
+};
 
 class App extends React.Component<AppProps, AppLocalState> {
     constructor(props: any) {
@@ -79,4 +87,4 @@ class App extends React.Component<AppProps, AppLocalState> {
     }
 }
 
-export default connect(mapStateToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

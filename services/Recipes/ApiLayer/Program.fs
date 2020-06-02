@@ -36,6 +36,9 @@ let getRecipe id =
 let deleteRecipe id =
     Recipes.delete id
 
+let deleteIngredient id =
+    Ingredients.delete id
+
 let handle<'ParamType, 'ResponseType> (request: HttpRequest, underlyingFunction: 'ParamType -> Result<'ResponseType, Error>) : WebPart =
     logRequest request
     |> getJsonFromRequest
@@ -75,8 +78,7 @@ let app =
             [ path "/recipes" >=> request(fun context -> handleParameterless (context, Recipes.getAll))
               pathScan "/recipes/%d" (fun id -> callWithJson getRecipe id)
               pathScan "/recipes/%d/nutrition" (fun id -> callWithJson Nutrition.getForRecipe id)
-              path "/ingredients" >=> request(fun context -> handleParameterless (context, Ingredients.getAll))
-              path "/nutrition/ingredients" >=> request(fun context -> handle (context, Nutrition.getForIngredients))]
+              path "/ingredients" >=> request(fun context -> handleParameterless (context, Ingredients.getAll))]
           POST >=> choose
             [ path "/recipes" >=> request(fun context -> handle (context, Recipes.add))
               path "/ingredients" >=> request(fun context -> handle (context, Ingredients.add))
@@ -84,10 +86,14 @@ let app =
               path "/nutrition/ingredients" >=> request(fun context -> handle (context, Nutrition.addForIngredient))]
           PUT >=> choose
             [ path "/recipes" >=> request(fun context -> handle (context, Recipes.update))
+              path "/ingredients" >=> request(fun context -> handle (context, Ingredients.update))
+              path "/nutrition/ingredients" >=> request(fun context -> handle (context, Nutrition.updateForIngredient))
               // Can't send a body in get requests... we could just use multiple query string params?
-              path "/mealplanner/mealplans" >=> request(fun context -> handle (context, MealPlan.get))]
+              path "/mealplanner/mealplans" >=> request(fun context -> handle (context, MealPlan.get))
+              path "/nutrition/ingredients/get" >=> request(fun context -> handle (context, Nutrition.getForIngredients))]
           DELETE >=> choose
             [ pathScan "/recipes/%d" (fun id -> callWithJson deleteRecipe id)
+              path "/ingredients" >=> request(fun context -> handle (context, Ingredients.delete))
               path "/mealplanner/mealplans" >=> request(fun context -> handle (context, MealPlan.deleteEntry))]
         ]
 

@@ -41,3 +41,13 @@ module MacronutrientsDataAccess =
     let addMacronutrients macronutrients =
         let command = new AddMacronutrientsCommand(Database.realConnectionString)
         command.Execute(macronutrients.Calories, macronutrients.ProteinGrams, macronutrients.CarbGrams, macronutrients.FatGrams).Single()
+    
+    type UpdateMacronutrientsCommand = SqlCommandProvider<"
+        UPDATE dbo.Macronutrients
+        SET calories = @calories, proteinGrams = @proteinGrams, carbGrams = @carbGrams, fatGrams = @fatGrams
+        WHERE id = @id
+        ", Database.compileTimeConnectionString>
+    
+    let updateMacronutrients macronutrientsId  macronutrients =
+        let command = new UpdateMacronutrientsCommand(Database.realConnectionString)
+        command.Execute(macronutrients.Calories, macronutrients.ProteinGrams, macronutrients.CarbGrams, macronutrients.FatGrams, macronutrientsId) |> ignore

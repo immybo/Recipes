@@ -49,7 +49,7 @@ module IngredientNutritionDataAccess =
         let command = new DeleteIngredientNutritionCommand(Database.realConnectionString)
         command.Execute ingredientId
         
-    let addNutritionMappingForIngredient ingredientNutrition macronutrientsId gramsPerCup =
+    let addOrUpdateNutritionMappingForIngredient ingredientNutrition macronutrientsId gramsPerCup =
         deleteIngredientNutritionEntry ingredientNutrition.IngredientId |> ignore
 
         let command = new AddIngredientNutritionCommand(Database.realConnectionString)
@@ -64,5 +64,17 @@ module IngredientNutritionDataAccess =
             | 0 -> Result.Error Error.NoNutritionalInformationForIngredient
             | 1 ->
                 mapToIngredientNutrition results.[0]
+                |> Result.Ok
+            | _ -> Result.Error Error.ExpectedExactlyOne
+
+    let getNutritionIdForIngredient (ingredientId: int) =
+        let query = new GetIngredientNutritionCommand(Database.realConnectionString)
+        query.Execute (ingredientId)
+        |> Seq.toArray
+        |> function results ->
+            match results.Length with
+            | 0 -> Result.Error Error.NoNutritionalInformationForIngredient
+            | 1 ->
+                results.[0].macronutrientsId
                 |> Result.Ok
             | _ -> Result.Error Error.ExpectedExactlyOne

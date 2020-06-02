@@ -138,3 +138,23 @@ module IngredientDataAccess =
                 | _ -> updateIngredient ingredient.Ingredient
             |> addIngredientMapping recipe.Id ingredient.Quantity
             |> ignore
+
+    type GetIngredientMappingsForIngredientQuery = SqlCommandProvider<"
+        SELECT *
+        FROM dbo.RecipesToIngredients
+        WHERE IngredientId = @ingredientId
+        ", Database.compileTimeConnectionString>
+
+    let anyRecipeContainsIngredient ingredientId =
+        let query = new GetIngredientMappingsForIngredientQuery(Database.realConnectionString)
+        query.Execute (ingredientId)
+        |> fun x -> x.Count() > 0
+    
+    type DeleteIngredientCommand = SqlCommandProvider<"
+        DELETE FROM dbo.Ingredients
+        WHERE Id = @ingredientId
+        ", Database.compileTimeConnectionString>
+
+    let deleteIngredient ingredientId =
+        let command = new DeleteIngredientCommand(Database.realConnectionString)
+        command.Execute (ingredientId)

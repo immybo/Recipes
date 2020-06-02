@@ -15,11 +15,12 @@ import { IngredientNutrition } from '../../model/IngredientNutrition';
 import { QuantityFormatter } from '../../util/QuantityFormatter';
 import ValidationContainer from './ValidationContainer';
 import { PositiveOrZero } from '../../util/ValidationRules';
-import { Density } from '../../model/Density';
+import { Density, getDefaultDensity } from '../../model/Density';
 import Form from './Form';
 
 interface IngredientInputProps extends React.Props<IngredientInput> {
     initialIngredient: Ingredient,
+    initialNutrition?: IngredientNutrition,
     submitIngredient: (ingredient: Ingredient, nutrition: IngredientNutrition) => void,
     submitIngredientWithoutNutrition: (ingredient: Ingredient) => void,
     allIngredients: Ingredient[]
@@ -44,25 +45,31 @@ export default class IngredientInput extends React.Component<IngredientInputProp
 
         this.state = {
             ingredientName: props.initialIngredient.name,
-            caloriesPerServing: 0,
-            gramsCarbsPerServing: 0,
-            gramsFatPerServing: 0,
-            gramsProteinPerServing: 0,
-            servingSizeAmount: 0,
-            servingSizeUnit: QuantityUnit.Cups,
+            caloriesPerServing: props.initialNutrition?.macronutrientsPerServing.calories,
+            gramsCarbsPerServing: props.initialNutrition?.macronutrientsPerServing.carbGrams,
+            gramsFatPerServing: props.initialNutrition?.macronutrientsPerServing.fatGrams,
+            gramsProteinPerServing: props.initialNutrition?.macronutrientsPerServing.proteinGrams,
+            servingSizeAmount: props.initialNutrition?.servingSize.amount,
+            servingSizeUnit: props.initialNutrition?.servingSize.amount,
             numInvalidInputs: 0,
-            density: {
-                equivalentByWeight: {
-                    amount: 100,
-                    unit: QuantityUnit.Grams
-                },
-                equivalentByVolume: {
-                    amount: 1,
-                    unit: QuantityUnit.Cups
-                }
-            },
+            density: props.initialNutrition ? props.initialNutrition.density : getDefaultDensity(),
             noNutrition: false
         };
+    }
+
+    public componentDidUpdate(previousProps: IngredientInputProps) {
+        if (previousProps.initialNutrition == null && this.props.initialNutrition != null) {
+            this.setState({
+                caloriesPerServing: this.props.initialNutrition.macronutrientsPerServing.calories,
+                gramsCarbsPerServing: this.props.initialNutrition.macronutrientsPerServing.carbGrams,
+                gramsFatPerServing: this.props.initialNutrition.macronutrientsPerServing.fatGrams,
+                gramsProteinPerServing: this.props.initialNutrition.macronutrientsPerServing.proteinGrams,
+                servingSizeAmount: this.props.initialNutrition.servingSize.amount,
+                servingSizeUnit: this.props.initialNutrition.servingSize.amount,
+                density: this.props.initialNutrition.density,
+                noNutrition: false
+            });
+        }
     }
 
     public render(): JSX.Element {
@@ -117,7 +124,7 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                             <CustomTextInput
                                 placeholder="0"
                                 keyboardType="numeric"
-                                defaultValue={this.props.initialIngredient.name}
+                                defaultValue={this.state.caloriesPerServing?.toString()}
                                 onChangeText={(text) => this.onSetCalories(text)}
                                 validationRules={[ PositiveOrZero ]}
                                 validationContainer={caloriesErrors}
@@ -129,7 +136,7 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                             <CustomTextInput
                                 placeholder="0"
                                 keyboardType="numeric"
-                                defaultValue={this.props.initialIngredient.name}
+                                defaultValue={this.state.gramsProteinPerServing?.toString()}
                                 onChangeText={(text) => this.onSetProteinPercentage(text)}
                                 validationRules={[ PositiveOrZero ]}
                                 validationContainer={proteinErrors}
@@ -141,7 +148,7 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                             <CustomTextInput
                                 placeholder="0"
                                 keyboardType="numeric"
-                                defaultValue={this.props.initialIngredient.name}
+                                defaultValue={this.state.gramsFatPerServing?.toString()}
                                 onChangeText={(text) => this.onSetFatPercentage(text)}
                                 validationRules={[ PositiveOrZero ]}
                                 validationContainer={fatErrors}
@@ -153,7 +160,7 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                             <CustomTextInput
                                 placeholder="0"
                                 keyboardType="numeric"
-                                defaultValue={this.props.initialIngredient.name}
+                                defaultValue={this.state.gramsCarbsPerServing?.toString()}
                                 onChangeText={(text) => this.onSetCarbPercentage(text)}
                                 validationRules={[ PositiveOrZero ]}
                                 validationContainer={carbsErrors}
@@ -295,7 +302,7 @@ export default class IngredientInput extends React.Component<IngredientInputProp
         }
 
         return {
-            ingredientId: -1,
+            ingredientId: this.props.initialIngredient.id,
             macronutrientsPerServing: {
                 calories: this.state.caloriesPerServing ?? 0,
                 carbGrams: this.state.gramsCarbsPerServing ?? 0,

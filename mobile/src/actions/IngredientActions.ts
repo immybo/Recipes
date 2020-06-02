@@ -7,6 +7,9 @@ import { setApiErrorToDisplay } from "./NetworkActions";
 
 export const ADD_INGREDIENT = "ADD_INGREDIENT";
 export const SET_ALL_INGREDIENTS = "SET_ALL_INGREDIENTS";
+export const DELETE_INGREDIENT = "DELETE_INGREDIENT";
+export const UPDATE_INGREDIENT = "UPDATE_INGREDIENT";
+export const UPDATE_INGREDIENT_NUTRITION = "UPDATE_INGREDIENT_NUTRITION";
 
 interface AddIngredientAction {
     type: typeof ADD_INGREDIENT,
@@ -18,7 +21,22 @@ interface SetAllIngredientsAction {
     payload: Ingredient[]
 }
 
-export type IngredientActionTypes = AddIngredientAction | SetAllIngredientsAction;
+interface DeleteIngredientAction {
+    type: typeof DELETE_INGREDIENT,
+    payload: Ingredient
+}
+
+interface UpdateIngredientAction {
+    type: typeof UPDATE_INGREDIENT,
+    payload: Ingredient
+}
+
+interface UpdateIngredientNutritionAction {
+    type: typeof UPDATE_INGREDIENT_NUTRITION,
+    payload: IngredientNutrition
+}
+
+export type IngredientActionTypes = AddIngredientAction | SetAllIngredientsAction | DeleteIngredientAction | UpdateIngredientAction | UpdateIngredientNutritionAction;
 
 export function addIngredient(newIngredient: Ingredient)  {
     return function(dispatch: Dispatch) {
@@ -45,11 +63,78 @@ export function addIngredientWithNutritionalInformation(newIngredient: Ingredien
     }
 }
 
+export function deleteIngredient(ingredient: Ingredient) {
+    return function(dispatch: Dispatch) {
+        return IngredientsApi.deleteIngredient(ingredient.id).then(
+            _ => {
+                dispatch(removeIngredientLocal(ingredient))
+            },
+            error => {
+                if (error == 12) {
+                    dispatch(setApiErrorToDisplay("Can't delete ingredient " + ingredient.name + " because it's used by a recipe."))
+                } else {
+                    dispatch(setApiErrorToDisplay("Error deleting ingredient. " + String(error)))
+                }
+            }
+        );
+    }
+}
+
+export function updateIngredient(ingredient: Ingredient) {
+    return function(dispatch: Dispatch) {
+        return IngredientsApi.updateIngredient(ingredient).then(
+            _ => dispatch(updateIngredientLocal(ingredient)),
+            error => dispatch(setApiErrorToDisplay("Error updating ingredient. " + String(error)))
+        );
+    }
+}
+
+export function updateIngredientNutrition(nutrition: IngredientNutrition) {
+    return function(dispatch: Dispatch) {
+        return NutritionApi.updateNutritionalInformationForIngredient(nutrition).then(
+            _ => dispatch(updateIngredientNutritionLocal(nutrition)),
+            error => dispatch(setApiErrorToDisplay("Error updating nutritional information for ingredient. " + String(error)))
+        );
+    }
+}
+
+export function fetchNutritionForIngredient(ingredient: Ingredient) {
+    return function(dispatch: Dispatch) {
+        return NutritionApi.getNutritionForIngredients([ ingredient.id ]).then(
+            nutrition => {
+                if (nutrition.length > 0) dispatch(updateIngredientNutritionLocal(nutrition[0]))
+            },
+            error => dispatch(setApiErrorToDisplay("Error fetching nutritional information for ingredient. " + String(error)))
+        );
+    }
+}
+
+export function updateIngredientNutritionLocal(nutrition: IngredientNutrition): IngredientActionTypes {
+    return {
+        type: UPDATE_INGREDIENT_NUTRITION,
+        payload: nutrition
+    }
+}
+
 export function addIngredientLocal(newIngredient: Ingredient): IngredientActionTypes {
     return {
         type: ADD_INGREDIENT,
         payload: newIngredient
     }
+}
+
+export function removeIngredientLocal(ingredient: Ingredient): IngredientActionTypes {
+    return {
+        type: DELETE_INGREDIENT,
+        payload: ingredient
+    }
+}
+
+export function updateIngredientLocal(newIngredient: Ingredient): IngredientActionTypes {
+    return {
+        type: UPDATE_INGREDIENT,
+        payload: newIngredient
+    };
 }
 
 export function fetchIngredients() {
