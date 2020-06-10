@@ -49,7 +49,7 @@ class IngredientSelect extends React.Component<IngredientSelectProps, any> {
                         onValidChange={this.props.onValidChange} />
                     <View style={{ "flex": 0.35 }}>
                         <Picker style={[{"flex": 1}, styles.pickerItem]} selectedValue={this.props.ingredient.quantity.unit} onValueChange={(value, _) => this.updateIngredientQuantityUnit(value)}>
-                            { [ QuantityUnit.None, QuantityUnit.Grams, QuantityUnit.Kilograms, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Millilitres, QuantityUnit.Litres ].map((unit: QuantityUnit) => {
+                            { [ QuantityUnit.Grams, QuantityUnit.Kilograms, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Millilitres, QuantityUnit.Litres ].map((unit: QuantityUnit) => {
                                 let formattedUnit: string = QuantityFormatter.formatUnitShorthand(unit);
                                 return <Picker.Item label={formattedUnit} key={formattedUnit} value={unit} />
                             })}
