@@ -81,14 +81,8 @@ module Recipes =
         | true -> Result.Ok recipe
         | false -> Result.Error Error.RequiredParameter
     
-    let hasMethodSteps recipe : Result<Recipe, Error> =
-        match recipe.Method.Steps.Length with
-        | 0 -> Result.Error Error.MethodMustNotBeEmpty
-        | _ -> Result.Ok recipe
-    
     let validateUpdateRecipe recipe : Result<Recipe, Error> =
         hasMethodId recipe
-        >=> hasMethodSteps
     
     let updateRecipeUnchecked (recipe: Recipe) : Result<int, Error> =
         get (recipe.Id)
