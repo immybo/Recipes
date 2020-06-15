@@ -37,7 +37,7 @@ let convertToUnit newUnit quantity : Result<Quantity, Error> =
     match areCompatibleUnits quantity.Unit newUnit with
     | false -> Result.Error Error.IncompatibleUnits
     | true ->
-        let unitRatio = (getUnitConstant newUnit) / (getUnitConstant quantity.Unit)
+        let unitRatio = (getUnitConstant quantity.Unit) / (getUnitConstant newUnit)
         Result.Ok {
             Amount = unitRatio * quantity.Amount
             Unit = newUnit
@@ -66,15 +66,21 @@ let convertToVolumeQuantity (quantity: Quantity, density: Density) : Result<Quan
     if isVolume quantity.Unit then
         Result.Ok quantity
     else
-        toGramsPerCup density
-        >=> fun ratio -> Result.Ok { Amount = quantity.Amount / ratio; Unit = QuantityUnit.Cups }
+        match (convertToUnit QuantityUnit.Grams quantity) with
+        | Result.Error err -> Result.Error err
+        | Result.Ok gramsAmount ->
+            toGramsPerCup density
+            >=> fun gramsPerCup -> Result.Ok { Amount = gramsAmount.Amount / gramsPerCup; Unit = QuantityUnit.Cups }
 
 let convertToWeightQuantity (quantity: Quantity, density: Density) : Result<Quantity, Error> =
     if not (isVolume quantity.Unit) then
         Result.Ok quantity
     else
-        toGramsPerCup density
-        >=> fun ratio -> Result.Ok { Amount = quantity.Amount * ratio; Unit = QuantityUnit.Grams }
+        match (convertToUnit QuantityUnit.Cups quantity) with
+        | Result.Error err -> Result.Error err
+        | Result.Ok cupsAmount ->
+            toGramsPerCup density
+            >=> fun gramsPerCup -> Result.Ok { Amount = cupsAmount.Amount * gramsPerCup; Unit = QuantityUnit.Grams }
 
 let getRatioBetweenQuantities (quantity1: Quantity, quantity1Density: Density, quantity2: Quantity): Result<decimal, Error> =
     if isVolume quantity1.Unit && isWeight quantity2.Unit then

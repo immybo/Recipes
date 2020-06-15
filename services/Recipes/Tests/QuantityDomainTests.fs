@@ -15,6 +15,11 @@ module QuantityDomainTests =
         Unit = QuantityUnit.Grams
     }
 
+    let TablespoonQuantity: Quantity = {
+        Amount = 1m
+        Unit = QuantityUnit.Tablespoons
+    }
+
     let Density: Density = {
         EquivalentByVolume = {
             Amount = 10m
@@ -64,3 +69,10 @@ module QuantityDomainTests =
         match ratioResult with
         | Result.Error err -> Assert.Fail (err.ToString())
         | Result.Ok ratio -> Assert.AreEqual (2m, ratio)
+    
+    [<Test>]
+    let Quantity_In_Tablespoons_With_Density_Is_Converted_Correctly_From_Weight_To_Volume () =
+        let ratioResult = getRatioBetweenQuantities (TablespoonQuantity, Density, WeightQuantity)
+        match ratioResult with
+        | Result.Error err -> Assert.Fail (err.ToString())
+        | Result.Ok ratio -> Assert.AreEqual (0.001m, ratio)

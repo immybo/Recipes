@@ -3,14 +3,13 @@
 open Model
 open Railway
 
+// TODO
 module RecipeValidation =
     let validatePartialRecipe (recipe: Recipe): Result<Recipe, Error> =
-        match recipe.Description with
-        | null -> Result.Error Error.RecipeMustHaveDescription
-        | _ -> Result.Ok recipe
+        Result.Ok recipe
 
     let validateIngredients (recipe: Recipe): Result<Recipe, Error> =
-        Result.Ok recipe // TODO
+        Result.Ok recipe
 
     let validateRecipe recipe: Result<Recipe, Error> =
         validatePartialRecipe recipe

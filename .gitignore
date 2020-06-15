@@ -71,3 +71,4 @@ buck-out/
 # Misc
 *.ldf
 **/detachdb.sql
+**/index.android.bundle
