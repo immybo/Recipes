@@ -3,7 +3,7 @@ import {
     View, Picker, Text
 } from 'react-native';
 import { IngredientWithQuantity } from '../../model/IngredientWithQuantity';
-import { Numbers } from '../../util/Regex';
+import { Numbers, NumbersWithDecimalPlace } from '../../util/Regex';
 import { styles } from '../../style/Style';
 import CustomTextInput from './CustomTextInput';
 import { QuantityUnit } from '../../model/QuantityUnit';
@@ -44,6 +44,7 @@ class IngredientSelect extends React.Component<IngredientSelectProps, any> {
                         onChangeText={(newQuantity) => this.updateIngredientQuantityNumber(newQuantity)}
                         placeholder={"Quantity"}
                         maxLength={10}
+                        defaultValue={this.props.ingredient.quantity.amount.toString()}
                         validationRules={[ PositiveOrZero ]}
                         validationContainer={validationContainer}
                         onValidChange={this.props.onValidChange} />
@@ -85,7 +86,7 @@ class IngredientSelect extends React.Component<IngredientSelectProps, any> {
     }
 
     private updateIngredientQuantityNumber(newQuantity: string): void {
-        if (Numbers.test(newQuantity)) {
+        if (NumbersWithDecimalPlace.test(newQuantity)) {
             this.props.onChangeIngredient({
                 ...this.props.ingredient,
                 quantity: {

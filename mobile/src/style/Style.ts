@@ -96,5 +96,8 @@ export const styles = StyleSheet.create({
     },
     flexWrap: {
         flexWrap: "wrap"
+    },
+    buttonPadding: {
+        padding: 20
     }
 });

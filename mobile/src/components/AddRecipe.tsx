@@ -64,15 +64,11 @@ class AddRecipe extends React.Component<AddRecipeProps, AddRecipeState> {
     }
 
     private submitIngredient(ingredient: Ingredient, nutrition: IngredientNutrition): void {
-        this.props.beginLoading(LoadingType.SubmitIngredient);
         this.props.addIngredientWithNutritionalInformation(ingredient, nutrition);
-        this.props.endLoading(LoadingType.SubmitIngredient);
     }
 
     private submitIngredientWithoutNutrition(ingredient: Ingredient): void {
-        this.props.beginLoading(LoadingType.SubmitIngredient);
         this.props.addIngredient(ingredient);
-        this.props.endLoading(LoadingType.SubmitIngredient);
     }
 }
 

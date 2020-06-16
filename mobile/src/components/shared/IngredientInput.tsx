@@ -3,8 +3,7 @@ import {
     View,
     Button,
     Text,
-    Picker,
-    CheckBox
+    Picker
 } from 'react-native';
 import { styles } from '../../style/Style';
 import CustomTextInput from './CustomTextInput';
@@ -17,6 +16,7 @@ import ValidationContainer from './ValidationContainer';
 import { PositiveOrZero } from '../../util/ValidationRules';
 import { Density, getDefaultDensity } from '../../model/Density';
 import Form from './Form';
+import { EnergyUnit, KilojoulesPerCalorie } from '../../model/EnergyUnit';
 
 interface IngredientInputProps extends React.Props<IngredientInput> {
     initialIngredient: Ingredient,
@@ -30,13 +30,14 @@ interface IngredientInputState {
     ingredientName: string,
     servingSizeAmount?: number,
     servingSizeUnit?: QuantityUnit,
-    caloriesPerServing?: number,
+    energyPerServing?: number,
     gramsProteinPerServing?: number,
     gramsFatPerServing?: number,
     gramsCarbsPerServing?: number,
     numInvalidInputs: number,
     density: Density,
-    noNutrition: boolean
+    noNutrition: boolean,
+    energyUnit: EnergyUnit
 }
 
 export default class IngredientInput extends React.Component<IngredientInputProps, IngredientInputState> {
@@ -45,27 +46,28 @@ export default class IngredientInput extends React.Component<IngredientInputProp
 
         this.state = {
             ingredientName: props.initialIngredient.name,
-            caloriesPerServing: props.initialNutrition?.macronutrientsPerServing.calories,
+            energyPerServing: props.initialNutrition?.macronutrientsPerServing.calories,
             gramsCarbsPerServing: props.initialNutrition?.macronutrientsPerServing.carbGrams,
             gramsFatPerServing: props.initialNutrition?.macronutrientsPerServing.fatGrams,
             gramsProteinPerServing: props.initialNutrition?.macronutrientsPerServing.proteinGrams,
             servingSizeAmount: props.initialNutrition?.servingSize.amount,
-            servingSizeUnit: props.initialNutrition?.servingSize.amount,
+            servingSizeUnit: props.initialNutrition?.servingSize.unit,
             numInvalidInputs: 0,
             density: props.initialNutrition ? props.initialNutrition.density : getDefaultDensity(),
-            noNutrition: false
+            noNutrition: false,
+            energyUnit: EnergyUnit.Calories
         };
     }
 
     public componentDidUpdate(previousProps: IngredientInputProps) {
         if (previousProps.initialNutrition == null && this.props.initialNutrition != null) {
             this.setState({
-                caloriesPerServing: this.props.initialNutrition.macronutrientsPerServing.calories,
+                energyPerServing: this.props.initialNutrition.macronutrientsPerServing.calories,
                 gramsCarbsPerServing: this.props.initialNutrition.macronutrientsPerServing.carbGrams,
                 gramsFatPerServing: this.props.initialNutrition.macronutrientsPerServing.fatGrams,
                 gramsProteinPerServing: this.props.initialNutrition.macronutrientsPerServing.proteinGrams,
                 servingSizeAmount: this.props.initialNutrition.servingSize.amount,
-                servingSizeUnit: this.props.initialNutrition.servingSize.amount,
+                servingSizeUnit: this.props.initialNutrition.servingSize.unit,
                 density: this.props.initialNutrition.density,
                 noNutrition: false
             });
@@ -108,6 +110,7 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                                 keyboardType="numeric"
                                 onChangeText={(newQuantity) => this.updateServingSizeAmount(newQuantity)}
                                 placeholder={"0"}
+                                defaultValue={this.state.servingSizeAmount ? this.state.servingSizeAmount.toString() : "0"}
                                 maxLength={10}
                                 validationRules={[ PositiveOrZero ]}
                                 validationContainer={servingSizeAmountErrors}
@@ -124,12 +127,16 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                             <CustomTextInput
                                 placeholder="0"
                                 keyboardType="numeric"
-                                defaultValue={this.state.caloriesPerServing?.toString()}
+                                defaultValue={this.state.energyPerServing?.toString()}
                                 onChangeText={(text) => this.onSetCalories(text)}
                                 validationRules={[ PositiveOrZero ]}
                                 validationContainer={caloriesErrors}
                                 onValidChange={isValid => this.updateValid(isValid) } />
-                            <Text style={styles.horizontalMarginSmall}>calories per serving</Text>
+                            <Picker style={[{"flex": 0.7}, styles.pickerItem]} selectedValue={this.state.energyUnit} onValueChange={(value, _) => this.updateEnergyUnit(value)}>
+                                <Picker.Item label={"calories"} value={EnergyUnit.Calories} />
+                                <Picker.Item label={"kilojoules"} value={EnergyUnit.Kilojoules} />
+                            </Picker>
+                            <Text style={styles.horizontalMarginSmall}>per serving</Text>
                         </View>
                         <ValidationContainer ref={caloriesErrors} />
                         <View style={styles.rowWithoutJustify}>
@@ -205,6 +212,10 @@ export default class IngredientInput extends React.Component<IngredientInputProp
         );
     }
 
+    private updateEnergyUnit(newUnit: EnergyUnit) {
+        this.setState({ energyUnit: newUnit });
+    }
+
     private updateDensityWeightAmount(newAmount: string) {
         if (Numbers.test(newAmount)) {
             this.setState({ density: { ...this.state.density, equivalentByWeight: { ...this.state.density.equivalentByWeight, amount: Number(newAmount) }}});
@@ -257,7 +268,7 @@ export default class IngredientInput extends React.Component<IngredientInputProp
 
     private onSetCalories(newCalories: string): void {
         if (Numbers.test(newCalories)) {
-            this.setState({ caloriesPerServing: Number(newCalories) });
+            this.setState({ energyPerServing: Number(newCalories) });
         }
     }
 
@@ -301,10 +312,19 @@ export default class IngredientInput extends React.Component<IngredientInputProp
             return null;
         }
 
+        let caloriesPerServing = 0;
+        if (this.state.energyPerServing != null) {
+            if (this.state.energyUnit == EnergyUnit.Calories) {
+                caloriesPerServing = this.state.energyPerServing;
+            } else if (this.state.energyUnit == EnergyUnit.Kilojoules) {
+                caloriesPerServing = this.state.energyPerServing / KilojoulesPerCalorie;
+            } 
+        }
+
         return {
             ingredientId: this.props.initialIngredient.id,
             macronutrientsPerServing: {
-                calories: this.state.caloriesPerServing ?? 0,
+                calories: caloriesPerServing,
                 carbGrams: this.state.gramsCarbsPerServing ?? 0,
                 fatGrams: this.state.gramsFatPerServing ?? 0,
                 proteinGrams: this.state.gramsProteinPerServing ?? 0,

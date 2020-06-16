@@ -154,7 +154,7 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
 
     private getIngredientInputList(): JSX.Element[] {
         return this.state.ingredients.map(
-            (ingredient: IngredientWithQuantity, key: number) => <IngredientSelect onValidChange={isValid => this.updateValid(isValid)} allIngredients={this.props.allIngredients} ingredient={ingredient} key={"ingredient-" + key} onChangeIngredient={(newIngredient) => this.onChangeIngredient(newIngredient, key)} goToIngredientInput={() => this.switchToIngredientInput(key)} />
+            (ingredient: IngredientWithQuantity, key: number) =><IngredientSelect onValidChange={isValid => this.updateValid(isValid)} allIngredients={this.props.allIngredients} ingredient={ingredient} key={"ingredient-" + key} onChangeIngredient={(newIngredient) => this.onChangeIngredient(newIngredient, key)} goToIngredientInput={() => this.switchToIngredientInput(key)} />
         );
     }
     

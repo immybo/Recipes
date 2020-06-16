@@ -27,7 +27,7 @@ class RecipeCompactDisplay extends React.Component<RecipeCompactDisplayProps, an
                     <Text style={styles.largeText}>{this.props.recipe.name}</Text>
                     <View style={styles.rowRightButton}>
                         { this.props.onEdit != null &&
-                            <TouchableOpacity style={styles.marginSmall} onPress={(event) => { if (this.props.onEdit != null) { this.props.onEdit(this.props.recipe)}}}>
+                            <TouchableOpacity hitSlop={{top: 20, bottom: 20, left: 20, right: 20}} style={styles.marginSmall} onPress={(event) => { if (this.props.onEdit != null) { this.props.onEdit(this.props.recipe)}}}>
                                 <Icon name="edit" size={30} color="black" />
                             </TouchableOpacity>
                         }
