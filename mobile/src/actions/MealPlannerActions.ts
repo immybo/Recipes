@@ -45,6 +45,15 @@ export function deleteMealPlanEntry(day: Date) {
     }
 }
 
+export function generateRandomWeeklyMealPlan(startDate: Date) {
+    return function(dispatch: Dispatch) {
+        return MealPlannerApi.generateRandomMealPlan(startDate, 7).then(
+            mealPlan => dispatch(updateMealPlanLocal(mealPlan)),
+            error => dispatch(setApiErrorToDisplay("Error generating weekly meal plan. " + String(error)))
+        );
+    }
+}
+
 export function updateMealPlanLocal(mealPlan: MealPlanEntry[]): MealPlannerActionTypes {
     return {
         type: SET_MEAL_PLAN,

@@ -1,13 +1,12 @@
 import React from 'react';
-import { View, Text, Picker } from 'react-native';
+import { View, Text, Picker, Button } from 'react-native';
 import { connect } from 'react-redux';
 import { Recipe } from '../model/Recipe';
 import { AppState } from '../reducers/Reducers';
 import { withNavigation } from 'react-navigation';
 import { styles } from '../style/Style';
 import { DayUtils } from '../style/DayOfWeek';
-import RecipeCompactDisplay from './shared/RecipeCompactDisplay';
-import { getMealPlan, setMealPlan, deleteMealPlanEntry } from '../actions/MealPlannerActions';
+import { getMealPlan, setMealPlan, deleteMealPlanEntry, generateRandomWeeklyMealPlan } from '../actions/MealPlannerActions';
 import { MealPlanEntry } from '../model/MealPlanEntry';
 
 interface MealPlannerProps extends React.Props<MealPlanner> {
@@ -16,6 +15,7 @@ interface MealPlannerProps extends React.Props<MealPlanner> {
     getMealPlan: (startDate: Date, endDate: Date) => void;
     setMealPlan: (day: Date, recipeId: number) => void;
     deleteMealPlanEntry: (day: Date) => void;
+    generateRandomWeeklyMealPlan: (startDate: Date) => void;
 }
 
 interface MealPlannerState {
@@ -33,7 +33,8 @@ const mapStateToProps = (state: AppState) => {
 const mapDispatchToProps = {
     getMealPlan,
     setMealPlan,
-    deleteMealPlanEntry
+    deleteMealPlanEntry,
+    generateRandomWeeklyMealPlan
 };
 
 class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
@@ -63,6 +64,8 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
         return (
             <View style={styles.container}>
                 { this.getDateRows() }
+
+                <Button title="Randomize" onPress={_ => this.props.generateRandomWeeklyMealPlan(this.state.startDate)}>Random</Button>
             </View>
         );
     }

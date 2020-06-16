@@ -27,6 +27,14 @@ export class MealPlannerApi {
             parseNull,
             JSON.stringify({ UserId: 0, Date: formatDate(date), MealNumber: 1}));
     }
+
+    public static generateRandomMealPlan(startDate: Date, numDays: number) {
+        return callApi(
+            "mealplanner/generate",
+            HttpMethod.POST,
+            parseMealPlan,
+            JSON.stringify({ StartDate: startDate, NumDays: numDays }));
+    }
 } 
 
 function formatDate(date: Date): string {
