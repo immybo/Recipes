@@ -41,10 +41,12 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
         super(props);
         
         let today: Date = new Date();
-        let sundayThisWeek: Date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        let sundayThisWeek: Date = new Date(0);
+        sundayThisWeek.setFullYear(today.getFullYear());
+        sundayThisWeek.setMonth(today.getMonth());
         sundayThisWeek.setDate(today.getDate()-today.getDay());
 
-        let endDate = new Date(sundayThisWeek);
+        let endDate = new Date(sundayThisWeek.valueOf());
         endDate.setDate(sundayThisWeek.getDate() + 6);
 
         this.state = {
@@ -68,7 +70,7 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
     private getDateRows(): JSX.Element[] {
         let rows: JSX.Element[] = [];
         for (var i = 0; i < 7; i++) {
-            let dayOfWeek: Date = new Date(this.state.startDate);
+            let dayOfWeek: Date = new Date(this.state.startDate.valueOf());
             dayOfWeek.setDate(dayOfWeek.getDate() + i);
             rows.push(this.getRow(dayOfWeek));
         }
@@ -76,12 +78,16 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
     }
 
     private hasMealOnDate(date: Date): boolean {
-        // Can be a bit slow if we have a lot of recipes. Maybe start using dictionaries for recipes/ingredients.
-        return (this.props.mealPlan.find(x => +x.date === +date) != undefined) && this.props.allRecipes.find(x => x.id === this.props.mealPlan.find(x => +x.date === +date)!.recipeId) != undefined;
+        let planEntriesOnDate = this.props.mealPlan.filter(x => this.datesEqual(x.date, date));
+        if (planEntriesOnDate.length < 1) return false;
+
+        let matchingRecipes = this.props.allRecipes.filter(x => x.id === planEntriesOnDate[0].recipeId)
+        return matchingRecipes.length > 0;
     }
 
     private getMealOnDate(date: Date): Recipe {
-        let potentialMeal = this.props.allRecipes.find(x => x.id === this.props.mealPlan.find(x => +x.date === +date)!.recipeId);
+        let planEntry = this.props.mealPlan.filter(x => this.datesEqual(x.date, date))[0];
+        let potentialMeal = this.props.allRecipes.filter(x => x.id === planEntry.recipeId)[0];
         if (potentialMeal == null) {
             throw new Error("Unable to get meal for " + date.toString());
         } else {
@@ -92,8 +98,8 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
     private getRow(date: Date): JSX.Element {
         return (
             <View style={styles.rowLayout} key={date.getDay()}>
-                <Text style={{ flex: 0.25 }}>{ DayUtils.toString(date.getDay()) }</Text>
-                <View style={{ flex: 0.75 }}>
+                <Text style={{ flex: 0.3 }}>{ DayUtils.toString(date.getDay()).substring(0,3) + " " + date.getDate() + "/" + date.getMonth() }</Text>
+                <View style={{ flex: 0.7 }}>
                     { this.getIngredientRowSection(date) }
                 </View>
             </View>
@@ -101,20 +107,18 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
     }
 
     private getIngredientRowSection(date: Date) {
-        if (this.hasMealOnDate(date)) {
-            let selectedRecipe: Recipe = this.getMealOnDate(date);
-            return <RecipeCompactDisplay recipe={selectedRecipe} onDelete={() => this.props.deleteMealPlanEntry(date)} />
-        } else {
-            // TODO change this to an autocomplete text field
-            return (
-                <Picker key={date.getDay()} selectedValue={ "" } onValueChange={(value, _) => { if (value != -1) this.props.setMealPlan(date, value) }}>
-                    <Picker.Item label="" key={-1} value={-1} />
-                    { this.props.allRecipes.map((recipe: Recipe) => {
-                        return <Picker.Item label={recipe.name} key={recipe.id} value={recipe.id} />
-                    })}
-                </Picker>
-            );
-        }
+        return (
+            <Picker key={date.getDay()} selectedValue={ this.hasMealOnDate(date) ? this.getMealOnDate(date).id : "" } onValueChange={(value, _) => { if (value != -1) this.props.setMealPlan(date, value) }}>
+                <Picker.Item label="" key={-1} value={-1} />
+                { this.props.allRecipes.map((recipe: Recipe) => {
+                    return <Picker.Item label={recipe.name} key={recipe.id} value={recipe.id} />
+                })}
+            </Picker>
+        );
+    }
+
+    private datesEqual(date: Date, date2: Date): boolean {
+        return date.getDay() === date2.getDay() && date.getMonth() === date2.getMonth() && date.getFullYear() === date2.getFullYear();
     }
 }
 

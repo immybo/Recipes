@@ -23,7 +23,7 @@ export default function(state = initialState, action: MealPlannerActionTypes): M
                 newPlanDict[entry.date.toString()] = entry;
             });
 
-            newPlan = Object.entries(newPlanDict).map(([_, value]) => value);
+            newPlan = Object.keys(newPlanDict).map(key => newPlanDict[key]);
 
             return {
                 ...state,
