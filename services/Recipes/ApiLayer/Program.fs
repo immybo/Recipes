@@ -83,6 +83,7 @@ let app =
             [ path "/recipes" >=> request(fun context -> handle (context, Recipes.add))
               path "/ingredients" >=> request(fun context -> handle (context, Ingredients.add))
               path "/mealplanner/mealplans" >=> request(fun context -> handle (context, MealPlan.addOrUpdate))
+              path "/mealplanner/generate" >=> request(fun context -> handle (context, MealPlan.generateRandom))
               path "/nutrition/ingredients" >=> request(fun context -> handle (context, Nutrition.addForIngredient))]
           PUT >=> choose
             [ path "/recipes" >=> request(fun context -> handle (context, Recipes.update))
