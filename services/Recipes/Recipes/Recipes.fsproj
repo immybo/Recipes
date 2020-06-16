@@ -18,6 +18,7 @@
     <Compile Include="Model\Category.fs" />
     <Compile Include="Model\MealPlanEntry.fs" />
     <Compile Include="Model\Recipe.fs" />
+    <Compile Include="Domain\MealPlanGeneration.fs" />
     <Compile Include="Domain\QuantityDomain.fs" />
     <Compile Include="Domain\NutritionalInformationDomain.fs" />
     <Compile Include="Domain\RecipeNutritionDomain.fs" />
@@ -30,11 +31,13 @@
     <Compile Include="DataAccess\CategoryDataAccess.fs" />
     <Compile Include="DataAccess\RecipeDataAccess.fs" />
     <Compile Include="Validation\RecipeValidation.fs" />
-    <Compile Include="Interface\MealPlan.fs" />
     <Compile Include="Interface\Recipes.fs" />
+    <Compile Include="Interface\MealPlan.fs" />
     <Compile Include="Interface\Ingredients.fs" />
     <Compile Include="Interface\Nutrition.fs" />
   </ItemGroup>
+
+  <ItemGroup />
 
   <ItemGroup>
     <PackageReference Include="FSharp.Core" Version="4.7.0" />
