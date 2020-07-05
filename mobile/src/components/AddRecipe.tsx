@@ -3,13 +3,18 @@ import { connect } from 'react-redux';
 import { AppState } from '../reducers/Reducers';
 import { Recipe, getBlankRecipe } from '../model/Recipe';
 import { addRecipe } from '../actions/RecipeActions';
-import { withNavigation } from 'react-navigation';
-import { RouteViewRecipes } from '../Routes';
+import { withNavigation, NavigationScreenProp } from 'react-navigation';
+import { RouteViewRecipes, RouteAddRecipe } from '../Routes';
 import RecipeInput from './shared/RecipeInput';
 import { Ingredient } from '../model/Ingredient';
 import { IngredientNutrition } from '../model/IngredientNutrition';
 import { addIngredientWithNutritionalInformation, addIngredient } from '../actions/IngredientActions';
 import { LoadingType, LoadingActionTypes, beginLoading, endLoading } from '../actions/LoadingActions';
+import { View, TouchableOpacity } from 'react-native';
+import { styles } from '../style/Style';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import NavigationToggle from './NavigationToggle';
 
 interface AddRecipeProps extends React.Props<AddRecipe> {
     allIngredients: Ingredient[],
@@ -19,6 +24,7 @@ interface AddRecipeProps extends React.Props<AddRecipe> {
     addIngredient: (ingredient: Ingredient) => void
     beginLoading: (type: LoadingType) => LoadingActionTypes
     endLoading: (type: LoadingType) => LoadingActionTypes
+    navigation: DrawerNavigationProp<any, any>
 }
 
 interface AddRecipeState {
@@ -46,13 +52,16 @@ class AddRecipe extends React.Component<AddRecipeProps, AddRecipeState> {
 
     public render(): JSX.Element {
         return (
-            <RecipeInput
-                allRecipes={this.props.allRecipes}
-                allIngredients={this.props.allIngredients}
-                initialRecipe={getBlankRecipe()}
-                submitRecipe={(recipe) => this.submitRecipe(recipe)}
-                submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)}
-                submitIngredientWithoutNutrition={(ingredient) => this.submitIngredientWithoutNutrition(ingredient)} />
+            <View style={styles.container}>
+                <NavigationToggle navigation={this.props.navigation} pageTitle="Add Recipe" />
+                <RecipeInput
+                    allRecipes={this.props.allRecipes}
+                    allIngredients={this.props.allIngredients}
+                    initialRecipe={getBlankRecipe()}
+                    submitRecipe={(recipe) => this.submitRecipe(recipe)}
+                    submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)}
+                    submitIngredientWithoutNutrition={(ingredient) => this.submitIngredientWithoutNutrition(ingredient)} />
+            </View>
         );
     }
 

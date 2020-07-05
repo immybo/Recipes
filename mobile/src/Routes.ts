@@ -1,8 +1,8 @@
-export const RouteViewRecipes = "ViewRecipes";
-export const RouteAddRecipe = "AddRecipe";
-export const RouteViewIndividualRecipe = "ViewIndividualRecipe";
-export const RouteEditRecipe = "EditRecipe";
-export const RouteAddIngredient = "AddIngredient";
-export const RouteMealPlanner = "MealPlanner";
-export const RouteViewIngredients = "ViewIngredients";
-export const RouteEditIngredient = "EditIngredient";
+export const RouteViewRecipes = "View Recipes";
+export const RouteAddRecipe = "Add Recipe";
+export const RouteViewIndividualRecipe = "View Recipe";
+export const RouteEditRecipe = "Edit Recipe";
+export const RouteAddIngredient = "Add Ingredient";
+export const RouteMealPlanner = "Meal Planner";
+export const RouteViewIngredients = "View Ingredients";
+export const RouteEditIngredient = "Edit Ingredient";

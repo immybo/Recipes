@@ -1,12 +1,10 @@
 import React from 'react';
 import ViewRecipes from './components/ViewRecipes';
-import { createStackNavigator } from 'react-navigation-stack';
-import { createAppContainer } from 'react-navigation';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createStackNavigator } from '@react-navigation/stack'
 import { Provider, connect } from 'react-redux';
 import { store, AppState } from './reducers/Reducers';
 import AddRecipe from './components/AddRecipe';
-import ViewIndividualRecipe from './components/ViewIndividualRecipe';
-import EditRecipe from './components/EditRecipe';
 import InitialStateLoader from './components/InitialStateLoader';
 import { ActivityIndicator, View } from 'react-native';
 import { Colors } from './style/Colors';
@@ -16,27 +14,24 @@ import AddIngredient from './components/AddIngredient';
 import MealPlanner from './components/MealPlanner';
 import ErrorDisplay from './components/ErrorDisplay';
 import ViewIngredients from './components/ViewIngredients';
-import { removeDisplayedError } from './actions/NetworkActions';
+import { NavigationContainer } from '@react-navigation/native';
+import EditRecipe from './components/EditRecipe';
 import EditIngredient from './components/EditIngredient';
+import { RouteViewIndividualRecipe, RouteEditRecipe, RouteEditIngredient, RouteViewRecipes, RouteAddRecipe, RouteAddIngredient, RouteMealPlanner, RouteViewIngredients } from './Routes';
+import ViewIndividualRecipe from './components/ViewIndividualRecipe';
 
-const PageHeaderStyle = {
-    headerTitleStyle: {
-        fontWeight: 'bold'
-    }
-};
+const Stack = createStackNavigator();
+const Drawer = createDrawerNavigator();
 
-const MainNavigator = createStackNavigator({
-    ViewRecipes: { screen: ViewRecipes, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "Recipe List" })},
-    AddRecipe: { screen: AddRecipe, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "Add Recipe" })},
-    ViewIndividualRecipe: { screen: ViewIndividualRecipe, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "View Recipe" })},
-    EditRecipe: { screen: EditRecipe, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "Edit Recipe" })},
-    AddIngredient: { screen: AddIngredient, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "Add Ingredient" })},
-    MealPlanner: { screen: MealPlanner, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "Meal Planner" })},
-    ViewIngredients: { screen: ViewIngredients, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "Ingredient List" })},
-    EditIngredient: { screen: EditIngredient, navigationOptions: Object.assign({}, PageHeaderStyle, { title: "Edit Ingredient" })}
-});
-
-let Navigation = createAppContainer(MainNavigator);
+const DrawerNavigator = () => (
+    <Drawer.Navigator initialRouteName={RouteViewRecipes} drawerType={"back"}>
+        <Drawer.Screen name={RouteViewRecipes} component={ViewRecipes} />
+        <Drawer.Screen name={RouteAddRecipe} component={AddRecipe} />
+        <Drawer.Screen name={RouteAddIngredient} component={AddIngredient} />
+        <Drawer.Screen name={RouteMealPlanner} component={MealPlanner} />
+        <Drawer.Screen name={RouteViewIngredients} component={ViewIngredients} />
+    </Drawer.Navigator>
+)
 
 interface AppLocalState {
 }
@@ -67,7 +62,8 @@ class App extends React.Component<AppProps, AppLocalState> {
         return (
             <Provider store={store}>
                 <InitialStateLoader shouldReload={!this.props.isLoaded} />
-                { this.props.isLoaded && this.props.hasNetworkConnectivity && <Navigation />}
+
+                { this.props.isLoaded && this.props.hasNetworkConnectivity && this.getNavigator()}
 
                 { !this.props.isLoaded && 
                     <View style={styles.centerAlign}>
@@ -83,6 +79,18 @@ class App extends React.Component<AppProps, AppLocalState> {
                     <NoConnectionToServer attemptReload={() => this.setState({isLoaded: false})}/>
                 }
             </Provider>
+        );
+    }
+    private getNavigator(): JSX.Element {
+        return (
+            <NavigationContainer>
+                <Stack.Navigator>
+                    <Stack.Screen options={{headerShown: false}} name="Main" component={DrawerNavigator} />
+                    <Stack.Screen name={RouteEditRecipe} component={EditRecipe} />
+                    <Stack.Screen name={RouteEditIngredient} component={EditIngredient} />
+                    <Stack.Screen name={RouteViewIndividualRecipe} component={ViewIndividualRecipe} />
+                </Stack.Navigator>
+            </NavigationContainer>
         );
     }
 }

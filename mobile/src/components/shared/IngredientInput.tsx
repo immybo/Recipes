@@ -3,7 +3,8 @@ import {
     View,
     Button,
     Text,
-    Picker
+    Picker,
+    CheckBox
 } from 'react-native';
 import { styles } from '../../style/Style';
 import CustomTextInput from './CustomTextInput';
@@ -83,7 +84,7 @@ export default class IngredientInput extends React.Component<IngredientInputProp
         let carbsErrors = React.createRef<ValidationContainer>();
         
         return (
-            <Form style={styles.container}>
+            <Form style={styles.containerWithMargin}>
                 <CustomTextInput
                     style={styles.h1}
                     placeholder="Ingredient Name"

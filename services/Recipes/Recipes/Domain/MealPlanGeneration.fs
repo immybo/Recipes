@@ -14,7 +14,7 @@ let getRandomRecipesNoDuplicates (allRecipes: IList<Recipe>, numEntries: int) : 
     
 let generateRandomMealPlanNoDuplicates (allRecipes: IList<Recipe>, numEntries: int, startDate: DateTime) : MealPlanEntry[] =
    getRandomRecipesNoDuplicates (allRecipes, numEntries)
-   |> Seq.mapi (fun i recipe -> { UserId = 0; Date = startDate.AddDays(float(i)); MealNumber = 0; RecipeId = recipe.Id })
+   |> Seq.mapi (fun i recipe -> { UserId = 0; Date = startDate.AddDays(float(i)); MealNumber = 1; RecipeId = recipe.Id })
    |> Seq.toArray
 
 let getRandomRecipes (allRecipes: IList<Recipe>, numEntries: int) : seq<Recipe> =
@@ -26,5 +26,5 @@ let getRandomRecipes (allRecipes: IList<Recipe>, numEntries: int) : seq<Recipe> 
 
 let generateRandomMealPlan (allRecipes: IList<Recipe>, numEntries: int, startDate: DateTime) : MealPlanEntry[] =
    getRandomRecipes (allRecipes, numEntries)
-   |> Seq.mapi (fun i recipe -> { UserId = 0; Date = startDate.AddDays(float(i)); MealNumber = 0; RecipeId = recipe.Id })
+   |> Seq.mapi (fun i recipe -> { UserId = 0; Date = startDate.AddDays(float(i)); MealNumber = 1; RecipeId = recipe.Id })
    |> Seq.toArray

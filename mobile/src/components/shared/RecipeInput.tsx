@@ -4,12 +4,12 @@ import {
     Button,
     TouchableOpacity,
     Text,
-    Keyboard
+    Keyboard,
+    ScrollView
 } from 'react-native';
 import { IngredientWithQuantity, getBlankIngredientWithQuantity } from '../../model/IngredientWithQuantity';
 import IngredientSelect from './IngredientSelect';
 import { Recipe } from '../../model/Recipe';
-import { ScrollView } from 'react-navigation';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Category, getBlankCategory } from '../../model/Category';
 import { styles } from '../../style/Style';

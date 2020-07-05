@@ -8,6 +8,7 @@ import { styles } from '../style/Style';
 import { DayUtils } from '../style/DayOfWeek';
 import { getMealPlan, setMealPlan, deleteMealPlanEntry, generateRandomWeeklyMealPlan } from '../actions/MealPlannerActions';
 import { MealPlanEntry } from '../model/MealPlanEntry';
+import NavigationToggle from './NavigationToggle';
 
 interface MealPlannerProps extends React.Props<MealPlanner> {
     mealPlan: MealPlanEntry[];
@@ -63,9 +64,13 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
     public render(): JSX.Element {
         return (
             <View style={styles.container}>
-                { this.getDateRows() }
+                <NavigationToggle navigation={this.props.navigation} pageTitle="Meal Planner" />
+                
+                <View style={styles.containerWithMargin}>
+                    { this.getDateRows() }
 
-                <Button title="Randomize" onPress={_ => this.props.generateRandomWeeklyMealPlan(this.state.startDate)}>Random</Button>
+                    <Button title="Randomize" onPress={_ => this.props.generateRandomWeeklyMealPlan(this.state.startDate)}>Random</Button>
+                </View>
             </View>
         );
     }

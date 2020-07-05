@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers/Reducers';
-import { Recipe, getBlankRecipe } from '../model/Recipe';
+import { Recipe } from '../model/Recipe';
 import { updateRecipe } from '../actions/RecipeActions';
-import { withNavigation, NavigationParams, NavigationState, NavigationScreenProp } from 'react-navigation';
+import { withNavigation } from 'react-navigation';
 import { RouteViewRecipes } from '../Routes';
 import RecipeInput from './shared/RecipeInput';
 import { Ingredient } from '../model/Ingredient';
@@ -40,7 +40,7 @@ class EditRecipe extends React.Component<EditRecipeProps, EditRecipeState> {
         super(props);
 
         this.state = {
-            initialRecipe: this.props.navigation.getParam("recipe", null)
+            initialRecipe: this.props.route.params["recipe"]
         };
     }
 
@@ -57,7 +57,7 @@ class EditRecipe extends React.Component<EditRecipeProps, EditRecipeState> {
 
     private submitRecipe(recipe: Recipe): void {
         this.props.updateRecipe(recipe);
-        this.props.navigation.navigate(RouteViewRecipes);
+        this.props.navigation.pop();
     }
 
     private submitIngredient(ingredient: Ingredient, nutrition: IngredientNutrition): void {

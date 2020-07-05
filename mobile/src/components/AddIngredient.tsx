@@ -8,6 +8,9 @@ import { Ingredient, getBlankIngredient } from '../model/Ingredient';
 import IngredientInput from './shared/IngredientInput';
 import { IngredientNutrition } from '../model/IngredientNutrition';
 import { LoadingType, beginLoading, endLoading } from '../actions/LoadingActions';
+import { styles } from '../style/Style';
+import { View } from 'react-native';
+import NavigationToggle from './NavigationToggle';
 
 interface AddIngredientProps {
     allIngredients: Ingredient[],
@@ -40,10 +43,13 @@ class AddIngredient extends React.Component<AddIngredientProps, AddIngredientSta
 
     public render(): JSX.Element {
         return (
-            <IngredientInput initialIngredient={getBlankIngredient()}
-                submitIngredientWithoutNutrition={ingredient => this.submitIngredientWithoutNutrition(ingredient)}
-                submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)}
-                allIngredients={this.props.allIngredients} />
+            <View style={styles.container}>
+                <NavigationToggle navigation={this.props.navigation} pageTitle="Add Ingredient" />
+                <IngredientInput initialIngredient={getBlankIngredient()}
+                    submitIngredientWithoutNutrition={ingredient => this.submitIngredientWithoutNutrition(ingredient)}
+                    submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)}
+                    allIngredients={this.props.allIngredients} />
+            </View>
         );
     }
 

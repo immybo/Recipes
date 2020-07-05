@@ -1,17 +1,18 @@
 import React from 'react';
 import {
-    View
+    View,
+    ScrollView
 } from 'react-native';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers/Reducers';
-import { withNavigation, ScrollView } from 'react-navigation';
+import { withNavigation } from 'react-navigation';
 import { styles } from '../style/Style';
-import NavigationBar from './shared/NavigationBar';
 import { Ingredient } from '../model/Ingredient';
 import { deleteIngredient } from '../actions/IngredientActions';
 import IngredientCompactDisplay from './shared/IngredientCompactDisplay';
 import { removeDisplayedError } from '../actions/NetworkActions';
 import { RouteEditIngredient } from '../Routes';
+import NavigationToggle from './NavigationToggle';
 
 interface ViewIngredientsProps extends React.Props<ViewIngredients> {
     navigation: any,
@@ -39,6 +40,8 @@ class ViewIngredients extends React.Component<ViewIngredientsProps, any> {
     public render(): JSX.Element {
         return (
             <View style={styles.container}>
+                <NavigationToggle navigation={this.props.navigation} pageTitle="View Ingredients" />
+                
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View>
                         {this.getIngredientsList()}

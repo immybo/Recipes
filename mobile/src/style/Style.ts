@@ -3,11 +3,15 @@ import { Colors } from './Colors';
 
 export const styles = StyleSheet.create({
     container: {
+        flex: 1
+    },
+    containerWithMargin: {
         flex: 1,
         margin: 15
     },
     scrollContainer: {
-        flexGrow: 1
+        flexGrow: 1,
+        margin: 15
     },
     h1: {
         fontSize: 20,
@@ -57,6 +61,9 @@ export const styles = StyleSheet.create({
     horizontalMarginSmall: {
         marginHorizontal: 10
     },
+    horizontalMargin: {
+        marginHorizontal: 20
+    },
     rightMarginSmall: {
         marginRight: 10
     },
@@ -68,6 +75,9 @@ export const styles = StyleSheet.create({
     },
     topMargin: {
         marginTop: 20
+    },
+    bottomMargin: {
+        marginBottom: 20
     },
     noMargin: {
         margin: 0

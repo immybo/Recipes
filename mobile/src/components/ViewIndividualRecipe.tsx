@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import { Recipe } from '../model/Recipe';
 import { AppState } from '../reducers/Reducers';
-import { withNavigation, ScrollView } from 'react-navigation';
+import { withNavigation } from 'react-navigation';
 import IngredientDisplay from './shared/IngredientDisplay';
 import { styles } from '../style/Style';
 import { getNutritionalInformationForRecipe } from '../actions/RecipeActions';
@@ -34,7 +34,7 @@ class ViewIndividualRecipe extends React.Component<ViewIndividualRecipeProps, Vi
         super(props);
 
         this.state = {
-            recipe: this.props.navigation.getParam("recipe", null)
+            recipe: this.props.route.params["recipe"]
         };
     }
 

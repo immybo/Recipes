@@ -1,17 +1,17 @@
 import React from 'react';
 import {
-    View
+    // Previously we used ScrollView from react-navigation, no longer necessary
+    View, ScrollView
 } from 'react-native';
 import { connect } from 'react-redux';
 import { Recipe } from '../model/Recipe';
 import { AppState } from '../reducers/Reducers';
-import { withNavigation, ScrollView } from 'react-navigation';
 import { RouteViewIndividualRecipe, RouteEditRecipe } from '../Routes';
 import { deleteRecipe } from '../actions/RecipeActions';
 import RecipeCompactDisplay from './shared/RecipeCompactDisplay';
 import { styles } from '../style/Style';
-import NavigationBar from './shared/NavigationBar';
 import { removeDisplayedError } from '../actions/NetworkActions';
+import NavigationToggle from './NavigationToggle';
 
 interface ViewRecipesProps extends React.Props<ViewRecipes> {
     navigation: any,
@@ -39,12 +39,10 @@ class ViewRecipes extends React.Component<ViewRecipesProps, any> {
     public render(): JSX.Element {
         return (
             <View style={styles.container}>
+                <NavigationToggle navigation={this.props.navigation} pageTitle="View Recipes" />
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View>
                         {this.getRecipeList()}
-                    </View>
-                    <View style={styles.bottomButtonContainer}>
-                        <NavigationBar navigate={route => this.props.navigation.navigate(route)} removeDisplayedError={this.props.removeDisplayedError} />
                     </View>
                 </ScrollView>
             </View>
@@ -74,4 +72,4 @@ class ViewRecipes extends React.Component<ViewRecipesProps, any> {
     }
 }
 
-export default withNavigation(connect(mapStateToProps, mapDispatchToProps)(ViewRecipes));
+export default connect(mapStateToProps, mapDispatchToProps)(ViewRecipes);
