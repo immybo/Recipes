@@ -1,8 +1,11 @@
 import { RecipeActionTypes, ADD_RECIPE, DELETE_RECIPE, UPDATE_RECIPE, SET_ALL_RECIPES, SET_NUTRITIONAL_INFORMATION_FOR_RECIPE } from "../actions/RecipeActions";
 import { RecipeState, Recipe } from "../model/Recipe";
+import { MacronutrientInformation } from "../model/MacronutrientInformation";
+import { copyMap } from "../util/Copier";
 
 const initialState: RecipeState = {
-    recipes: []
+    recipes: [],
+    recipeNutrition: new Map<number, MacronutrientInformation>()
 }
 
 export default function(state = initialState, action: RecipeActionTypes) {
@@ -34,9 +37,12 @@ export default function(state = initialState, action: RecipeActionTypes) {
                 recipes: action.payload
             }
         case SET_NUTRITIONAL_INFORMATION_FOR_RECIPE:
+            let newNutrition = copyMap(state.recipeNutrition);
+            newNutrition[action.payload[0]] = action.payload[1];
+
             return {
                 ...state,
-                nutritionalInformationForCurrentRecipe: action.payload[1]
+                recipeNutrition: newNutrition
             }
         default:
             return state;

@@ -16,7 +16,7 @@ export interface Recipe {
 export interface RecipeState {
     recipes: Recipe[];
     recipeContext?: Recipe;
-    nutritionalInformationForCurrentRecipe?: MacronutrientInformation
+    recipeNutrition: Map<number, MacronutrientInformation>;
 }
 
 export function getBlankRecipe(): Recipe {

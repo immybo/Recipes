@@ -11,7 +11,7 @@ import { MacronutrientInformation } from '../model/MacronutrientInformation';
 
 interface ViewIndividualRecipeProps extends React.Props<ViewIndividualRecipe> {
     navigation: any,
-    nutritionalInformation?: MacronutrientInformation,
+    recipeNutrition: Map<number, MacronutrientInformation>,
     getNutritionalInformationForRecipe: (recipeId: number) => void
 }
 
@@ -21,7 +21,7 @@ interface ViewIndividualRecipeState {
 
 const mapStateToProps = (state: AppState) => {
     return {
-        nutritionalInformation: state.recipes.nutritionalInformationForCurrentRecipe
+        recipeNutrition: state.recipes.recipeNutrition
     };
 }
 
@@ -57,12 +57,12 @@ class ViewIndividualRecipe extends React.Component<ViewIndividualRecipeProps, Vi
                         {this.getIngredientList()}
                     </View>
                     {
-                        this.props.nutritionalInformation != null &&
+                        this.props.recipeNutrition != null && this.props.recipeNutrition[this.state.recipe.id] != null &&
                             <View style={styles.verticalMarginSmall}>
-                                <Text>Calories: { this.props.nutritionalInformation.calories.toFixed(0) ?? 0 }</Text>
-                                <Text>Protein: { this.props.nutritionalInformation.proteinGrams.toFixed(0) ?? 0 }g</Text>
-                                <Text>Fat: { this.props.nutritionalInformation.fatGrams.toFixed(0) ?? 0 }g</Text>
-                                <Text>Carbs: { this.props.nutritionalInformation.carbGrams.toFixed(0) ?? 0 }g</Text>
+                                <Text>Calories: { this.props.recipeNutrition[this.state.recipe.id].calories.toFixed(0) ?? 0 }</Text>
+                                <Text>Protein: { this.props.recipeNutrition[this.state.recipe.id].proteinGrams.toFixed(0) ?? 0 }g</Text>
+                                <Text>Fat: { this.props.recipeNutrition[this.state.recipe.id].fatGrams.toFixed(0) ?? 0 }g</Text>
+                                <Text>Carbs: { this.props.recipeNutrition[this.state.recipe.id].carbGrams.toFixed(0) ?? 0 }g</Text>
                             </View>
                     }
                     <View>
