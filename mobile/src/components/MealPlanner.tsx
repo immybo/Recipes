@@ -77,7 +77,7 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
     }
 
     public render(): JSX.Element {
-        let averageNutrition: MacronutrientInformation = this.getAverageRecipeNutrition();
+        let averageNutrition: MacronutrientInformation = this.getAverageDailyNutrition();
         let macroPercentages: MacronutrientPercentages = fromMacronutrientInformation(averageNutrition);
 
         return (
@@ -88,7 +88,7 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
                     { this.getDateRows() }
                     
                     <View style={styles.verticalMarginSmall}>
-                        <Text>Average calories: { averageNutrition.calories.toFixed(0) }</Text>
+                        <Text>Average calories per day: { averageNutrition.calories.toFixed(0) }</Text>
                         <Text>Approximately { macroPercentages.percentCarbs.toFixed(1) }% carbs, { macroPercentages.percentFat.toFixed(1) }% fat, { macroPercentages.percentProtein.toFixed(1) }% protein</Text>
                     </View>
 
@@ -173,7 +173,7 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
         );
     }
 
-    private getAverageRecipeNutrition(): MacronutrientInformation {
+    private getAverageDailyNutrition(): MacronutrientInformation {
         let mealPlanMacronutrientsInformation: MacronutrientInformation[] = this.props.mealPlan.map(mealPlanEntry => this.props.recipeNutrition[mealPlanEntry.recipeId]);
         
         let totalMacronutrients: MacronutrientInformation = {
@@ -195,12 +195,12 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
             totalMacronutrients.proteinGrams += nutrition.proteinGrams;
         });
 
-        let totalNumMeals = 21; // Always 3 meals x 7 days
+        let totalNumDays = 7;
         if (mealPlanMacronutrientsInformation.length > 0) {
-            totalMacronutrients.calories /= totalNumMeals;
-            totalMacronutrients.carbGrams /= totalNumMeals;
-            totalMacronutrients.fatGrams /= totalNumMeals;
-            totalMacronutrients.proteinGrams /= totalNumMeals;
+            totalMacronutrients.calories /= totalNumDays;
+            totalMacronutrients.carbGrams /= totalNumDays;
+            totalMacronutrients.fatGrams /= totalNumDays;
+            totalMacronutrients.proteinGrams /= totalNumDays;
         }
 
         return totalMacronutrients;
