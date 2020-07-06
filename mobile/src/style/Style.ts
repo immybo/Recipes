@@ -24,6 +24,9 @@ export const styles = StyleSheet.create({
     largeText: {
         fontSize: 20
     },
+    pickerText: {
+        fontSize: 16
+    },
     rowLayout: {
         flexDirection: "row",
         justifyContent: "space-between",

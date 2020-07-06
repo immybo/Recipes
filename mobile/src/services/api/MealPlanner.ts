@@ -12,20 +12,20 @@ export class MealPlannerApi {
             JSON.stringify({ UserId: 0, StartDateInclusive: formatDate(startDateInclusive), EndDateInclusive: formatDate(endDateInclusive)}));
     }
 
-    public static setMealPlan(date: Date, recipeId: number) {
+    public static setMealPlan(date: Date, recipeId: number, mealNumber: number) {
         return callApi(
             "mealplanner/mealplans",
             HttpMethod.POST,
             parseNull,
-            JSON.stringify([{ UserId: 0, Date: formatDate(date), MealNumber: 1, RecipeId: recipeId}]));
+            JSON.stringify([{ UserId: 0, Date: formatDate(date), MealNumber: mealNumber, RecipeId: recipeId}]));
     }
 
-    public static deleteMealPlanEntry(date: Date) {
+    public static deleteMealPlanEntry(date: Date, mealNumber: number) {
         return callApi(
             "mealplanner/mealplans",
             HttpMethod.DELETE,
             parseNull,
-            JSON.stringify({ UserId: 0, Date: formatDate(date), MealNumber: 1}));
+            JSON.stringify({ UserId: 0, Date: formatDate(date), MealNumber: mealNumber}));
     }
 
     public static generateRandomMealPlan(startDate: Date, numDays: number) {

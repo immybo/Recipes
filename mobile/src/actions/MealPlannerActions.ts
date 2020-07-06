@@ -13,7 +13,8 @@ interface SetMealPlanAction {
 
 interface DeleteMealPlanAction {
     type: typeof DELETE_MEAL_PLAN,
-    payload: Date
+    date: Date,
+    mealNumber: number
 }
 
 export type MealPlannerActionTypes = SetMealPlanAction | DeleteMealPlanAction;
@@ -27,19 +28,19 @@ export function getMealPlan(startDateInclusive: Date, endDateInclusive: Date) {
     }
 }
 
-export function setMealPlan(day: Date, recipeId: number) {
+export function setMealPlan(day: Date, recipeId: number, mealNumber: number) {
     return function(dispatch: Dispatch) {
-        return MealPlannerApi.setMealPlan(day, recipeId).then(
+        return MealPlannerApi.setMealPlan(day, recipeId, mealNumber).then(
             _ => getMealPlan(day, day)(dispatch),
             error => dispatch(setApiErrorToDisplay("Error updating meal plan. " + String(error)))
         );
     }
 }
 
-export function deleteMealPlanEntry(day: Date) {
+export function deleteMealPlanEntry(day: Date, mealNumber: number) {
     return function(dispatch: Dispatch) {
-        return MealPlannerApi.deleteMealPlanEntry(day).then(
-            _ => dispatch(deleteMealPlanLocal(day)),
+        return MealPlannerApi.deleteMealPlanEntry(day, mealNumber).then(
+            _ => dispatch(deleteMealPlanLocal(day, mealNumber)),
             error => dispatch(setApiErrorToDisplay("Error removing meal. " + String(error)))
         );
     }
@@ -61,9 +62,10 @@ export function updateMealPlanLocal(mealPlan: MealPlanEntry[]): MealPlannerActio
     }
 }
 
-export function deleteMealPlanLocal(date: Date): MealPlannerActionTypes {
+export function deleteMealPlanLocal(date: Date, mealNumber): MealPlannerActionTypes {
     return {
         type: DELETE_MEAL_PLAN,
-        payload: date
+        date: date,
+        mealNumber: mealNumber
     }
 }
