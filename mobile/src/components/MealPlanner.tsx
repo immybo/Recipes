@@ -13,6 +13,7 @@ import NavigationToggle from './NavigationToggle';
 import { MacronutrientInformation } from '../model/MacronutrientInformation';
 import { MacronutrientPercentages, fromMacronutrientInformation } from '../model/MacronutrientPercentages';
 import { datesEqual } from '../util/DateUtils';
+import { convertToNutritionPerServing } from '../util/NutritionUtils';
 
 interface MealPlannerProps extends React.Props<MealPlanner> {
     mealPlan: MealPlanEntry[];
@@ -87,10 +88,12 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     { this.getDateRows() }
                     
-                    <View style={styles.verticalMarginSmall}>
-                        <Text>Average calories per day: { averageNutrition.calories.toFixed(0) }</Text>
-                        <Text>Approximately { macroPercentages.percentCarbs.toFixed(1) }% carbs, { macroPercentages.percentFat.toFixed(1) }% fat, { macroPercentages.percentProtein.toFixed(1) }% protein</Text>
-                    </View>
+                    { this.props.mealPlan.length > 0 &&
+                        <View style={styles.verticalMarginSmall}>
+                            <Text>Average calories per day: { averageNutrition.calories.toFixed(0) }</Text>
+                            <Text>Approximately { macroPercentages.percentCarbs.toFixed(1) }% carbs, { macroPercentages.percentFat.toFixed(1) }% fat, { macroPercentages.percentProtein.toFixed(1) }% protein</Text>
+                        </View>
+                    }
 
                     <Button title="Randomize" onPress={_ => this.props.generateRandomWeeklyMealPlan(this.state.startDate).then(() => this.updateNutrition)}>Random</Button>
                 </ScrollView>
@@ -174,8 +177,6 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
     }
 
     private getAverageDailyNutrition(): MacronutrientInformation {
-        let mealPlanMacronutrientsInformation: MacronutrientInformation[] = this.props.mealPlan.map(mealPlanEntry => this.props.recipeNutrition[mealPlanEntry.recipeId]);
-        
         let totalMacronutrients: MacronutrientInformation = {
             calories: 0,
             carbGrams: 0,
@@ -184,9 +185,18 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
         };
         
         // If some are null then we haven't properly loaded the recipe nutrition yet.
-        if (mealPlanMacronutrientsInformation.length === 0 || mealPlanMacronutrientsInformation.some(x => x == null)) {
+        if (this.props.mealPlan.filter(x => !this.props.recipeNutrition.has(x.recipeId)).length > 0 || this.props.mealPlan.length === 0) {
             return totalMacronutrients;
         }
+
+        let mealPlanMacronutrientsInformation: MacronutrientInformation[] = this.props.mealPlan.map(mealPlanEntry => {
+            let totalNutrients: MacronutrientInformation | undefined = this.props.recipeNutrition.get(mealPlanEntry.recipeId);
+            if (totalNutrients == null) throw new Error(); // Can't happen because of the above check but TS doesn't catch it
+            
+            let recipe: Recipe = this.props.allRecipes.filter(x => x.id == mealPlanEntry.recipeId)[0];
+
+            return convertToNutritionPerServing(recipe, totalNutrients);
+        });
 
         mealPlanMacronutrientsInformation.forEach(nutrition => {
             totalMacronutrients.calories += nutrition.calories;

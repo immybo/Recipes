@@ -38,7 +38,7 @@ export default function(state = initialState, action: RecipeActionTypes) {
             }
         case SET_NUTRITIONAL_INFORMATION_FOR_RECIPE:
             let newNutrition = copyMap(state.recipeNutrition);
-            newNutrition[action.payload[0]] = action.payload[1];
+            newNutrition.set(action.payload[0], action.payload[1]);
 
             return {
                 ...state,

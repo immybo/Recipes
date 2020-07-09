@@ -12,9 +12,9 @@ module RecipeDataAccess =
         ", Database.compileTimeConnectionString>
 
     type AddRecipeCommand = SqlCommandProvider<"
-        INSERT INTO dbo.Recipes (Description, Name, MethodId)
+        INSERT INTO dbo.Recipes (Description, Name, MethodId, NumberOfServings)
         OUTPUT INSERTED.Id
-        VALUES (@description, @name, @methodId)
+        VALUES (@description, @name, @methodId, @numberOfServings)
         ", Database.compileTimeConnectionString>
         
     type GetAllRecipeIdsQuery = SqlCommandProvider<"
@@ -24,7 +24,7 @@ module RecipeDataAccess =
 
     type UpdateRecipeCommand = SqlCommandProvider<"
         UPDATE dbo.Recipes
-        SET Description=@description, Name=@name, MethodId=@methodId
+        SET Description=@description, Name=@name, MethodId=@methodId, NumberOfServings=@numberOfServings
         WHERE Id = @id
         ", Database.compileTimeConnectionString>
         
@@ -43,7 +43,8 @@ module RecipeDataAccess =
             Method = {
                 Id = recipeEntity.methodId;
                 Steps = Array.empty<string>;
-            }
+            };
+            NumberOfServings = recipeEntity.numberOfServings;
         }
 
     let getPartialRecipeById (id: int) : Result<Recipe, Error> = 
@@ -57,7 +58,7 @@ module RecipeDataAccess =
 
     let writePartialRecipe recipe : Recipe =
         let command = new AddRecipeCommand(Database.realConnectionString);
-        command.Execute(recipe.Description, recipe.Name, recipe.Method.Id)
+        command.Execute(recipe.Description, recipe.Name, recipe.Method.Id, recipe.NumberOfServings)
         |> fun x -> { recipe with Id = x.Single() }
 
     let getAllRecipeIds () : int[] =
@@ -67,7 +68,7 @@ module RecipeDataAccess =
 
     let updatePartialRecipe updatedRecipe =
         let command = new UpdateRecipeCommand(Database.realConnectionString);
-        command.Execute(updatedRecipe.Description, updatedRecipe.Name, updatedRecipe.Method.Id, updatedRecipe.Id)
+        command.Execute(updatedRecipe.Description, updatedRecipe.Name, updatedRecipe.Method.Id, updatedRecipe.Id, updatedRecipe.NumberOfServings)
 
     let deletePartialRecipe recipeId =
         let command = new DeleteRecipeCommand(Database.realConnectionString);

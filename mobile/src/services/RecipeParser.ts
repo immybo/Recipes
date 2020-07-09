@@ -18,7 +18,8 @@ export function parseRecipe(recipeJson: any): Recipe {
             steps: recipeJson.Method.Steps
         },
         categories: parseCategories(recipeJson.Categories),
-        ingredients: parseIngredients(recipeJson.Ingredients)
+        ingredients: parseIngredients(recipeJson.Ingredients),
+        numberOfServings: Number.parseInt(recipeJson.NumberOfServings)
     };
 }
 

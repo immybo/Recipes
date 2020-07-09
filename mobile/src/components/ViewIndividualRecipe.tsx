@@ -8,6 +8,7 @@ import IngredientDisplay from './shared/IngredientDisplay';
 import { styles } from '../style/Style';
 import { getNutritionalInformationForRecipe } from '../actions/RecipeActions';
 import { MacronutrientInformation } from '../model/MacronutrientInformation';
+import { convertToNutritionPerServing } from '../util/NutritionUtils';
 
 interface ViewIndividualRecipeProps extends React.Props<ViewIndividualRecipe> {
     navigation: any,
@@ -56,15 +57,6 @@ class ViewIndividualRecipe extends React.Component<ViewIndividualRecipeProps, Vi
                         <Text style={styles.h2}>Ingredients</Text>
                         {this.getIngredientList()}
                     </View>
-                    {
-                        this.props.recipeNutrition != null && this.props.recipeNutrition[this.state.recipe.id] != null &&
-                            <View style={styles.verticalMarginSmall}>
-                                <Text>Calories: { this.props.recipeNutrition[this.state.recipe.id].calories.toFixed(0) ?? 0 }</Text>
-                                <Text>Protein: { this.props.recipeNutrition[this.state.recipe.id].proteinGrams.toFixed(0) ?? 0 }g</Text>
-                                <Text>Fat: { this.props.recipeNutrition[this.state.recipe.id].fatGrams.toFixed(0) ?? 0 }g</Text>
-                                <Text>Carbs: { this.props.recipeNutrition[this.state.recipe.id].carbGrams.toFixed(0) ?? 0 }g</Text>
-                            </View>
-                    }
                     <View>
                         <Text style={styles.h2}>Method</Text>
                         {this.getMethod()}
@@ -73,9 +65,27 @@ class ViewIndividualRecipe extends React.Component<ViewIndividualRecipeProps, Vi
                         <Text style={styles.h2}>Categories</Text>
                         {this.getCategoryList()}
                     </View>
+                    { this.getNutritionDisplay() }
                 </ScrollView>
             </View>
         );
+    }
+
+    private getNutritionDisplay(): JSX.Element {
+        if (this.props.recipeNutrition != null && this.props.recipeNutrition[this.state.recipe.id] != null) {
+            let recipeNutritionPerServing: MacronutrientInformation = convertToNutritionPerServing(this.state.recipe, this.props.recipeNutrition[this.state.recipe.id])
+
+            return (
+                <View style={styles.verticalMarginSmall}>
+                    <Text>Calories per serving: { recipeNutritionPerServing.calories.toFixed(0) ?? 0 }</Text>
+                    <Text>Protein per serving: { recipeNutritionPerServing.proteinGrams.toFixed(0) ?? 0 }g</Text>
+                    <Text>Fat per serving: { recipeNutritionPerServing.fatGrams.toFixed(0) ?? 0 }g</Text>
+                    <Text>Carbs per serving: { recipeNutritionPerServing.carbGrams.toFixed(0) ?? 0 }g</Text>
+                </View>
+            );
+        } else {
+            return <View />;
+        }
     }
 
     private getIngredientList(): JSX.Element[] {

@@ -21,6 +21,8 @@ import { IngredientNutrition } from '../../model/IngredientNutrition';
 import { QuantityUnit } from '../../model/QuantityUnit';
 import ValidationContainer from './ValidationContainer';
 import Form from './Form';
+import { PositiveOrZero } from '../../util/ValidationRules';
+import { Numbers } from '../../util/Regex';
 
 interface RecipeInputProps extends React.Props<RecipeInput> {
     initialRecipe: Recipe,
@@ -40,7 +42,8 @@ interface RecipeInputState {
     isInputtingIngredient: boolean,
     ingredientInputKey: number,
     ingredientWaitingToAdd?: Ingredient,
-    numInvalidInputs: number
+    numInvalidInputs: number,
+    numberOfServings: number
 }
 
 export default class RecipeInput extends React.Component<RecipeInputProps, RecipeInputState> {
@@ -55,7 +58,8 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
             method: props.initialRecipe.method,
             isInputtingIngredient: false,
             ingredientInputKey: -1, 
-            numInvalidInputs: 0
+            numInvalidInputs: 0,
+            numberOfServings: 1
         };
     }
 
@@ -84,6 +88,7 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
 
     private getRecipeInput(): JSX.Element {
         let nameErrors = React.createRef<ValidationContainer>();
+        let numServingsErrors = React.createRef<ValidationContainer>();
 
         return (
             <Form style={styles.container}>
@@ -102,6 +107,21 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
                             onValidChange={isValid => this.updateValid(isValid) } />
                         <ValidationContainer ref={nameErrors} />
                         <CustomTextInput style={styles.verticalMarginSmall} multiline={true} placeholder="Recipe Description" value={this.state.recipeDescription} onChangeText={(text) => this.onRecipeDescriptionChange(text)} />
+
+                        <View style={styles.rowWithoutJustify}>
+                            <Text>Makes </Text>
+                            <CustomTextInput
+                                keyboardType="numeric"
+                                onChangeText={(newQuantity) => this.updateNumberOfServings(newQuantity)}
+                                placeholder={"0"}
+                                defaultValue={this.state.numberOfServings ? this.state.numberOfServings.toString() : "1"}
+                                maxLength={10}
+                                validationRules={[ PositiveOrZero ]}
+                                validationContainer={numServingsErrors}
+                                onValidChange={isValid => this.updateValid(isValid) } />
+                            <Text> servings</Text>
+                        </View>
+                        <ValidationContainer ref={numServingsErrors} />
                         
                         <View style={styles.rowLayout}>
                             <Text style={[styles.h1, styles.verticalMarginSmall]}>Ingredients</Text>
@@ -236,6 +256,12 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
         this.setState({ categories: [...this.state.categories.slice(0, index), { ...this.state.categories[index], name: newText }, ...this.state.categories.slice(index + 1)] });
     }
 
+    private updateNumberOfServings(newNumber: string) {
+        if (Numbers.test(newNumber)) {
+            this.setState({ numberOfServings: Number(newNumber) });
+        }
+    }
+
     private submitRecipe(): void {
         let recipe: Recipe = this.buildRecipe();
         this.props.submitRecipe(recipe);
@@ -248,11 +274,12 @@ export default class RecipeInput extends React.Component<RecipeInputProps, Recip
             description: this.state.recipeDescription,
             ingredients: this.state.ingredients.filter((ingredient: IngredientWithQuantity) => this.isValidIngredient(ingredient)),
             categories: this.state.categories.filter((category: Category) => category.name.length > 0),
-            method: { ...this.state.method, steps: this.state.method.steps.filter((step: string) => step.length > 0)}
+            method: { ...this.state.method, steps: this.state.method.steps.filter((step: string) => step.length > 0)},
+            numberOfServings: this.state.numberOfServings
         };
     }
 
     private isValidIngredient(ingredient: IngredientWithQuantity): boolean {
-        return ingredient.ingredient.name != null && ingredient.ingredient.name.length > 0;
+        return ingredient.ingredient.name != null && ingredient.ingredient.name.length > 0 && this.state.numberOfServings > 0;
     }
 }

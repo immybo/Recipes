@@ -7,4 +7,5 @@ type Recipe = {
     Ingredients: IngredientWithQuantity[]
     Categories: Category[]
     Method: Method
+    NumberOfServings: int
 }
