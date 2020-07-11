@@ -3,23 +3,19 @@ import { Colors } from './Colors';
 
 export const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        backgroundColor: Colors.Cultured
     },
     containerWithMargin: {
         flex: 1,
-        margin: 15
+        padding: 15
     },
     scrollContainer: {
         flexGrow: 1,
-        margin: 15
+        padding: 15
     },
-    h1: {
-        fontSize: 20,
-        fontWeight: "bold"
-    },
-    h2: {
-        fontSize: 15,
-        fontWeight: "bold"
+    hugeText: {
+        fontSize: 30
     },
     largeText: {
         fontSize: 20
@@ -73,6 +69,9 @@ export const styles = StyleSheet.create({
     marginSmall: {
         margin: 10
     },
+    margin: {
+        margin: 20
+    },
     textInput: {
         paddingLeft: 6
     },
@@ -112,5 +111,21 @@ export const styles = StyleSheet.create({
     },
     buttonPadding: {
         padding: 20
+    },
+    textHeaderLight: {
+        color: Colors.Cultured,
+        fontFamily: "PlayfairDisplay-Bold"
+    },
+    textLight: {
+        color: Colors.Cultured,
+        fontFamily: "Montserrat-Regular"
+    },
+    textHeader: {
+        color: Colors.Charcoal,
+        fontFamily: "PlayfairDisplay-Bold"
+    },
+    text: {
+        color: Colors.Charcoal,
+        fontFamily: "Montserrat-Regular"
     }
 });

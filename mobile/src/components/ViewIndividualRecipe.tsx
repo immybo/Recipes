@@ -9,9 +9,10 @@ import { styles } from '../style/Style';
 import { getNutritionalInformationForRecipe } from '../actions/RecipeActions';
 import { MacronutrientInformation } from '../model/MacronutrientInformation';
 import { convertToNutritionPerServing } from '../util/NutritionUtils';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 interface ViewIndividualRecipeProps extends React.Props<ViewIndividualRecipe> {
-    navigation: any,
+    navigation: StackNavigationProp<any>,
     recipeNutrition: Map<number, MacronutrientInformation>,
     getNutritionalInformationForRecipe: (recipeId: number) => void
 }
@@ -51,18 +52,18 @@ class ViewIndividualRecipe extends React.Component<ViewIndividualRecipeProps, Vi
         return (
             <View style={styles.container}>
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
-                    <Text style={[styles.h1, styles.verticalMarginSmall]}>{this.state.recipe.name}</Text>
-                    <Text style={styles.verticalMarginSmall}>{this.state.recipe.description}</Text>
-                    <View style={styles.verticalMarginSmall}>
-                        <Text style={styles.h2}>Ingredients</Text>
+                    <Text style={[styles.textHeader, styles.hugeText, styles.verticalMarginSmall, styles.centerText]}>{this.state.recipe.name.toUpperCase()}</Text>
+                    <Text style={[styles.text, styles.verticalMarginSmall]}>{this.state.recipe.description}</Text>
+                    <View style={[styles.centerAlign, styles.verticalMarginSmall]}>
+                        <Text style={[styles.textHeader, styles.hugeText, styles.bottomMargin]}>Ingredients</Text>
                         {this.getIngredientList()}
                     </View>
-                    <View>
-                        <Text style={styles.h2}>Method</Text>
+                    <View style={[styles.centerAlign, styles.verticalMarginSmall]}>
+                        <Text style={[styles.textHeader, styles.hugeText, styles.bottomMargin]}>Method</Text>
                         {this.getMethod()}
                     </View>
-                    <View style={styles.verticalMarginSmall}>
-                        <Text style={styles.h2}>Categories</Text>
+                    <View style={styles.centerAlign}>
+                        <Text style={[styles.textHeader, styles.hugeText, styles.bottomMargin]}>Categories</Text>
                         {this.getCategoryList()}
                     </View>
                     { this.getNutritionDisplay() }
@@ -77,10 +78,10 @@ class ViewIndividualRecipe extends React.Component<ViewIndividualRecipeProps, Vi
 
             return (
                 <View style={styles.verticalMarginSmall}>
-                    <Text>Calories per serving: { recipeNutritionPerServing.calories.toFixed(0) ?? 0 }</Text>
-                    <Text>Protein per serving: { recipeNutritionPerServing.proteinGrams.toFixed(0) ?? 0 }g</Text>
-                    <Text>Fat per serving: { recipeNutritionPerServing.fatGrams.toFixed(0) ?? 0 }g</Text>
-                    <Text>Carbs per serving: { recipeNutritionPerServing.carbGrams.toFixed(0) ?? 0 }g</Text>
+                    <Text style={styles.text}>Calories per serving: { recipeNutritionPerServing.calories.toFixed(0) ?? 0 }</Text>
+                    <Text style={styles.text}>Protein per serving: { recipeNutritionPerServing.proteinGrams.toFixed(0) ?? 0 }g</Text>
+                    <Text style={styles.text}>Fat per serving: { recipeNutritionPerServing.fatGrams.toFixed(0) ?? 0 }g</Text>
+                    <Text style={styles.text}>Carbs per serving: { recipeNutritionPerServing.carbGrams.toFixed(0) ?? 0 }g</Text>
                 </View>
             );
         } else {
@@ -94,12 +95,17 @@ class ViewIndividualRecipe extends React.Component<ViewIndividualRecipeProps, Vi
 
     private getMethod(): JSX.Element[] {
         return this.state.recipe.method.steps.map(
-            (step: string, key: number) => <Text key={"step-" + key}>{(key+1) + ". " + step}</Text>
+            (step: string, key: number) => (
+                <View style={[styles.rowLayout, styles.bottomMargin]} key={"step-" + key + "-container"}>
+                    <Text style={[styles.text, {flex: 0.1}]}>{(key+1) + "."}</Text>
+                    <Text style={[styles.text, {flex: 0.9}]} key={"step-" + key}>{step}</Text>
+                </View>
+            )
         );
     }
 
     private getCategoryList(): JSX.Element {
-        return <Text>{this.state.recipe.categories.map(x => x.name).join(", ")}</Text>
+        return <Text style={styles.text}>{this.state.recipe.categories.map(x => x.name).join(", ")}</Text>
     }
 }
 

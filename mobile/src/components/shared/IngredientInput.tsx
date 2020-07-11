@@ -3,7 +3,6 @@ import {
     View,
     Button,
     Text,
-    Picker,
     CheckBox
 } from 'react-native';
 import { styles } from '../../style/Style';
@@ -18,6 +17,8 @@ import { PositiveOrZero } from '../../util/ValidationRules';
 import { Density, getDefaultDensity } from '../../model/Density';
 import Form from './Form';
 import { EnergyUnit, KilojoulesPerCalorie } from '../../model/EnergyUnit';
+import RNPickerSelect, { Item } from 'react-native-picker-select';
+import { Colors } from '../../style/Colors';
 
 interface IngredientInputProps extends React.Props<IngredientInput> {
     initialIngredient: Ingredient,
@@ -86,7 +87,7 @@ export default class IngredientInput extends React.Component<IngredientInputProp
         return (
             <Form style={styles.containerWithMargin}>
                 <CustomTextInput
-                    style={styles.h1}
+                    style={[styles.text, styles.largeText]}
                     placeholder="Ingredient Name"
                     defaultValue={this.props.initialIngredient.name}
                     onChangeText={(text) => this.onChangeIngredientName(text)}
@@ -100,14 +101,15 @@ export default class IngredientInput extends React.Component<IngredientInputProp
 
                 <View style={[styles.rowWithoutJustify, styles.verticalMarginSmall]}>
                     <CheckBox value={this.state.noNutrition} onValueChange={newValue => this.setState({noNutrition: newValue})}/>
-                    <Text>No nutrition</Text>
+                    <Text style={styles.text}>No nutrition</Text>
                 </View>
 
                 { !this.state.noNutrition &&
                     <View>
                         <View style={styles.rowWithoutJustify}>
-                            <Text style={styles.rightMarginSmall}>Serving size of </Text>
+                            <Text style={[styles.text, styles.rightMarginSmall]}>Serving size of </Text>
                             <CustomTextInput
+                                style={styles.text}
                                 keyboardType="numeric"
                                 onChangeText={(newQuantity) => this.updateServingSizeAmount(newQuantity)}
                                 placeholder={"0"}
@@ -116,16 +118,18 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                                 validationRules={[ PositiveOrZero ]}
                                 validationContainer={servingSizeAmountErrors}
                                 onValidChange={isValid => this.updateValid(isValid) } />
-                            <Picker style={[{"flex": 1}, styles.pickerItem]} selectedValue={this.state.servingSizeUnit} onValueChange={(value, _) => this.updateServingSizeUnit(value)}>
-                                { [ QuantityUnit.None, QuantityUnit.Grams, QuantityUnit.Kilograms, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Millilitres, QuantityUnit.Litres ].map((unit: QuantityUnit) => {
+                                
+                            <RNPickerSelect useNativeAndroidPickerStyle={false} placeholder={{}} style={{inputAndroid: {fontFamily: "Montserrat-Regular", color: Colors.Charcoal}}} value={this.state.servingSizeUnit} onValueChange={(value, _) => this.updateServingSizeUnit(value)}
+                                items={ [ QuantityUnit.None, QuantityUnit.Grams, QuantityUnit.Kilograms, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Millilitres, QuantityUnit.Litres ].map((unit: QuantityUnit) => {
                                     let formattedUnit: string = QuantityFormatter.formatUnit(unit, true);
-                                    return <Picker.Item label={formattedUnit} key={formattedUnit} value={unit} />
+                                    return { label: formattedUnit, value: unit }
                                 })}
-                            </Picker>
+                            />
                         </View>
                         <ValidationContainer ref={servingSizeAmountErrors} />
                         <View style={styles.rowWithoutJustify}>
                             <CustomTextInput
+                                style={styles.text}
                                 placeholder="0"
                                 keyboardType="numeric"
                                 defaultValue={this.state.energyPerServing?.toString()}
@@ -133,15 +137,21 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                                 validationRules={[ PositiveOrZero ]}
                                 validationContainer={caloriesErrors}
                                 onValidChange={isValid => this.updateValid(isValid) } />
-                            <Picker style={[{"flex": 0.7}, styles.pickerItem]} selectedValue={this.state.energyUnit} onValueChange={(value, _) => this.updateEnergyUnit(value)}>
-                                <Picker.Item label={"calories"} value={EnergyUnit.Calories} />
-                                <Picker.Item label={"kilojoules"} value={EnergyUnit.Kilojoules} />
-                            </Picker>
-                            <Text style={styles.horizontalMarginSmall}>per serving</Text>
+                            
+                            <View style={{"flex": 0.7}}>
+                                <RNPickerSelect useNativeAndroidPickerStyle={false} placeholder={{}} style={{inputAndroid: {fontFamily: "Montserrat-Regular", color: Colors.Charcoal}}} value={this.state.energyUnit} onValueChange={(value, _) => this.updateEnergyUnit(value)}
+                                    items={[
+                                        { label: "calories", value: EnergyUnit.Calories },
+                                        { label: "kilojoules", value: EnergyUnit.Kilojoules }
+                                    ]}
+                                />
+                            </View>
+                            <Text style={[styles.text, styles.horizontalMarginSmall]}>per serving</Text>
                         </View>
                         <ValidationContainer ref={caloriesErrors} />
                         <View style={styles.rowWithoutJustify}>
                             <CustomTextInput
+                                style={styles.text}
                                 placeholder="0"
                                 keyboardType="numeric"
                                 defaultValue={this.state.gramsProteinPerServing?.toString()}
@@ -149,11 +159,12 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                                 validationRules={[ PositiveOrZero ]}
                                 validationContainer={proteinErrors}
                                 onValidChange={isValid => this.updateValid(isValid) } />
-                            <Text style={styles.horizontalMarginSmall}>grams of protein per serving</Text>
+                            <Text style={[styles.text, styles.horizontalMarginSmall]}>grams of protein per serving</Text>
                         </View>
                         <ValidationContainer ref={proteinErrors} />
                         <View style={styles.rowWithoutJustify}>
                             <CustomTextInput
+                                style={styles.text}
                                 placeholder="0"
                                 keyboardType="numeric"
                                 defaultValue={this.state.gramsFatPerServing?.toString()}
@@ -161,11 +172,12 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                                 validationRules={[ PositiveOrZero ]}
                                 validationContainer={fatErrors}
                                 onValidChange={isValid => this.updateValid(isValid) } />
-                            <Text style={styles.horizontalMarginSmall}>grams of fat per serving</Text>
+                            <Text style={[styles.text, styles.horizontalMarginSmall]}>grams of fat per serving</Text>
                         </View>
                         <ValidationContainer ref={fatErrors} />
                         <View style={styles.rowWithoutJustify}>
                             <CustomTextInput
+                                style={styles.text}
                                 placeholder="0"
                                 keyboardType="numeric"
                                 defaultValue={this.state.gramsCarbsPerServing?.toString()}
@@ -173,35 +185,42 @@ export default class IngredientInput extends React.Component<IngredientInputProp
                                 validationRules={[ PositiveOrZero ]}
                                 validationContainer={carbsErrors}
                                 onValidChange={isValid => this.updateValid(isValid) } />
-                            <Text style={styles.horizontalMarginSmall}>grams of carbs per serving</Text>
+                            <Text style={[styles.text, styles.horizontalMarginSmall]}>grams of carbs per serving</Text>
                         </View>
                         <ValidationContainer ref={carbsErrors} />
 
                         <View style={[styles.rowWithoutJustify, styles.flexWrap, styles.noMargin]}>
-                            <Text>The weight of </Text>
+                            <Text style={styles.text}>The weight of </Text>
                             <CustomTextInput
+                                style={styles.text}
                                 keyboardType="numeric"
                                 defaultValue={String(this.state.density.equivalentByVolume.amount)}
                                 onChangeText={(text) => this.updateDensityVolumeAmount(text)} />
-                            <Picker style={[styles.pickerItem, {"flex": 0.45}]} selectedValue={this.state.density.equivalentByVolume.unit} onValueChange={(value, _) => this.updateDensityVolumeUnit(value)}>
-                                { [ QuantityUnit.Millilitres, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Litres ].map((unit: QuantityUnit) => {
-                                    let formattedUnit: string = QuantityFormatter.formatUnitShorthand(unit);
-                                    return <Picker.Item label={formattedUnit} key={formattedUnit} value={unit} />
-                                })}
-                            </Picker>
+                            <View style={{"flex": 0.45}}>
+                                <RNPickerSelect useNativeAndroidPickerStyle={false} placeholder={{}} style={{inputAndroid: {fontFamily: "Montserrat-Regular", color: Colors.Charcoal}}} value={this.state.density.equivalentByVolume.unit} onValueChange={(value, _) => this.updateDensityVolumeUnit(value)}
+                                    items={ [ QuantityUnit.Millilitres, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Litres ].map((unit: QuantityUnit) => {
+                                        let formattedUnit: string = QuantityFormatter.formatUnitShorthand(unit);
+                                        return { label: formattedUnit, value: unit };
+                                    })}
+                                />
+                            </View>
                         </View>
+
                         <View style={[styles.rowWithoutJustify, styles.flexWrap, styles.noMargin]}>
-                            <Text> is </Text>
+                            <Text style={styles.text}> is </Text>
                             <CustomTextInput
+                                style={styles.text}
                                 keyboardType="numeric"
                                 defaultValue={String(this.state.density.equivalentByWeight.amount)}
                                 onChangeText={(text) => this.updateDensityWeightAmount(text)} />
-                            <Picker style={[styles.pickerItem, {"flex": 0.3}]} selectedValue={this.state.density.equivalentByWeight.unit} onValueChange={(value, _) => this.updateDensityWeightUnit(value)}>
-                                { [ QuantityUnit.Grams, QuantityUnit.Kilograms ].map((unit: QuantityUnit) => {
-                                    let formattedUnit: string = QuantityFormatter.formatUnitShorthand(unit);
-                                    return <Picker.Item label={formattedUnit} key={formattedUnit} value={unit} />
-                                })}
-                            </Picker>
+                            <View style={{"flex": 0.3}}>
+                                <RNPickerSelect useNativeAndroidPickerStyle={false} placeholder={{}} style={{inputAndroid: {fontFamily: "Montserrat-Regular", color: Colors.Charcoal}}} value={this.state.density.equivalentByWeight.unit} onValueChange={(value, _) => this.updateDensityWeightUnit(value)}
+                                    items={ [ QuantityUnit.Grams, QuantityUnit.Kilograms ].map((unit: QuantityUnit) => {
+                                        let formattedUnit: string = QuantityFormatter.formatUnitShorthand(unit);
+                                        return { label: formattedUnit, value: unit };
+                                    })}
+                                />
+                            </View>
                         </View>
                     </View>
                 }

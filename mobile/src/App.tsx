@@ -1,7 +1,7 @@
 import React from 'react';
 import ViewRecipes from './components/ViewRecipes';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { createStackNavigator } from '@react-navigation/stack'
+import { createStackNavigator, StackHeaderTitleProps, StackHeaderProps } from '@react-navigation/stack'
 import { Provider, connect } from 'react-redux';
 import { store, AppState } from './reducers/Reducers';
 import AddRecipe from './components/AddRecipe';
@@ -19,6 +19,7 @@ import EditRecipe from './components/EditRecipe';
 import EditIngredient from './components/EditIngredient';
 import { RouteViewIndividualRecipe, RouteEditRecipe, RouteEditIngredient, RouteViewRecipes, RouteAddRecipe, RouteAddIngredient, RouteMealPlanner, RouteViewIngredients } from './Routes';
 import ViewIndividualRecipe from './components/ViewIndividualRecipe';
+import NavigationToggle from './components/NavigationToggle';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -81,10 +82,11 @@ class App extends React.Component<AppProps, AppLocalState> {
             </Provider>
         );
     }
+
     private getNavigator(): JSX.Element {
         return (
             <NavigationContainer>
-                <Stack.Navigator>
+                <Stack.Navigator screenOptions={{ header: (props: StackHeaderProps) => <NavigationToggle stackNavigation={props.navigation} pageTitle={props.scene.route.name} /> }}>
                     <Stack.Screen options={{headerShown: false}} name="Main" component={DrawerNavigator} />
                     <Stack.Screen name={RouteEditRecipe} component={EditRecipe} />
                     <Stack.Screen name={RouteEditIngredient} component={EditIngredient} />

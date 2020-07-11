@@ -7,6 +7,7 @@ import {
 import { Recipe } from '../../model/Recipe';
 import { styles } from '../../style/Style';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { Colors } from '../../style/Colors';
 
 interface RecipeCompactDisplayProps {
     recipe: Recipe,
@@ -24,16 +25,16 @@ class RecipeCompactDisplay extends React.Component<RecipeCompactDisplayProps, an
         return (
             <TouchableOpacity onPress={(event) => { if (this.props.onClick != null) { this.props.onClick(this.props.recipe)}}}>
                 <View style={styles.rowLayout}>
-                    <Text style={styles.largeText}>{this.props.recipe.name}</Text>
+                    <Text style={[styles.text, styles.largeText]}>{this.props.recipe.name}</Text>
                     <View style={styles.rowRightButton}>
                         { this.props.onEdit != null &&
                             <TouchableOpacity hitSlop={{top: 20, bottom: 20, left: 20, right: 20}} style={styles.marginSmall} onPress={(event) => { if (this.props.onEdit != null) { this.props.onEdit(this.props.recipe)}}}>
-                                <Icon name="edit" size={30} color="black" />
+                                <Icon name="edit" size={30} color={Colors.Charcoal} />
                             </TouchableOpacity>
                         }
                         { this.props.onDelete != null &&
                             <TouchableOpacity style={styles.marginSmall} onPress={(event) => { if (this.props.onDelete != null) { this.props.onDelete(this.props.recipe)}}}>
-                                <Icon name="trash" size={30} color="black" />
+                                <Icon name="trash" size={30} color={Colors.Charcoal} />
                             </TouchableOpacity>
                         }
                     </View>

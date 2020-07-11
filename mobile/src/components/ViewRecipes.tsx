@@ -39,7 +39,7 @@ class ViewRecipes extends React.Component<ViewRecipesProps, any> {
     public render(): JSX.Element {
         return (
             <View style={styles.container}>
-                <NavigationToggle navigation={this.props.navigation} pageTitle="View Recipes" />
+                <NavigationToggle drawerNavigation={this.props.navigation} pageTitle="View Recipes" />
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View>
                         {this.getRecipeList()}

@@ -11,8 +11,10 @@ import { LoadingType, beginLoading, endLoading } from '../actions/LoadingActions
 import { styles } from '../style/Style';
 import { View } from 'react-native';
 import NavigationToggle from './NavigationToggle';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
 
 interface AddIngredientProps {
+    navigation: DrawerNavigationProp<any, any>,
     allIngredients: Ingredient[],
     addIngredientWithNutritionalInformation: (ingredient: Ingredient, nutrition: IngredientNutrition) => void
     addIngredient: (ingredient: Ingredient) => void
@@ -44,7 +46,7 @@ class AddIngredient extends React.Component<AddIngredientProps, AddIngredientSta
     public render(): JSX.Element {
         return (
             <View style={styles.container}>
-                <NavigationToggle navigation={this.props.navigation} pageTitle="Add Ingredient" />
+                <NavigationToggle drawerNavigation={this.props.navigation} pageTitle="Add Ingredient" />
                 <IngredientInput initialIngredient={getBlankIngredient()}
                     submitIngredientWithoutNutrition={ingredient => this.submitIngredientWithoutNutrition(ingredient)}
                     submitIngredient={(ingredient, nutrition) => this.submitIngredient(ingredient, nutrition)}

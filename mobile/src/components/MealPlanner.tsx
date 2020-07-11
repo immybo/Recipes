@@ -14,8 +14,12 @@ import { MacronutrientInformation } from '../model/MacronutrientInformation';
 import { MacronutrientPercentages, fromMacronutrientInformation } from '../model/MacronutrientPercentages';
 import { datesEqual } from '../util/DateUtils';
 import { convertToNutritionPerServing } from '../util/NutritionUtils';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
+import RNPickerSelect, { Item } from 'react-native-picker-select';
+import { Colors } from '../style/Colors';
 
 interface MealPlannerProps extends React.Props<MealPlanner> {
+    navigation: DrawerNavigationProp<any, any>;
     mealPlan: MealPlanEntry[];
     allRecipes: Recipe[];
     recipeNutrition: Map<number, MacronutrientInformation>;
@@ -83,15 +87,15 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
 
         return (
             <View style={styles.container}>
-                <NavigationToggle navigation={this.props.navigation} pageTitle="Meal Planner" />
+                <NavigationToggle drawerNavigation={this.props.navigation} pageTitle="Meal Planner" />
                 
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     { this.getDateRows() }
                     
                     { this.props.mealPlan.length > 0 &&
                         <View style={styles.verticalMarginSmall}>
-                            <Text>Average calories per day: { averageNutrition.calories.toFixed(0) }</Text>
-                            <Text>Approximately { macroPercentages.percentCarbs.toFixed(1) }% carbs, { macroPercentages.percentFat.toFixed(1) }% fat, { macroPercentages.percentProtein.toFixed(1) }% protein</Text>
+                            <Text style={styles.text}>Average calories per day: { averageNutrition.calories.toFixed(0) }</Text>
+                            <Text style={styles.text}>Approximately { macroPercentages.percentCarbs.toFixed(1) }% carbs, { macroPercentages.percentFat.toFixed(1) }% fat, { macroPercentages.percentProtein.toFixed(1) }% protein</Text>
                         </View>
                     }
 
@@ -132,7 +136,7 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
     private getRow(date: Date): JSX.Element {
         return (
             <View key={date.getDay()}>
-                <Text style={styles.largeText}>{ DayUtils.toString(date.getDay()).substring(0,3) + " " + date.getDate() + "/" + (date.getMonth()+1) }</Text>
+                <Text style={[styles.textHeader, styles.largeText]}>{ DayUtils.toString(date.getDay()).substring(0,3) + " " + date.getDate() + "/" + (date.getMonth()+1) }</Text>
                 <View>
                     { this.getIngredientRowSection(date) }
                 </View>
@@ -144,15 +148,15 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
         return (
             <View style={styles.verticalMarginSmall}>
                 <View style={styles.rowLayout}>
-                    <View style={{flex: 0.3}}><Text style={styles.pickerText}>Breakfast: </Text></View>
+                    <View style={{flex: 0.3}}><Text style={[styles.text, styles.pickerText]}>Breakfast: </Text></View>
                     <View style={{flex: 0.7}}>{ this.getMealPicker(date, 0) }</View>
                 </View>
                 <View style={styles.rowLayout}>
-                    <View style={{flex: 0.3}}><Text style={styles.pickerText}>Lunch: </Text></View>
+                    <View style={{flex: 0.3}}><Text style={[styles.text, styles.pickerText]}>Lunch: </Text></View>
                     <View style={{flex: 0.7}}>{ this.getMealPicker(date, 1) }</View>
                 </View>
                 <View style={styles.rowLayout}>
-                    <View style={{flex: 0.3}}><Text style={styles.pickerText}>Dinner: </Text></View>
+                    <View style={{flex: 0.3}}><Text style={[styles.text, styles.pickerText]}>Dinner: </Text></View>
                     <View style={{flex: 0.7}}>{ this.getMealPicker(date, 2) }</View>
                 </View>
             </View>
@@ -161,18 +165,18 @@ class MealPlanner extends React.Component<MealPlannerProps, MealPlannerState> {
 
     private getMealPicker(date: Date, mealNumber: number) {
         return (
-            <Picker key={ date.getDay() } selectedValue={ this.hasMealOnDate(date, mealNumber) ? this.getMealOnDate(date, mealNumber).id : "" } onValueChange={(value, _) => {
-                     if (value == -1) {
-                         this.props.deleteMealPlanEntry(date, mealNumber);
-                     } else {
+            <RNPickerSelect useNativeAndroidPickerStyle={false} placeholder={{label: "", value: null}} value={this.hasMealOnDate(date, mealNumber) ? this.getMealOnDate(date, mealNumber).id : ""} style={{inputAndroid: {fontFamily: "Montserrat-Regular", color: Colors.Charcoal}}}
+                onValueChange={(value, _) => {
+                    if (value == null) {
+                        this.props.deleteMealPlanEntry(date, mealNumber);
+                    } else {
                         this.props.setMealPlan(date, value, mealNumber);
-                     }
-                }}>
-                <Picker.Item label="" key={-1} value={-1} />
-                { this.props.allRecipes.map((recipe: Recipe) => {
-                    return <Picker.Item label={recipe.name} key={recipe.id} value={recipe.id} />
+                    }
+                }}
+                items={ this.props.allRecipes.map((recipe: Recipe) => {
+                    return { label: recipe.name, value: recipe.id }
                 })}
-            </Picker>
+            />
         );
     }
 

@@ -1,6 +1,6 @@
  import React from 'react';
 import {
-    View, Picker, Text
+    View, Text
 } from 'react-native';
 import { IngredientWithQuantity } from '../../model/IngredientWithQuantity';
 import { Numbers, NumbersWithDecimalPlace } from '../../util/Regex';
@@ -11,6 +11,8 @@ import { QuantityFormatter } from '../../util/QuantityFormatter';
 import { Ingredient } from '../../model/Ingredient';
 import ValidationContainer from './ValidationContainer';
 import { PositiveOrZero } from '../../util/ValidationRules';
+import RNPickerSelect, { Item } from 'react-native-picker-select';
+import { Colors } from '../../style/Colors';
 
 interface IngredientSelectProps extends React.Props<IngredientSelect> {
     ingredient: IngredientWithQuantity,
@@ -31,15 +33,13 @@ class IngredientSelect extends React.Component<IngredientSelectProps, any> {
         return (
             <View>
                 <View style={styles.rowLayout}>
-                    <Picker style={{ "flex": 0.55 }} selectedValue={this.props.ingredient.ingredient.id} onValueChange={(value, _) => this.updateIngredient(value)}>
-                        <Picker.Item label={""} key={-1} value={-1} />
-                        { this.props.allIngredients.map((ingredient: Ingredient) => {
-                            return <Picker.Item label={ingredient.name} key={ingredient.id} value={ingredient.id} />
-                        })}
-                        <Picker.Item label={"Add New Ingredient"} key={-2} value={-2} />
-                    </Picker>
+                    <View style={{ "flex": 0.55 }}>
+                        <RNPickerSelect useNativeAndroidPickerStyle={false} placeholder={{}} style={{inputAndroid: {fontFamily: "Montserrat-Regular", color: Colors.Charcoal}}} value={this.props.ingredient.ingredient.id} onValueChange={(value, _) => this.updateIngredient(value)}
+                            items={this.getIngredientPickerItems()}
+                        />
+                    </View>
                     <CustomTextInput
-                        style={{ "flex": 0.1 }}
+                        style={[{ "flex": 0.1 }, styles.text]}
                         keyboardType="numeric"
                         onChangeText={(newQuantity) => this.updateIngredientQuantityNumber(newQuantity)}
                         placeholder={"Quantity"}
@@ -49,12 +49,15 @@ class IngredientSelect extends React.Component<IngredientSelectProps, any> {
                         validationContainer={validationContainer}
                         onValidChange={this.props.onValidChange} />
                     <View style={{ "flex": 0.35 }}>
-                        <Picker style={[{"flex": 1}, styles.pickerItem]} selectedValue={this.props.ingredient.quantity.unit} onValueChange={(value, _) => this.updateIngredientQuantityUnit(value)}>
-                            { [ QuantityUnit.Grams, QuantityUnit.Kilograms, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Millilitres, QuantityUnit.Litres ].map((unit: QuantityUnit) => {
+                        <RNPickerSelect useNativeAndroidPickerStyle={false} placeholder={{}} value={this.props.ingredient.quantity.unit} style={{inputAndroid: {fontFamily: "Montserrat-Regular", color: Colors.Charcoal}}} onValueChange={(value, _) => this.updateIngredientQuantityUnit(value)}
+                            items={ [ QuantityUnit.Grams, QuantityUnit.Kilograms, QuantityUnit.Teaspoons, QuantityUnit.Tablespoons, QuantityUnit.Cups, QuantityUnit.Millilitres, QuantityUnit.Litres ].map((unit: QuantityUnit) => {
                                 let formattedUnit: string = QuantityFormatter.formatUnitShorthand(unit);
-                                return <Picker.Item label={formattedUnit} key={formattedUnit} value={unit} />
+                                return {
+                                    label: formattedUnit,
+                                    value: unit
+                                };
                             })}
-                        </Picker>
+                            />
                     </View>
                 </View>
                 <View style={styles.rowLayout}>
@@ -64,12 +67,17 @@ class IngredientSelect extends React.Component<IngredientSelectProps, any> {
         );
     }
 
+    private getIngredientPickerItems(): Item[] {
+        return this.props.allIngredients.map((ingredient: Ingredient) => {
+            return {
+                label: ingredient.name,
+                value: ingredient.id
+            }
+        });
+    }
+
     private updateIngredient(newIngredientId: number): void {
-        // Couple special cases here. Probably the easiest way to do it
-        if (newIngredientId == -1) {
-            return;
-        } else if (newIngredientId == -2) {
-            this.props.goToIngredientInput();
+        if (newIngredientId == null) {
             return;
         }
 

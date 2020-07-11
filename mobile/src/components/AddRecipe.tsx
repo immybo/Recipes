@@ -13,7 +13,6 @@ import { LoadingType, LoadingActionTypes, beginLoading, endLoading } from '../ac
 import { View, TouchableOpacity } from 'react-native';
 import { styles } from '../style/Style';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import NavigationToggle from './NavigationToggle';
 
 interface AddRecipeProps extends React.Props<AddRecipe> {
@@ -53,7 +52,7 @@ class AddRecipe extends React.Component<AddRecipeProps, AddRecipeState> {
     public render(): JSX.Element {
         return (
             <View style={styles.container}>
-                <NavigationToggle navigation={this.props.navigation} pageTitle="Add Recipe" />
+                <NavigationToggle drawerNavigation={this.props.navigation} pageTitle="Add Recipe" />
                 <RecipeInput
                     allRecipes={this.props.allRecipes}
                     allIngredients={this.props.allIngredients}

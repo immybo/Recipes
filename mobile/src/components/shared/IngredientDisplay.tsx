@@ -18,9 +18,8 @@ class IngredientDisplay extends React.Component<IngredientDisplayProps, any> {
 
     public render(): JSX.Element {
         return (
-            <View style={styles.rowLayout}>
-                <Text>{this.props.ingredient.ingredient.name}</Text>
-                <Text>{QuantityFormatter.format(this.props.ingredient.quantity)}</Text>
+            <View>
+                <Text style={[styles.text, styles.largeText]}>{QuantityFormatter.format(this.props.ingredient.quantity)} {this.props.ingredient.ingredient.name.toLowerCase()}</Text>
             </View>
         );
     }

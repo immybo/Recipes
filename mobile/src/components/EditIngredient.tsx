@@ -6,12 +6,12 @@ import { updateIngredient, updateIngredientNutrition, fetchNutritionForIngredien
 import { withNavigation } from 'react-navigation';
 import IngredientInput from './shared/IngredientInput';
 import { IngredientNutrition } from '../model/IngredientNutrition';
-import { RouteViewIngredients } from '../Routes';
 import { View } from 'react-native';
 import { styles } from '../style/Style';
-import NavigationToggle from './NavigationToggle';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 interface EditIngredientProps extends React.Props<EditIngredient> {
+    navigation: StackNavigationProp<any>
     allIngredients: Ingredient[]
     allIngredientNutrition: IngredientNutrition[]
     updateIngredient: (newIngredient: Ingredient) => void
