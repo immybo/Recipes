@@ -37,14 +37,9 @@ module MealPlan =
         |> Result.Ok
 
     let generateRandom (command: GenerateRandomMealPlanCommand): Result<MealPlanEntry[], Error> =
-        let recipeResult = Recipes.getAll ()
-        match recipeResult with
-        | Result.Error err -> Result.Error err
-        | Result.Ok recipes ->
-            let mealPlan = 
-                match recipes.Length < command.NumDays with
-                | true -> MealPlanGeneration.generateRandomMealPlan (recipes, command.NumDays, command.StartDate)
-                | false -> MealPlanGeneration.generateRandomMealPlanNoDuplicates (recipes, command.NumDays, command.StartDate)
-
-            addOrUpdate (mealPlan)
-            >=> fun _ -> Result.Ok mealPlan
+        Recipes.getAll ()
+            >>> fun recipes ->
+                    match recipes.Length < command.NumDays with
+                    | true -> MealPlanGeneration.generateRandomMealPlan (recipes, command.NumDays, command.StartDate)
+                    | false -> MealPlanGeneration.generateRandomMealPlanNoDuplicates (recipes, command.NumDays, command.StartDate)
+            >^> addOrUpdate

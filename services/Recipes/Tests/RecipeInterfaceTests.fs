@@ -33,7 +33,7 @@ module RecipeInterfaceTests =
                 |> function result -> 
                     match result with
                     | Result.Error err -> Assert.False(true, err.ToString())
-                    | Result.Ok recipe -> (
+                    | Result.Ok recipe ->
                         let updatedRecipe = { recipe with
                             Name = "hello test 123";
                             Ingredients = List.toArray [
@@ -62,7 +62,7 @@ module RecipeInterfaceTests =
                                     "Serve the food 2";
                                     "Add an extra step";
                                 ];
-                            }
+                            };
                         }
                         Recipes.update updatedRecipe
                         |> function result ->
@@ -74,7 +74,6 @@ module RecipeInterfaceTests =
                                     match readRecipe with
                                     | Result.Error Error.RecipeDoesNotExist -> Assert.False(true)
                                     | Result.Ok readRecipe -> TestUtils.recipesAreEqualExceptForIds updatedRecipe readRecipe
-                    )
 
     [<Test>]
     let AddAndDeleteRecipeAndCheckThatItNoLongerExists () =

@@ -39,7 +39,8 @@ module TestUtils =
                 "Make the food";
                 "Serve the food";
             ];
-        }
+        };
+        NumberOfServings = 1
     }
 
     let TestNutritionalInformation: IngredientNutrition = {
@@ -91,7 +92,6 @@ module TestUtils =
         }
     }
 
-    // TODO is there a cleaner way to do this?
     let recipesAreEqualExceptForIds (r1: Recipe) (r2: Recipe) =
         Assert.AreEqual(r1.Name, r2.Name);
         Assert.AreEqual(r1.Description, r2.Description);

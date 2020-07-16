@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Utilities\Railway.fs" />
     <Compile Include="Model\QuantityUnit.fs" />
     <Compile Include="Model\Quantity.fs" />
     <Compile Include="Model\Density.fs" />
@@ -18,6 +17,7 @@
     <Compile Include="Model\Category.fs" />
     <Compile Include="Model\MealPlanEntry.fs" />
     <Compile Include="Model\Recipe.fs" />
+    <Compile Include="Utilities\Railway.fs" />
     <Compile Include="Domain\MealPlanGeneration.fs" />
     <Compile Include="Domain\QuantityDomain.fs" />
     <Compile Include="Domain\NutritionalInformationDomain.fs" />

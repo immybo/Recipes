@@ -85,17 +85,15 @@ module Recipes =
         hasMethodId recipe
     
     let updateRecipeUnchecked (recipe: Recipe) : Result<int, Error> =
-        get (recipe.Id)
-        |> function result ->
-            match result with
-            | Result.Error err -> Result.Error err
-            | Result.Ok _ -> (
-                RecipeDataAccess.updatePartialRecipe recipe
-                CategoryDataAccess.updateCategoriesForRecipe recipe
-                IngredientDataAccess.updateIngredientsForRecipe recipe
-                MethodDataAccess.updateMethod recipe.Method
-                Result.Ok recipe.Id
-            )
+        let getResult = get (recipe.Id)
+        match getResult with
+        | Result.Ok _ ->
+            RecipeDataAccess.updatePartialRecipe recipe |> ignore
+            CategoryDataAccess.updateCategoriesForRecipe recipe
+            IngredientDataAccess.updateIngredientsForRecipe recipe
+            MethodDataAccess.updateMethod recipe.Method
+            Result.Ok recipe.Id
+        | Result.Error err -> Result.Error err
     
     let update recipe : Result<int, Error> =
         validateUpdateRecipe recipe

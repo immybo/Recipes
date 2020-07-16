@@ -68,7 +68,7 @@ module RecipeDataAccess =
 
     let updatePartialRecipe updatedRecipe =
         let command = new UpdateRecipeCommand(Database.realConnectionString);
-        command.Execute(updatedRecipe.Description, updatedRecipe.Name, updatedRecipe.Method.Id, updatedRecipe.Id, updatedRecipe.NumberOfServings)
+        command.Execute(updatedRecipe.Description, updatedRecipe.Name, updatedRecipe.Method.Id, updatedRecipe.NumberOfServings, updatedRecipe.Id)
 
     let deletePartialRecipe recipeId =
         let command = new DeleteRecipeCommand(Database.realConnectionString);
