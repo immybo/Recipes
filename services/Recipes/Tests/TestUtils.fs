@@ -5,6 +5,27 @@ open NUnit.Framework
 open Interface
 
 module TestUtils =
+    let (>=>) currentValue nextFunc =
+        match currentValue with
+        | Result.Ok result -> nextFunc result
+        | Result.Error error ->
+            error.ToString ()
+            |> Assert.Fail
+            Result.Error error
+    
+    let (>>>) currentValue nextFunc: Result<'b, 'ErrorType> =
+        match currentValue with
+        | Result.Ok result -> nextFunc result |> Result.Ok
+        | Result.Error error -> Result.Error error
+            
+    let (>|) currentValue nextFunc: unit =
+        match currentValue with
+        | Result.Ok result ->
+            nextFunc result
+        | Result.Error error -> ()
+
+        ()
+
     let TestIngredient: Ingredient =
         {
             Id = -1;

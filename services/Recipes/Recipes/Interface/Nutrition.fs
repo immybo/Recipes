@@ -17,8 +17,8 @@ module Nutrition =
                 match QuantityDomain.toGramsPerCup nutritionalInformation.Density with
                 | Result.Error err -> Result.Error err
                 | Result.Ok gramsPerCup ->
-                    IngredientNutritionDataAccess.addOrUpdateNutritionMappingForIngredient nutritionalInformation macronutrientsId gramsPerCup
-                    |> Result.Ok
+                    IngredientNutritionDataAccess.addOrUpdateNutritionMappingForIngredient nutritionalInformation macronutrientsId gramsPerCup |> ignore
+                    Result.Ok nutritionalInformation.IngredientId
     
     let updateForIngredient nutritionalInformation : Result<int, Error> =
         IngredientDataAccess.getIngredient nutritionalInformation.IngredientId
