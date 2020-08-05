@@ -1,9 +1,9 @@
  import React from 'react';
 import {
-    View, Text
+    View, Text, TouchableOpacity
 } from 'react-native';
 import { IngredientWithQuantity } from '../../model/IngredientWithQuantity';
-import { Numbers, NumbersWithDecimalPlace } from '../../util/Regex';
+import { NumbersWithDecimalPlace } from '../../util/Regex';
 import { styles } from '../../style/Style';
 import CustomTextInput from './CustomTextInput';
 import { QuantityUnit } from '../../model/QuantityUnit';
@@ -13,6 +13,7 @@ import ValidationContainer from './ValidationContainer';
 import { PositiveOrZero } from '../../util/ValidationRules';
 import RNPickerSelect, { Item } from 'react-native-picker-select';
 import { Colors } from '../../style/Colors';
+import Autocomplete from 'react-native-autocomplete-input';
 
 interface IngredientSelectProps extends React.Props<IngredientSelect> {
     ingredient: IngredientWithQuantity,
@@ -22,9 +23,17 @@ interface IngredientSelectProps extends React.Props<IngredientSelect> {
     onValidChange?: (isValid: boolean) => void
 }
 
-class IngredientSelect extends React.Component<IngredientSelectProps, any> {
+interface IngredientSelectState {
+    currentIngredientName: string
+}
+
+class IngredientSelect extends React.Component<IngredientSelectProps, IngredientSelectState> {
     constructor(props: any) {
         super(props);
+
+        this.state = {
+            currentIngredientName: this.props.ingredient.ingredient ? this.props.ingredient.ingredient.name : ""
+        };
     }
 
     public render(): JSX.Element {
@@ -33,10 +42,20 @@ class IngredientSelect extends React.Component<IngredientSelectProps, any> {
         return (
             <View>
                 <View style={styles.rowLayout}>
-                    <View style={{ "flex": 0.55 }}>
-                        <RNPickerSelect useNativeAndroidPickerStyle={false} placeholder={{}} style={{inputAndroid: {fontFamily: "Montserrat-Regular", color: Colors.Charcoal}}} value={this.props.ingredient.ingredient.id} onValueChange={(value, _) => this.updateIngredient(value)}
-                            items={this.getIngredientPickerItems()}
-                        />
+                    <View style={[{ "flex": 0.45 }]}>
+                        <View style={styles.autocompleteContainer}>
+                            <Autocomplete
+                                defaultValue={this.state.currentIngredientName}
+                                data={this.getIngredientsSuggestionList(this.state.currentIngredientName)}
+                                onChangeText={ingredientName => this.updateIngredientIfValidIngredientName(ingredientName)}
+                                renderItem={({item}) => (
+                                    <TouchableOpacity onPress={ () => this.updateIngredientIfValidIngredientName(item) } style={styles.autocompleteEntry}>
+                                        <Text>{item}</Text>
+                                    </TouchableOpacity>
+                                )}
+                                listStyle={styles.autocompleteList}
+                                inputContainerStyle={styles.autocompleteInputContainer}/>
+                        </View>
                     </View>
                     <CustomTextInput
                         style={[{ "flex": 0.1 }, styles.text]}
@@ -67,23 +86,36 @@ class IngredientSelect extends React.Component<IngredientSelectProps, any> {
         );
     }
 
-    private getIngredientPickerItems(): Item[] {
-        return this.props.allIngredients.map((ingredient: Ingredient) => {
-            return {
-                label: ingredient.name,
-                value: ingredient.id
-            }
-        });
+    private getIngredientsSuggestionList(currentText: string): string[] {
+        let ingredients: string[] = this.props.allIngredients.filter(x => x.name.toLowerCase().startsWith(currentText.toLowerCase())).map(x => x.name);
+        if (ingredients.length > 1 || (ingredients.length === 1 && ingredients[0].toLowerCase() !== currentText.toLowerCase())) {
+            return ingredients;
+        } else {
+            return [];
+        }
+    }
+
+    private updateIngredientIfValidIngredientName(ingredientName: string): void {
+        let exactMatches: Ingredient[] = this.props.allIngredients.filter(x => x.name.toLowerCase() === ingredientName.toLowerCase());
+        if (exactMatches.length > 0) {
+            this.updateIngredient(exactMatches[0].id);
+        } else {
+            this.deselectIngredient();
+        }
+
+        this.setState({ currentIngredientName: ingredientName });
     }
 
     private updateIngredient(newIngredientId: number): void {
         if (newIngredientId == null) {
+            if (this.props.onValidChange) this.props.onValidChange(false);
             return;
         }
 
         let newIngredient: Ingredient | undefined = this.props.allIngredients.find(ingr => ingr.id === newIngredientId);
 
         if (newIngredient == null) {
+            if (this.props.onValidChange) this.props.onValidChange(false);
             return; // Should always be able to find the ingredient though...
         }
 
@@ -91,6 +123,11 @@ class IngredientSelect extends React.Component<IngredientSelectProps, any> {
             ...this.props.ingredient,
             ingredient: newIngredient
         });
+        if (this.props.onValidChange) this.props.onValidChange(true);
+    }
+
+    private deselectIngredient(): void {
+        if (this.props.onValidChange) this.props.onValidChange(false);
     }
 
     private updateIngredientQuantityNumber(newQuantity: string): void {

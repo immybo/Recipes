@@ -127,5 +127,26 @@ export const styles = StyleSheet.create({
     text: {
         color: Colors.Charcoal,
         fontFamily: "Montserrat-Regular"
+    },
+    autocompleteContainer: {
+        left: 0, 
+        position: "absolute",
+        top: 0,
+        marginTop: -25,
+        flexDirection: "row",
+        flex: 1
+    },
+    autocompleteInputContainer: {
+        backgroundColor: Colors.White,
+        paddingHorizontal: 7
+    },
+    autocompleteEntry: {
+        flex: 1
+    },
+    autocompleteList: {
+        zIndex: 1,
+        flex: 1,
+        padding: 10,
+        margin: 0
     }
 });
