@@ -15,7 +15,7 @@ export default class NoConnectionToServer extends React.Component<NoConnectionTo
         return (
             <View style={[styles.container, styles.centerAlign]}>
                 <Text style={styles.largeText}>Unable to connect to server.</Text>
-                <Text style={styles.largeText}>Please try again later.</Text>
+                <Text style={[styles.largeText, styles.bottomMargin]}>Please try again later.</Text>
                 <Button title="Retry" onPress={(event) => this.attemptReload()}>Retry</Button>
             </View>
         );

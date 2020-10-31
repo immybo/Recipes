@@ -35,6 +35,7 @@ const DrawerNavigator = () => (
 )
 
 interface AppLocalState {
+    shouldReloadInitialState: boolean
 }
 
 interface AppProps extends React.Props<App> {
@@ -57,12 +58,16 @@ const mapDispatchToProps = {
 class App extends React.Component<AppProps, AppLocalState> {
     constructor(props: any) {
         super(props);
+
+        this.state = {
+            shouldReloadInitialState: true
+        };
     }
 
     public render(): JSX.Element {
         return (
             <Provider store={store}>
-                <InitialStateLoader shouldReload={!this.props.isLoaded} />
+                <InitialStateLoader shouldReload={this.state.shouldReloadInitialState} onLoad={() => this.setState({ shouldReloadInitialState: false })} />
 
                 { this.props.isLoaded && this.props.hasNetworkConnectivity && this.getNavigator()}
 
@@ -77,7 +82,7 @@ class App extends React.Component<AppProps, AppLocalState> {
                 }
 
                 { !this.props.hasNetworkConnectivity && this.props.isLoaded &&
-                    <NoConnectionToServer attemptReload={() => this.setState({isLoaded: false})}/>
+                    <NoConnectionToServer attemptReload={() => this.setState({shouldReloadInitialState: true})}/>
                 }
             </Provider>
         );

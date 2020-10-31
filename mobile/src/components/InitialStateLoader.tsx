@@ -4,6 +4,8 @@ import { View } from "react-native";
 import React from "react";
 import { connect } from "react-redux";
 import { LoadingType, beginLoading, endLoading } from "../actions/LoadingActions";
+import { setApiErrorToDisplay, removeDisplayedError, hasConnectionToServer } from "../actions/NetworkActions";
+import TimeoutError from "../services/TimeoutError";
 
 interface InitialStateLoaderProps extends React.Props<InitialStateLoader> {
     fetchRecipes: () => Promise<void>
@@ -11,6 +13,10 @@ interface InitialStateLoaderProps extends React.Props<InitialStateLoader> {
     shouldReload: boolean
     beginLoading: (type: LoadingType) => void
     endLoading: (type: LoadingType) => void
+    setApiErrorToDisplay: (message: string) => void
+    removeDisplayedError: () => void
+    hasConnectionToServer: (hasConnection: boolean) => void
+    onLoad: () => void
 }
 
 interface InitialStateLoaderState {
@@ -21,7 +27,10 @@ const mapDispatchToProps = {
     fetchRecipes,
     fetchIngredients,
     beginLoading,
-    endLoading
+    endLoading,
+    setApiErrorToDisplay,
+    removeDisplayedError,
+    hasConnectionToServer
 };
 
 const mergeProps = (stateProps: InitialStateLoaderProps, dispatchProps: InitialStateLoaderProps, ownProps: InitialStateLoaderProps): InitialStateLoaderProps => {
@@ -30,7 +39,11 @@ const mergeProps = (stateProps: InitialStateLoaderProps, dispatchProps: InitialS
         fetchIngredients: dispatchProps.fetchIngredients,
         shouldReload: ownProps.shouldReload,
         beginLoading: dispatchProps.beginLoading,
-        endLoading: dispatchProps.endLoading
+        endLoading: dispatchProps.endLoading,
+        setApiErrorToDisplay: dispatchProps.setApiErrorToDisplay,
+        removeDisplayedError: dispatchProps.removeDisplayedError,
+        hasConnectionToServer: dispatchProps.hasConnectionToServer,
+        onLoad: ownProps.onLoad
     }
 }
 
@@ -48,20 +61,36 @@ class InitialStateLoader extends React.Component<InitialStateLoaderProps, Initia
     }
 
     public componentDidMount(): void {
-        this.setState({ isLoading: true });
-
-        this.props.fetchRecipes()
-            .then(_ => this.props.fetchIngredients())
-            .then(_ => { this.setState({ isLoading: false }); this.props.beginLoading(LoadingType.InitialState)});
+        this.fetchData();
     }
 
     public componentDidUpdate(): void {
         if (this.props.shouldReload && !this.state.isLoading) {
-            this.setState({ isLoading: true });
+            this.fetchData();
+        }
+    }
 
-            this.props.fetchRecipes()
-                .then(_ => this.props.fetchIngredients())
-                .then(_ => { this.setState({ isLoading: false }); this.props.endLoading(LoadingType.InitialState)});
+    private fetchData(): void {
+        this.props.beginLoading(LoadingType.InitialState);
+        this.setState({ isLoading: true });
+        this.props.fetchRecipes()
+            .then(
+                _ => this.props.fetchIngredients(),
+                failureReason => this.fail(failureReason))
+            .then(_ => {
+                this.setState({ isLoading: false });
+                this.props.endLoading(LoadingType.InitialState);
+                this.props.onLoad();
+            });
+            
+    }
+
+    private fail(failureReason: Error) {
+        if (failureReason instanceof TimeoutError) {
+            this.props.removeDisplayedError();
+            this.props.hasConnectionToServer(false);
+        } else {
+            this.props.setApiErrorToDisplay(failureReason.message);
         }
     }
 }

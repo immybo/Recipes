@@ -1,7 +1,10 @@
 import { ServerError } from "./api/ServerError";
+import TimeoutError from "./TimeoutError";
 
 //const SERVER_IP = "http://10.0.2.2:8080"
 const SERVER_IP = "http://13.77.60.116:8080"
+
+const TIMEOUT = 3000;
 
 export enum HttpMethod {
     GET = "GET",
@@ -16,7 +19,7 @@ export enum HttpStatus {
 }
 
 export function callApi<PayloadType, ReturnType>(endpoint: string, method: HttpMethod, parse: (json: any) => ReturnType, payload?: PayloadType): Promise<ReturnType> {
-    return callApiRaw(endpoint, method, payload)
+    return callWithTimeout(() => callApiRaw(endpoint, method, payload), TIMEOUT)
         .then(
             response => handleResponse(response, parse),
             error => Promise.reject(error)
@@ -50,6 +53,15 @@ function handleErrorResponse<ReturnType>(response: Response): Promise<ReturnType
             // Ironic
             error => Promise.reject(error)
         );
+}
+
+export function callWithTimeout<T>(func: () => Promise<T>, timeout: number): Promise<any> {
+    return Promise.race([
+        func(),
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new TimeoutError("Fetch timed out.")), timeout)
+        )
+    ]);
 }
 
 export function callApiRaw(endpoint: string, method: HttpMethod, payload?: any): Promise<Response> {

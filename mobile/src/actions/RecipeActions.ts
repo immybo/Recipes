@@ -90,7 +90,7 @@ export function fetchRecipes() {
     return function(dispatch: Dispatch) {
         return RecipesApi.getAllRecipes().then(
             recipes => dispatch(setAllRecipes(recipes)),
-            error => dispatch(setApiErrorToDisplay("Error retrieving recipes. " + String(error)))
+            error => Promise.reject(error)
         );
     }
 }
